@@ -4,9 +4,9 @@
     "main": "./src/index.ts",
     "scripts": {
         "dev": "nodemon",
-        "format": "prettier --write .",
         "lint": "eslint .",
-        "lint:fix": "eslint --fix ."
+        "lint:fix": "eslint --fix .",
+        "format": "prettier --write ."
     },
     "type": "module",
     "author": "",
