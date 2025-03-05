@@ -1,28 +1,41 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import Input from "@/components/input";
 import Button from "@/components/button";
 import CustomLink from "@/components/custom-link";
 import PasswordInput from "@/app/auth/_components/password-input";
+import { useMutation } from "react-query";
+import * as apiClient from "@/actions";
 
-interface FormData {
-    fName: string;
-    lName: string;
+export interface SignUpFormData {
+    firstName: string;
+    lastName: string;
     email: string;
     password: string;
 }
 
 function Page() {
+    const router = useRouter();
     const {
         register,
         handleSubmit,
         watch,
         formState: { errors },
-    } = useForm<FormData>();
+    } = useForm<SignUpFormData>();
 
-    const onSubmit = (data: FormData) => {
-        console.log("Form submitted:", data);
+    const mutation = useMutation(apiClient.signUp, {
+        onSuccess: () => {
+            router.push("/");
+        },
+        onError: (error: Error) => {
+            console.log(error.message);
+        },
+    });
+
+    const onSubmit = (data: SignUpFormData) => {
+        mutation.mutate(data);
     };
 
     return (
@@ -33,17 +46,19 @@ function Page() {
                     <div className="flex gap-2">
                         <Input
                             label="First Name"
-                            {...register("fName", {
+                            {...register("firstName", {
                                 required: "First name is required",
                             })}
-                            error={errors.fName?.message}
+                            error={errors.firstName?.message}
+                            disabled={mutation.isLoading}
                         />
                         <Input
                             label="Last Name"
-                            {...register("lName", {
+                            {...register("lastName", {
                                 required: "Last name is required",
                             })}
-                            error={errors.lName?.message}
+                            error={errors.lastName?.message}
+                            disabled={mutation.isLoading}
                         />
                     </div>
                     <Input
@@ -57,6 +72,7 @@ function Page() {
                             },
                         })}
                         error={errors.email?.message}
+                        disabled={mutation.isLoading}
                     />
                     <PasswordInput
                         label="Password"
@@ -83,6 +99,7 @@ function Page() {
                             },
                         })}
                         error={errors.password?.message}
+                        disabled={mutation.isLoading}
                     />
                     <p className="text-xs leading-none">
                         By creating an account, you agree with our{" "}
@@ -98,6 +115,7 @@ function Page() {
                     <Button
                         type="submit"
                         className="w-full text-center font-semibold"
+                        isLoading={mutation.isLoading}
                     >
                         Continue with email
                     </Button>

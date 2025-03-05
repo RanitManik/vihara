@@ -12,8 +12,8 @@ const validateRegister = [
     check("email", "email is required").isEmail(),
     check(
         "password",
-        "password with minimum 6 characters is required",
-    ).isLength({ min: 6 }),
+        "password with minimum 8 characters is required",
+    ).isLength({ min: 8 }),
 ];
 
 // /api/users/register

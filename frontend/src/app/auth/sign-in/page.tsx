@@ -7,7 +7,7 @@ import Checkbox from "@/components/checkbox";
 import CustomLink from "@/components/custom-link";
 import PasswordInput from "@/app/auth/_components/password-input";
 
-interface SignInFormData {
+export interface SignInFormData {
     email: string;
     password: string;
 }
