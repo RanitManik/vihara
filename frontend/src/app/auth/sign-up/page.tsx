@@ -1,6 +1,7 @@
 import Input from "@/components/input";
 import Button from "@/components/button";
 import CustomLink from "@/components/custom-link";
+import PasswordInput from "@/app/auth/_components/password-input";
 
 function Page() {
     return (
@@ -13,7 +14,7 @@ function Page() {
                         <Input name="lName" type="text" label="Last Name" />
                     </div>
                     <Input name="email" type="email" label="Email address" />
-                    <Input name="password" type="password" label="Password" />
+                    <PasswordInput name="password" label="Password" />
                     <p className="text-xs leading-none">
                         By creating an account, you agree with our{" "}
                         <CustomLink className="text-xs font-semibold" href="/">

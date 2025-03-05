@@ -2,6 +2,7 @@ import Input from "@/components/input";
 import Button from "@/components/button";
 import Checkbox from "@/components/checkbox";
 import CustomLink from "@/components/custom-link";
+import PasswordInput from "@/app/auth/_components/password-input";
 
 function Page() {
     return (
@@ -10,7 +11,7 @@ function Page() {
                 <h1 className="text-center text-2xl font-bold">Sign in</h1>
                 <form className="space-y-4">
                     <Input name="email" type="email" label="Email address" />
-                    <Input name="password" type="password" label="Password" />
+                    <PasswordInput name="password" label="Password" />
                     <div className="flex items-center justify-between">
                         <Checkbox label="Keep me signed in" />
                         <CustomLink href="/auth/forgot-password">

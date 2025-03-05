@@ -1,6 +1,6 @@
 import React, { forwardRef, ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
-import Loader, { LoaderProps } from "@/components/loader";
+import Loader from "@/components/loader";
 
 // Define strict types for variant and size
 type ButtonVariant =
@@ -10,6 +10,8 @@ type ButtonVariant =
     | "outline"
     | "ghost";
 type ButtonSize = "xs" | "sm" | "md" | "lg";
+
+type LoaderProps = React.ComponentProps<typeof Loader>;
 
 interface ButtonProps
     extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "size"> {

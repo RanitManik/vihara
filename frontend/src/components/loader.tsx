@@ -1,6 +1,6 @@
 import React from "react";
 
-export interface LoaderProps {
+interface LoaderProps {
     size?: "sm" | "md" | "lg";
     className?: string;
     label?: string;

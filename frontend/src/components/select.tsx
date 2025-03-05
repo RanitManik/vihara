@@ -6,13 +6,15 @@ import Button from "@/components/button";
 import ReactDOM from "react-dom";
 import Input from "@/components/input";
 import { cn } from "@/lib/utils";
+import { v4 } from "uuid";
 
 interface Option {
     label: string;
     value: string;
 }
 
-interface CustomSelectProps {
+interface CustomSelectProps
+    extends Omit<React.ComponentProps<typeof Input>, "onChange"> {
     options: Option[];
     selectedOption: Option;
     setSelectedOption: (value: Option) => void;
@@ -25,18 +27,12 @@ interface CustomSelectProps {
     creatable?: boolean;
     loading?: boolean;
     onChange?: (newValue: Option) => void;
-    CreateEditModal?: React.ComponentType<{
-        onSave: (newOption: Option) => void;
-        onClose: () => void;
-        isOpen: boolean;
-        nameInputValue: string;
-    }>;
 }
 
 /**
  * Select Component:
- * A customizable dropdown select component with optional search functionality,
- * creation of new options, and a create/edit modal.
+ * A customizable dropdown select component with search functionality
+ * and option to create new items.
  *
  * @param options - List of options to display in the dropdown.
  * @param selectedOption - The currently selected value.
@@ -50,7 +46,7 @@ interface CustomSelectProps {
  * @param width - Determines the width of the dropdown ('sm', 'md', 'full').
  * @param creatable - If true, allows the creation of new options.
  * @param loading - If true, displays a loading indicator in the dropdown menu.
- * @param CreateEditModal - Optional component for handling the creation and editing of options.
+ * @param ...props - Additional input props that will be passed to the underlying input element.
  */
 const Select: FC<CustomSelectProps> = ({
     options,
@@ -65,15 +61,21 @@ const Select: FC<CustomSelectProps> = ({
     creatable = false,
     loading = false,
     onChange,
-    CreateEditModal: CreateEditModal,
+    "aria-label": ariaLabel,
+    ...inputProps
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [inputValue, setInputValue] = useState("");
     const [focusedIndex, setFocusedIndex] = useState(-1);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
-    // states for the create edit modal
-    const [createEditOpen, setCreateEditOpen] = useState(false);
+    // Generate unique IDs for accessibility
+    const [generatedId, setGeneratedId] = React.useState("");
+
+    React.useEffect(() => {
+        setGeneratedId(`select-${v4()}`);
+    }, []);
 
     const allOptions = options;
     const filteredOptions = allOptions.filter((option) =>
@@ -119,64 +121,47 @@ const Select: FC<CustomSelectProps> = ({
             value: "",
         });
         setFocusedIndex(-1);
+        inputRef.current?.focus();
     };
 
     const handleToggleDropdown = () => {
         setInputValue("");
         setIsOpen((prev) => !prev);
+        if (!isOpen) {
+            inputRef.current?.focus();
+        }
     };
 
     const handleSelect = (newValue: Option) => {
         setSelectedOption(newValue);
-        if (onChange) onChange(newValue); // Call onChange if provided
+        if (onChange) onChange(newValue);
         setInputValue("");
         setIsOpen(false);
         setFocusedIndex(-1);
+        inputRef.current?.focus();
     };
 
     const handleCreateNewOption = () => {
         if (inputValue.trim() !== "") {
-            setSelectedOption({
+            const newOption = {
                 label: inputValue.trim(),
                 value: inputValue.trim(),
-            });
-            if (onChange)
-                onChange({
-                    label: inputValue.trim(),
-                    value: inputValue.trim(),
-                });
+            };
+            setSelectedOption(newOption);
+            if (onChange) onChange(newOption);
             setInputValue("");
             setIsOpen(false);
             setFocusedIndex(-1);
+            inputRef.current?.focus();
         }
-    };
-
-    const handleSaveNewOption = (newOption: Option) => {
-        handleSelect(newOption); // Automatically select the new option
-    };
-
-    const handleOpenCreateEditModal = () => {
-        setIsOpen(false);
-        setCreateEditOpen(true);
-    };
-
-    const handleCloseCreateEditModal = () => {
-        setCreateEditOpen(false);
-        setInputValue("");
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         const filteredOptionsCount = filteredOptions.length;
         const creatableOptionIndex =
             creatable && canCreateNewOption ? filteredOptionsCount : -1;
-        const createEditIndex =
-            CreateEditModal && creatableOptionIndex !== -1
-                ? creatableOptionIndex + 1
-                : -1;
         const totalOptions =
-            filteredOptionsCount +
-            (creatableOptionIndex !== -1 ? 1 : 0) +
-            (createEditIndex !== -1 ? 1 : 0);
+            filteredOptionsCount + (creatableOptionIndex !== -1 ? 1 : 0);
 
         switch (event.key) {
             case "ArrowDown":
@@ -205,12 +190,6 @@ const Select: FC<CustomSelectProps> = ({
                     handleCreateNewOption();
                 } else if (
                     !loading &&
-                    focusedIndex >= 0 &&
-                    focusedIndex === createEditIndex
-                ) {
-                    handleOpenCreateEditModal();
-                } else if (
-                    !loading &&
                     canCreateNewOption &&
                     inputValue.trim() !== ""
                 ) {
@@ -232,7 +211,7 @@ const Select: FC<CustomSelectProps> = ({
     useEffect(() => {
         if (focusedIndex >= 0) {
             const optionElement = document.getElementById(
-                `option-${focusedIndex}`,
+                `${generatedId}-option-${focusedIndex}`,
             );
             if (optionElement) {
                 optionElement.scrollIntoView({
@@ -241,7 +220,7 @@ const Select: FC<CustomSelectProps> = ({
                 });
             }
         }
-    }, [focusedIndex]);
+    }, [focusedIndex, generatedId]);
 
     return (
         <div
@@ -250,7 +229,7 @@ const Select: FC<CustomSelectProps> = ({
         >
             {label && (
                 <label
-                    htmlFor="input-id"
+                    htmlFor={generatedId}
                     className="mb-0 block text-xs font-medium text-gray-600"
                 >
                     {label}
@@ -258,7 +237,9 @@ const Select: FC<CustomSelectProps> = ({
             )}
             <div className="relative">
                 <Input
-                    id="input-id"
+                    {...inputProps}
+                    ref={inputRef}
+                    id={generatedId}
                     value={inputValue}
                     onChange={(e) => {
                         setInputValue(e.target.value);
@@ -274,9 +255,16 @@ const Select: FC<CustomSelectProps> = ({
                     }}
                     onFocus={() => setIsOpen(true)}
                     onKeyDown={handleKeyDown}
+                    role="combobox"
                     aria-expanded={isOpen}
-                    aria-controls="select-dropdown"
-                    aria-activedescendant={`option-${focusedIndex}`}
+                    aria-controls={`${generatedId}-listbox`}
+                    aria-activedescendant={
+                        focusedIndex >= 0
+                            ? `${generatedId}-option-${focusedIndex}`
+                            : undefined
+                    }
+                    aria-label={ariaLabel || label || "Select an option"}
+                    aria-autocomplete="list"
                     className={cn(
                         "pr-20",
                         selectedOption.value !== "" &&
@@ -286,7 +274,7 @@ const Select: FC<CustomSelectProps> = ({
                     placeholder={
                         selectedOption.label !== ""
                             ? selectedOption.label
-                            : placeholder || "Search or type..."
+                            : placeholder
                     }
                 />
                 <div className="absolute bottom-px right-0 top-px flex">
@@ -307,8 +295,8 @@ const Select: FC<CustomSelectProps> = ({
                         variant="ghost"
                         onClick={() => setIsOpen((prev) => !prev)}
                         className="group h-full rounded-r-sm !px-2 !py-0 text-gray-500 transition hover:bg-gray-200 hover:text-gray-700 focus:!outline-1 focus:!-outline-offset-0 focus-visible:!outline-1"
-                        aria-label="Toggle dropdown"
-                        aria-expanded={isOpen ? "true" : "false"}
+                        aria-label={isOpen ? "Close dropdown" : "Open dropdown"}
+                        aria-expanded={isOpen}
                     >
                         <ChevronDown
                             className={`transform stroke-gray-600 transition-transform group-hover:stroke-gray-800 ${
@@ -335,15 +323,15 @@ const Select: FC<CustomSelectProps> = ({
                                 dropdownRef.current?.getBoundingClientRect()
                                     .width || "auto",
                         }}
-                        id="select-dropdown"
+                        id={`${generatedId}-listbox`}
                         role="listbox"
-                        aria-labelledby="input-id"
-                        className={`select-dropdown absolute left-0 right-0 z-10 mt-2 max-h-40 overflow-auto border border-gray-300 bg-white text-sm shadow-md ${dropdownClassName}`}
+                        aria-label={`${label || "Options"} list`}
+                        className={`select-dropdown absolute left-0 right-0 z-10 mt-2 max-h-40 overflow-auto rounded-sm border border-gray-300 bg-white text-sm shadow-md ${dropdownClassName}`}
                         onMouseDown={(e) => e.stopPropagation()}
                     >
                         {filteredOptions.map((option, index) => (
                             <li
-                                id={`option-${index}`}
+                                id={`${generatedId}-option-${index}`}
                                 role="option"
                                 key={option.value}
                                 aria-selected={
@@ -369,40 +357,21 @@ const Select: FC<CustomSelectProps> = ({
                         ))}
                         {canCreateNewOption && !loading && (
                             <li
-                                id={`option-${filteredOptions.length}`}
+                                id={`${generatedId}-option-${filteredOptions.length}`}
+                                role="option"
+                                aria-selected={false}
                                 className={`group cursor-pointer truncate bg-gray-100 px-4 py-2 hover:bg-gray-200 hover:outline-none hover:outline-2 hover:-outline-offset-2 hover:outline-primary active:bg-gray-300 ${focusedIndex === filteredOptions.length && "bg-gray-300 outline-none outline-1 -outline-offset-1 outline-primary"} }`}
                                 onClick={handleCreateNewOption}
-                                title={inputValue}
+                                title={`Create "${inputValue}"`}
                             >
                                 <span>
                                     Create <strong>{inputValue}</strong>
                                 </span>
                             </li>
                         )}
-                        {CreateEditModal && (
-                            <li
-                                id={`option-create-edit`}
-                                className={`group cursor-pointer truncate bg-gray-100 px-4 py-2 hover:bg-gray-200 hover:outline-none hover:outline-2 hover:-outline-offset-2 hover:outline-primary active:bg-gray-300 ${
-                                    focusedIndex ===
-                                        filteredOptions.length + 1 &&
-                                    "bg-gray-300 outline-none outline-1 -outline-offset-1 outline-primary"
-                                }`}
-                                onClick={handleOpenCreateEditModal}
-                            >
-                                <span>Edit or Create New Option</span>
-                            </li>
-                        )}
                     </ul>,
                     document.body,
                 )}
-            {CreateEditModal && (
-                <CreateEditModal
-                    isOpen={createEditOpen}
-                    onClose={handleCloseCreateEditModal}
-                    onSave={handleSaveNewOption}
-                    nameInputValue={inputValue}
-                />
-            )}
         </div>
     );
 };
