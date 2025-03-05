@@ -10,11 +10,26 @@ function Page() {
                 <h1 className="text-center text-2xl font-bold">Sign up</h1>
                 <form className="space-y-4">
                     <div className="flex gap-2">
-                        <Input name="fname" type="text" label="First Name" />
-                        <Input name="lName" type="text" label="Last Name" />
+                        <Input
+                            required
+                            name="fname"
+                            type="text"
+                            label="First Name"
+                        />
+                        <Input
+                            required
+                            name="lName"
+                            type="text"
+                            label="Last Name"
+                        />
                     </div>
-                    <Input name="email" type="email" label="Email address" />
-                    <PasswordInput name="password" label="Password" />
+                    <Input
+                        required
+                        name="email"
+                        type="email"
+                        label="Email address"
+                    />
+                    <PasswordInput required name="password" label="Password" />
                     <p className="text-xs leading-none">
                         By creating an account, you agree with our{" "}
                         <CustomLink className="text-xs font-semibold" href="/">
@@ -26,7 +41,10 @@ function Page() {
                         </CustomLink>
                         .
                     </p>
-                    <Button className="w-full text-center font-semibold">
+                    <Button
+                        type="submit"
+                        className="w-full text-center font-semibold"
+                    >
                         Continue with email
                     </Button>
                 </form>

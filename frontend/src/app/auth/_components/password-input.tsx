@@ -69,6 +69,8 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
                 type={showPassword ? "text" : "password"}
                 extraContent={<IconButton />}
                 autoComplete="current-password"
+                pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                title="Password must be at least 8 characters long, and include at least one letter, one number, and one special character."
                 {...props}
             />
         );

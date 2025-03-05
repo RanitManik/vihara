@@ -10,15 +10,23 @@ function Page() {
             <div className="w-full max-w-sm space-y-4 sm:space-y-6">
                 <h1 className="text-center text-2xl font-bold">Sign in</h1>
                 <form className="space-y-4">
-                    <Input name="email" type="email" label="Email address" />
-                    <PasswordInput name="password" label="Password" />
+                    <Input
+                        required
+                        name="email"
+                        type="email"
+                        label="Email address"
+                    />
+                    <PasswordInput required name="password" label="Password" />
                     <div className="flex items-center justify-between">
                         <Checkbox label="Keep me signed in" />
                         <CustomLink href="/auth/forgot-password">
                             Forgot password?
                         </CustomLink>
                     </div>
-                    <Button className="w-full text-center font-semibold">
+                    <Button
+                        type="submit"
+                        className="w-full text-center font-semibold"
+                    >
                         Continue with email
                     </Button>
                 </form>
