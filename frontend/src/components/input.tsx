@@ -56,7 +56,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             }
         }, [providedId]);
 
-        const descriptionId = description ? `${inputId}-description` : undefined;
+        const descriptionId = description
+            ? `${inputId}-description`
+            : undefined;
         const errorId = error ? `${inputId}-error` : undefined;
 
         // Combine aria-describedby values
