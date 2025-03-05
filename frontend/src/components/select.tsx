@@ -46,7 +46,7 @@ interface CustomSelectProps
  * @param width - Determines the width of the dropdown ('sm', 'md', 'full').
  * @param creatable - If true, allows the creation of new options.
  * @param loading - If true, displays a loading indicator in the dropdown menu.
- * @param ...props - Additional input props that will be passed to the underlying input element.
+ * @param inputProps - Additional input props that will be passed to the underlying input element.
  */
 const Select: FC<CustomSelectProps> = ({
     options,
@@ -225,7 +225,7 @@ const Select: FC<CustomSelectProps> = ({
     return (
         <div
             ref={dropdownRef}
-            className={`group grid gap-1 ${sizeClass} ${className}`}
+            className={cn("group grid gap-1", sizeClass, className)}
         >
             {label && (
                 <label
@@ -299,9 +299,10 @@ const Select: FC<CustomSelectProps> = ({
                         aria-expanded={isOpen}
                     >
                         <ChevronDown
-                            className={`transform stroke-gray-600 transition-transform group-hover:stroke-gray-800 ${
-                                isOpen ? "rotate-180" : "rotate-0"
-                            }`}
+                            className={cn(
+                                "transform stroke-gray-600 transition-transform group-hover:stroke-gray-800",
+                                isOpen ? "rotate-180" : "rotate-0",
+                            )}
                             size={16}
                         />
                     </Button>
@@ -326,7 +327,10 @@ const Select: FC<CustomSelectProps> = ({
                         id={`${generatedId}-listbox`}
                         role="listbox"
                         aria-label={`${label || "Options"} list`}
-                        className={`select-dropdown absolute left-0 right-0 z-10 mt-2 max-h-40 overflow-auto rounded-sm border border-gray-300 bg-white text-sm shadow-md ${dropdownClassName}`}
+                        className={cn(
+                            "select-dropdown absolute left-0 right-0 z-10 mt-2 max-h-40 overflow-auto rounded-sm border border-gray-300 bg-white text-sm shadow-md",
+                            dropdownClassName,
+                        )}
                         onMouseDown={(e) => e.stopPropagation()}
                     >
                         {filteredOptions.map((option, index) => (
@@ -337,10 +341,13 @@ const Select: FC<CustomSelectProps> = ({
                                 aria-selected={
                                     option.value === selectedOption.value
                                 }
-                                className={`group cursor-pointer border-b border-b-gray-300 bg-gray-100 px-4 last:border-none hover:border-transparent hover:bg-gray-200 hover:outline-none hover:outline-2 hover:-outline-offset-2 hover:outline-primary active:bg-gray-300 ${option.value === selectedOption.value && "bg-gray-200 hover:bg-gray-300"} ${
+                                className={cn(
+                                    "group cursor-pointer border-b border-b-gray-300 bg-gray-100 px-4 last:border-none hover:border-transparent hover:bg-gray-200 hover:outline-none hover:outline-2 hover:-outline-offset-2 hover:outline-primary active:bg-gray-300",
+                                    option.value === selectedOption.value &&
+                                        "bg-gray-200 hover:bg-gray-300",
                                     index === focusedIndex &&
-                                    "bg-gray-300 outline-none outline-1 -outline-offset-1 outline-primary"
-                                }`}
+                                        "bg-gray-300 outline-none outline-1 -outline-offset-1 outline-primary",
+                                )}
                                 onClick={() => handleSelect(option)}
                                 title={option.label}
                             >
@@ -360,7 +367,11 @@ const Select: FC<CustomSelectProps> = ({
                                 id={`${generatedId}-option-${filteredOptions.length}`}
                                 role="option"
                                 aria-selected={false}
-                                className={`group cursor-pointer truncate bg-gray-100 px-4 py-2 hover:bg-gray-200 hover:outline-none hover:outline-2 hover:-outline-offset-2 hover:outline-primary active:bg-gray-300 ${focusedIndex === filteredOptions.length && "bg-gray-300 outline-none outline-1 -outline-offset-1 outline-primary"} }`}
+                                className={cn(
+                                    "group cursor-pointer truncate bg-gray-100 px-4 py-2 hover:bg-gray-200 hover:outline-none hover:outline-2 hover:-outline-offset-2 hover:outline-primary active:bg-gray-300",
+                                    focusedIndex === filteredOptions.length &&
+                                        "bg-gray-300 outline-none outline-1 -outline-offset-1 outline-primary",
+                                )}
                                 onClick={handleCreateNewOption}
                                 title={`Create "${inputValue}"`}
                             >

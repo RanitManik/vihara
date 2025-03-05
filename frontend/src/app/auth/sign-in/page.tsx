@@ -1,22 +1,52 @@
+"use client";
+
+import { useForm } from "react-hook-form";
 import Input from "@/components/input";
 import Button from "@/components/button";
 import Checkbox from "@/components/checkbox";
 import CustomLink from "@/components/custom-link";
 import PasswordInput from "@/app/auth/_components/password-input";
 
+interface SignInFormData {
+    email: string;
+    password: string;
+}
+
 function Page() {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<SignInFormData>();
+
+    const onSubmit = (data: SignInFormData) => {
+        console.log("Sign-in data:", data);
+    };
+
     return (
         <div className="flex min-h-svh items-center justify-center p-4 animate-in fade-in">
             <div className="w-full max-w-sm space-y-4 sm:space-y-6">
                 <h1 className="text-center text-2xl font-bold">Sign in</h1>
-                <form className="space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <Input
-                        required
-                        name="email"
-                        type="email"
                         label="Email address"
+                        type="email"
+                        {...register("email", {
+                            required: "Email is required",
+                            pattern: {
+                                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                                message: "Invalid email format",
+                            },
+                        })}
+                        error={errors.email?.message}
                     />
-                    <PasswordInput required name="password" label="Password" />
+                    <PasswordInput
+                        label="Password"
+                        {...register("password", {
+                            required: "Password is required",
+                        })}
+                        error={errors.password?.message}
+                    />
                     <div className="flex items-center justify-between">
                         <Checkbox label="Keep me signed in" />
                         <CustomLink href="/auth/forgot-password">

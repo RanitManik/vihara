@@ -1,8 +1,25 @@
+"use client";
+
+import { useForm } from "react-hook-form";
 import Input from "@/components/input";
 import Button from "@/components/button";
 import CustomLink from "@/components/custom-link";
 
+interface ForgotPasswordFormData {
+    email: string;
+}
+
 function Page() {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<ForgotPasswordFormData>();
+
+    const onSubmit = (data: ForgotPasswordFormData) => {
+        console.log("Reset password request sent for:", data.email);
+    };
+
     return (
         <div className="flex min-h-svh items-center justify-center p-4 animate-in fade-in">
             <div className="w-full max-w-sm space-y-4 sm:space-y-6">
@@ -15,13 +32,23 @@ function Page() {
                         address used for Vihara.
                     </p>
                 </div>
-                <form className="space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <Input
-                        name="email"
-                        type="email"
                         label="Your email address"
+                        type="email"
+                        {...register("email", {
+                            required: "Email is required",
+                            pattern: {
+                                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                                message: "Invalid email format",
+                            },
+                        })}
+                        error={errors.email?.message}
                     />
-                    <Button className="w-full text-center font-semibold">
+                    <Button
+                        type="submit"
+                        className="w-full text-center font-semibold"
+                    >
                         Send Reset Link
                     </Button>
                 </form>

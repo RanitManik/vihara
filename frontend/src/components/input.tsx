@@ -10,6 +10,9 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     labelClassName?: string;
     width?: "sm" | "md" | "full";
     extraContent?: React.ReactNode;
+    error?: string;
+    description?: string;
+    required?: boolean;
 }
 
 /**
@@ -20,6 +23,9 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
  * @param labelClassName - Additional classes for customizing the label styling.
  * @param width - Determines the width of the input field (sm, md, full).
  * @param extraContent - Optional additional content to render alongside the input.
+ * @param error - Optional error message to display below the input.
+ * @param description - Optional description text to display below the input.
+ * @param required - Whether the input is required.
  */
 const Input = forwardRef<HTMLInputElement, InputProps>(
     (
@@ -34,6 +40,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             width = "full",
             id: providedId,
             extraContent,
+            error,
+            description,
+            required,
+            "aria-describedby": ariaDescribedBy,
             ...props
         },
         ref,
@@ -47,6 +57,17 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             }
         }, [providedId]);
 
+        const descriptionId = description
+            ? `${inputId}-description`
+            : undefined;
+        const errorId = error ? `${inputId}-error` : undefined;
+
+        // Combine aria-describedby values
+        const combinedAriaDescribedBy =
+            [ariaDescribedBy, descriptionId, errorId]
+                .filter(Boolean)
+                .join(" ") || undefined;
+
         // Map width classes to match the input's size
         const sizeClass =
             {
@@ -58,7 +79,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         return (
             // Wrapper div with custom classes and width mapping
             <div
-                className={`group grid gap-1 ${sizeClass} ${wrapperClassName}`}
+                className={cn(
+                    "group grid content-start gap-1",
+                    sizeClass,
+                    wrapperClassName,
+                )}
                 role="group"
                 aria-labelledby={label ? `${inputId}-label` : undefined}
             >
@@ -69,6 +94,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                         htmlFor={inputId}
                         className={cn(
                             "text-sm font-medium text-gray-700",
+                            required
+                                ? "after:ml-0.5 after:text-red-500 after:content-['*']"
+                                : "",
                             labelClassName,
                         )}
                     >
@@ -86,13 +114,33 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                         placeholder={placeholder}
                         className={cn(
                             "peer w-full rounded-sm border bg-gray-100 px-3.5 py-2 text-sm text-gray-900 caret-primary placeholder:text-gray-500 hover:border-gray-400 focus:border-transparent focus:outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50",
+                            error ? "border-red-500" : "border-gray-200",
                             className,
                         )}
+                        aria-invalid={error ? "true" : "false"}
+                        aria-required={required}
+                        aria-describedby={combinedAriaDescribedBy}
                         {...props} // Spread other props like onChange, onBlur, etc.
                     />
                     {/* Optional extra content rendered alongside input */}
                     {extraContent}
                 </div>
+                {/* Optional description text */}
+                {description && !error && (
+                    <p id={descriptionId} className="text-sm text-gray-500">
+                        {description}
+                    </p>
+                )}
+                {/* Optional error message */}
+                {error && (
+                    <p
+                        id={errorId}
+                        className="text-sm text-red-500"
+                        role="alert"
+                    >
+                        {error}
+                    </p>
+                )}
             </div>
         );
     },

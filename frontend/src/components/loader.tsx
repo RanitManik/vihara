@@ -1,4 +1,5 @@
 import React from "react";
+import { cn } from "@/lib/utils";
 
 interface LoaderProps {
     size?: "sm" | "md" | "lg";
@@ -29,7 +30,11 @@ const Loader: React.FC<LoaderProps> = ({
         <div className="flex flex-col items-center justify-center gap-1">
             {/* Spinner element */}
             <div
-                className={`inline-block animate-spin rounded-full border-solid border-gray-300 border-t-gray-600 ${sizeClasses[size]} ${className}`}
+                className={cn(
+                    "inline-block animate-spin rounded-full border-solid border-gray-300 border-t-gray-600",
+                    sizeClasses[size],
+                    className,
+                )}
                 role="status" // Accessibility role for screen readers
                 aria-label="Loading" // Descriptive label for screen readers
             ></div>
