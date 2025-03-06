@@ -31,7 +31,7 @@ const Loader: React.FC<LoaderProps> = ({
             {/* Spinner element */}
             <div
                 className={cn(
-                    "inline-block animate-spin rounded-full border-solid border-gray-300 border-t-gray-600",
+                    "inline-block animate-spin rounded-full border-solid border-gray-400 border-t-white",
                     sizeClasses[size],
                     className,
                 )}

@@ -32,7 +32,7 @@
     "no-unused-vars": [
         "warn",
         {
-            "argsIgnorePattern": "req|res|next|__"
+            "argsIgnorePattern": "req|res|next|error|__"
         }
     ],
     //* Enhance Readability
