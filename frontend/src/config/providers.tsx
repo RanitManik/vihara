@@ -1,7 +1,9 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
+import { ToastProvider } from "@/context/toast-context";
+import ToastList from "@/components/toast-list";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -18,7 +20,10 @@ interface ProviderProps {
 export default function Providers({ children }: ProviderProps) {
     return (
         <QueryClientProvider client={queryClient}>
-            {children}
+            <ToastProvider>
+                <ToastList />
+                {children}
+            </ToastProvider>
         </QueryClientProvider>
     );
 }

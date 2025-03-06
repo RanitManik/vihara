@@ -12,6 +12,6 @@ export async function signIn(formData: SignInFormData) {
     const responseBody = await response.json();
 
     if (!response.ok) {
-        throw new Error(responseBody.message || "Registration failed");
+        return Promise.reject(responseBody.message || "Login failed");
     }
 }

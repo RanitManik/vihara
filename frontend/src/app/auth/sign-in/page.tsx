@@ -9,6 +9,7 @@ import PasswordInput from "@/app/auth/_components/password-input";
 import { useMutation } from "react-query";
 import * as apiClient from "@/actions";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/context/toast-context";
 
 export interface SignInFormData {
     email: string;
@@ -17,6 +18,7 @@ export interface SignInFormData {
 
 function Page() {
     const router = useRouter();
+    const { addToast } = useToast();
     const {
         register,
         handleSubmit,
@@ -25,10 +27,15 @@ function Page() {
 
     const mutation = useMutation(apiClient.signIn, {
         onSuccess: () => {
+            addToast(
+                "You signed in successfully",
+                "success",
+                "Welcome back! You have successfully logged into your account.",
+            );
             router.push("/");
         },
-        onError: (error: Error) => {
-            console.log(error.message);
+        onError: (error) => {
+            addToast("Login failed", "error", error as string);
         },
     });
 
@@ -52,6 +59,7 @@ function Page() {
                             },
                         })}
                         error={errors.email?.message}
+                        disabled={mutation.isLoading}
                     />
                     <PasswordInput
                         label="Password"
@@ -59,6 +67,7 @@ function Page() {
                             required: "Password is required",
                         })}
                         error={errors.password?.message}
+                        disabled={mutation.isLoading}
                     />
                     <div className="flex items-center justify-between">
                         <Checkbox label="Keep me signed in" />
@@ -69,6 +78,7 @@ function Page() {
                     <Button
                         type="submit"
                         className="w-full text-center font-semibold"
+                        isLoading={mutation.isLoading}
                     >
                         Continue with email
                     </Button>

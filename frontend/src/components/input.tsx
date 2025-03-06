@@ -1,7 +1,7 @@
 "use client";
 
 import React, { forwardRef, InputHTMLAttributes } from "react";
-import { v4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import { cn } from "@/lib/utils";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -53,7 +53,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
         React.useEffect(() => {
             if (!providedId) {
-                setInputId(`input-${v4()}`);
+                setInputId(`input-${uuidv4()}`);
             }
         }, [providedId]);
 

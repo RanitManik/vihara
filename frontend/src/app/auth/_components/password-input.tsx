@@ -3,7 +3,7 @@
 import React from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Input from "@/components/input";
-import { v4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * PasswordInput Component:
@@ -34,7 +34,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
         const [generatedId, setGeneratedId] = React.useState("");
 
         React.useEffect(() => {
-            setGeneratedId(`input-${v4()}`);
+            setGeneratedId(`input-${uuidv4()}`);
         }, []);
 
         // Toggle password visibility

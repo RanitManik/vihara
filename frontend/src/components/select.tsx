@@ -6,7 +6,7 @@ import Button from "@/components/button";
 import ReactDOM from "react-dom";
 import Input from "@/components/input";
 import { cn } from "@/lib/utils";
-import { v4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 interface Option {
     label: string;
@@ -74,7 +74,7 @@ const Select: FC<CustomSelectProps> = ({
     const [generatedId, setGeneratedId] = React.useState("");
 
     React.useEffect(() => {
-        setGeneratedId(`select-${v4()}`);
+        setGeneratedId(`select-${uuidv4()}`);
     }, []);
 
     const allOptions = options;
