@@ -70,7 +70,10 @@ function Page() {
                         disabled={mutation.isLoading}
                     />
                     <div className="flex items-center justify-between">
-                        <Checkbox label="Keep me signed in" />
+                        <Checkbox
+                            disabled={mutation.isLoading}
+                            label="Keep me signed in"
+                        />
                         <CustomLink href="/auth/forgot-password">
                             Forgot password?
                         </CustomLink>

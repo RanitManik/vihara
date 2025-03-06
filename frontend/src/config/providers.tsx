@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import React, { ReactNode } from "react";
 import { ToastProvider } from "@/context/toast-context";
 import ToastList from "@/components/toast-list";
+import { AuthProvider } from "@/context/auth-context";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -20,10 +21,12 @@ interface ProviderProps {
 export default function Providers({ children }: ProviderProps) {
     return (
         <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-                <ToastList />
-                {children}
-            </ToastProvider>
+            <AuthProvider>
+                <ToastProvider>
+                    <ToastList />
+                    {children}
+                </ToastProvider>
+            </AuthProvider>
         </QueryClientProvider>
     );
 }

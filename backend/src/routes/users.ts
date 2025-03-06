@@ -1,6 +1,5 @@
 import express, { Request, Response } from "express";
 import User from "@/models/user.js";
-import jwt from "jsonwebtoken";
 import { check, validationResult } from "express-validator";
 
 const router = express.Router();
@@ -9,11 +8,10 @@ const router = express.Router();
 const validateRegister = [
     check("firstName", "First Name is required").isString(),
     check("lastName", "Last Name is required").isString(),
-    check("email", "email is required").isEmail(),
-    check(
-        "password",
-        "password with minimum 8 characters is required",
-    ).isLength({ min: 8 }),
+    check("email", "Email is required").isEmail(),
+    check("password", "Password must be at least 8 characters long").isLength({
+        min: 8,
+    }),
 ];
 
 // /api/users/register
@@ -25,7 +23,7 @@ router.post(
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             res.status(400).json({ message: errors.array() });
-            return; // End function execution after sending response
+            return;
         }
 
         try {
@@ -39,24 +37,12 @@ router.post(
             user = new User(req.body);
             await user.save();
 
-            const token = jwt.sign(
-                { userId: user.id },
-                process.env.JWT_SECRET_KEY as string,
-                {
-                    expiresIn: "1d",
-                },
-            );
-
-            res.cookie("auth_token", token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                maxAge: 86400000,
+            res.status(201).json({
+                message: "User created successfully. Please log in.",
             });
-
-            res.status(201).json({ message: "User created successfully" });
         } catch (error) {
             console.error(error);
-            res.status(400).send({ message: "Something went wrong" });
+            res.status(500).send({ message: "Something went wrong" });
         }
     },
 );
