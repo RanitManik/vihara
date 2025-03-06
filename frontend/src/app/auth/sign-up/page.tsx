@@ -27,7 +27,7 @@ function Page() {
 
     const mutation = useMutation(apiClient.signUp, {
         onSuccess: () => {
-            router.push("/");
+            router.push("/auth/sign-in");
         },
         onError: (error: Error) => {
             console.log(error.message);

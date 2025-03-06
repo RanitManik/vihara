@@ -6,6 +6,9 @@ import Button from "@/components/button";
 import Checkbox from "@/components/checkbox";
 import CustomLink from "@/components/custom-link";
 import PasswordInput from "@/app/auth/_components/password-input";
+import { useMutation } from "react-query";
+import * as apiClient from "@/actions";
+import { useRouter } from "next/navigation";
 
 export interface SignInFormData {
     email: string;
@@ -13,14 +16,24 @@ export interface SignInFormData {
 }
 
 function Page() {
+    const router = useRouter();
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<SignInFormData>();
 
+    const mutation = useMutation(apiClient.signIn, {
+        onSuccess: () => {
+            router.push("/");
+        },
+        onError: (error: Error) => {
+            console.log(error.message);
+        },
+    });
+
     const onSubmit = (data: SignInFormData) => {
-        console.log("Sign-in data:", data);
+        mutation.mutate(data);
     };
 
     return (
