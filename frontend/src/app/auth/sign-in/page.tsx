@@ -6,7 +6,7 @@ import Button from "@/components/button";
 import Checkbox from "@/components/checkbox";
 import CustomLink from "@/components/custom-link";
 import PasswordInput from "@/app/auth/_components/password-input";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import * as apiClient from "@/actions";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/context/toast-context";
@@ -18,6 +18,7 @@ export interface SignInFormData {
 
 function Page() {
     const router = useRouter();
+    const queryClient = useQueryClient();
     const { addToast } = useToast();
     const {
         register,
@@ -26,13 +27,14 @@ function Page() {
     } = useForm<SignInFormData>();
 
     const mutation = useMutation(apiClient.signIn, {
-        onSuccess: () => {
-            router.push("/");
+        onSuccess: async () => {
             addToast(
                 "You signed in successfully",
                 "success",
                 "Welcome back! You have successfully logged into your account.",
             );
+            await queryClient.invalidateQueries("validateToken");
+            router.push("/");
         },
         onError: (error) => {
             addToast("Login failed", "error", error as string);

@@ -4,29 +4,11 @@ import React from "react";
 import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/loader";
-import Button from "@/components/button";
-import { useMutation } from "react-query";
-import * as apiClient from "@/actions";
-import { useToast } from "@/context/toast-context";
+import SignOutButton from "@/app/auth/_components/sign-out-button";
 
 function Page() {
     const { isAuthenticated, isCheckingAuth } = useAuth();
     const router = useRouter();
-    const { addToast } = useToast();
-
-    const mutation = useMutation(apiClient.signOut, {
-        onSuccess: () => {
-            router.push("/auth/sign-in");
-            addToast("Sign Out Successful");
-        },
-        onError: (e) => {
-            addToast(e as string);
-        },
-    });
-
-    const handleClick = () => {
-        mutation.mutate();
-    };
 
     if (isCheckingAuth) {
         return <Loader />;
@@ -36,7 +18,7 @@ function Page() {
         return (
             <div>
                 <span>YOU ARE SIGNED IN</span>
-                <Button onClick={handleClick}>Sign Out</Button>
+                <SignOutButton />
             </div>
         );
 }

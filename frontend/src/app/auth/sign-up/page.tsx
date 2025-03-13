@@ -6,7 +6,7 @@ import Input from "@/components/input";
 import Button from "@/components/button";
 import CustomLink from "@/components/custom-link";
 import PasswordInput from "@/app/auth/_components/password-input";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import * as apiClient from "@/actions";
 import { useToast } from "@/context/toast-context";
 
@@ -19,6 +19,7 @@ export interface SignUpFormData {
 
 function Page() {
     const router = useRouter();
+    const queryClient = useQueryClient();
     const { addToast } = useToast();
     const {
         register,
@@ -28,13 +29,14 @@ function Page() {
     } = useForm<SignUpFormData>();
 
     const mutation = useMutation(apiClient.signUp, {
-        onSuccess: () => {
-            router.push("/auth/sign-in");
+        onSuccess: async () => {
             addToast(
                 "Account created successfully",
                 "success",
                 "Your account has been created. Please sign in to continue.",
             );
+            await queryClient.invalidateQueries("validateToken");
+            router.push("/auth/sign-in");
         },
         onError: (error) => {
             addToast("Signup failed", "error", error as string);
