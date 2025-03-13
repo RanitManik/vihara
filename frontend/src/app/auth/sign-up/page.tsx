@@ -29,12 +29,12 @@ function Page() {
 
     const mutation = useMutation(apiClient.signUp, {
         onSuccess: () => {
+            router.push("/auth/sign-in");
             addToast(
                 "Account created successfully",
                 "success",
                 "Your account has been created. Please sign in to continue.",
             );
-            router.push("/auth/sign-in");
         },
         onError: (error) => {
             addToast("Signup failed", "error", error as string);

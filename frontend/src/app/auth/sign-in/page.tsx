@@ -27,12 +27,12 @@ function Page() {
 
     const mutation = useMutation(apiClient.signIn, {
         onSuccess: () => {
+            router.push("/");
             addToast(
                 "You signed in successfully",
                 "success",
                 "Welcome back! You have successfully logged into your account.",
             );
-            router.push("/");
         },
         onError: (error) => {
             addToast("Login failed", "error", error as string);
