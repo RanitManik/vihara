@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Input from "@/components/input";
 import Button from "@/components/button";
 import CustomLink from "@/components/custom-link";
-import PasswordInput from "@/app/auth/_components/password-input";
+import PasswordInput from "@/app/(auth)/_components/password-input";
 import { useMutation, useQueryClient } from "react-query";
 import * as apiClient from "@/actions";
 import { useToast } from "@/context/toast-context";
@@ -131,7 +131,7 @@ function Page() {
                 </form>
                 <div className="text-center text-sm">
                     <span>Already have an account? </span>
-                    <CustomLink href="/auth/sign-in">Sign in</CustomLink>
+                    <CustomLink href="/sign-in">Sign in</CustomLink>
                 </div>
             </div>
         </div>

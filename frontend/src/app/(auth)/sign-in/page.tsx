@@ -1,19 +1,20 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import Input from "@/components/input";
 import Button from "@/components/button";
 import Checkbox from "@/components/checkbox";
 import CustomLink from "@/components/custom-link";
-import PasswordInput from "@/app/auth/_components/password-input";
+import PasswordInput from "@/app/(auth)/_components/password-input";
 import { useMutation, useQueryClient } from "react-query";
 import * as apiClient from "@/actions";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/context/toast-context";
 
-export interface SignInFormData {
+interface SignInFormData {
     email: string;
     password: string;
+    keepSignedIn: boolean;
 }
 
 function Page() {
@@ -21,10 +22,17 @@ function Page() {
     const queryClient = useQueryClient();
     const { addToast } = useToast();
     const {
+        control,
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<SignInFormData>();
+    } = useForm<SignInFormData>({
+        defaultValues: {
+            email: "",
+            password: "",
+            keepSignedIn: true,
+        },
+    });
 
     const mutation = useMutation(apiClient.signIn, {
         onSuccess: async () => {
@@ -72,11 +80,20 @@ function Page() {
                         disabled={mutation.isLoading}
                     />
                     <div className="flex items-center justify-between">
-                        <Checkbox
-                            disabled={mutation.isLoading}
-                            label="Keep me signed in"
+                        <Controller
+                            name="keepSignedIn"
+                            control={control}
+                            defaultValue={true}
+                            render={({ field: { onChange, value } }) => (
+                                <Checkbox
+                                    onChange={onChange}
+                                    checked={value}
+                                    label="Keep me signed in"
+                                    disabled={mutation.isLoading}
+                                />
+                            )}
                         />
-                        <CustomLink href="/auth/forgot-password">
+                        <CustomLink href="/forgot-password">
                             Forgot password?
                         </CustomLink>
                     </div>
@@ -90,7 +107,7 @@ function Page() {
                 </form>
                 <div className="text-center text-sm">
                     <span>Don’t have an account? </span>
-                    <CustomLink href="/auth/sign-up">Register</CustomLink>
+                    <CustomLink href="/sign-up">Register</CustomLink>
                 </div>
             </div>
         </div>
