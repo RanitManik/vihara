@@ -52,17 +52,10 @@ function Page() {
                         Send Reset Link
                     </Button>
                 </form>
-                <p className="text-center text-xs leading-none">
-                    By creating an account, you agree with our{" "}
-                    <CustomLink className="text-xs font-semibold" href="/">
-                        Terms and Conditions
-                    </CustomLink>{" "}
-                    and{" "}
-                    <CustomLink className="text-xs font-semibold" href="/">
-                        Privacy Statement
-                    </CustomLink>
-                    .
-                </p>
+                <div className="text-center text-sm">
+                    <span>Don’t have an account? </span>
+                    <CustomLink href="/sign-up">Register</CustomLink>
+                </div>
             </div>
         </div>
     );

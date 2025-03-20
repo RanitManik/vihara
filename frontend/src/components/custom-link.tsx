@@ -28,8 +28,7 @@ const CustomLink: React.FC<CustomLinkProps> = ({
         <Link
             href={href}
             className={cn(
-                "font-semibold transition focus:outline-none",
-                "text-sm text-primary hover:text-primaryH active:text-primaryA",
+                "text-sm font-semibold text-primary transition hover:text-primaryH hover:underline focus:outline-none active:text-primaryA",
                 className,
             )}
             {...props}
