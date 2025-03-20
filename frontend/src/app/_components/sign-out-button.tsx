@@ -16,7 +16,7 @@ function SignOutButton() {
         onSuccess: async () => {
             addToast("Sign Out Successful");
             await queryClient.invalidateQueries("validateToken");
-            router.push("/auth/sign-in");
+            router.push("/sign-in");
         },
         onError: (e) => {
             addToast(e as string);

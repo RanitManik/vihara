@@ -36,7 +36,7 @@ function Page() {
                 "Your account has been created. Please sign in to continue.",
             );
             await queryClient.invalidateQueries("validateToken");
-            router.push("/auth/sign-in");
+            router.push("/sign-in");
         },
         onError: (error) => {
             addToast("Signup failed", "error", error as string);
