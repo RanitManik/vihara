@@ -4,6 +4,8 @@ import React from "react";
 import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/loader";
+import SignOutButton from "@/app/_components/sign-out-button";
+import Button from "@/components/button";
 
 function Page() {
     const { isAuthenticated, isCheckingAuth } = useAuth();
@@ -12,8 +14,14 @@ function Page() {
     if (isCheckingAuth) {
         return <Loader />;
     } else if (!isAuthenticated) {
-        router.push("/auth/sign-in");
-    } else return <div>YOU ARE SIGNED IN</div>;
+        return <Button onClick={() => router.push("/sign-in")}>Sign in</Button>;
+    } else
+        return (
+            <div>
+                <span>YOU ARE SIGNED IN</span>
+                <SignOutButton />
+            </div>
+        );
 }
 
 export default Page;

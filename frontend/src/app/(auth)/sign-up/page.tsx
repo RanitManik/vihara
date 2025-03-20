@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import Input from "@/components/input";
 import Button from "@/components/button";
 import CustomLink from "@/components/custom-link";
-import PasswordInput from "@/app/auth/_components/password-input";
-import { useMutation } from "react-query";
+import PasswordInput from "@/app/(auth)/_components/password-input";
+import { useMutation, useQueryClient } from "react-query";
 import * as apiClient from "@/actions";
 import { useToast } from "@/context/toast-context";
 
@@ -19,6 +19,7 @@ export interface SignUpFormData {
 
 function Page() {
     const router = useRouter();
+    const queryClient = useQueryClient();
     const { addToast } = useToast();
     const {
         register,
@@ -28,13 +29,14 @@ function Page() {
     } = useForm<SignUpFormData>();
 
     const mutation = useMutation(apiClient.signUp, {
-        onSuccess: () => {
+        onSuccess: async () => {
             addToast(
                 "Account created successfully",
                 "success",
                 "Your account has been created. Please sign in to continue.",
             );
-            router.push("/auth/sign-in");
+            await queryClient.invalidateQueries("validateToken");
+            router.push("/sign-in");
         },
         onError: (error) => {
             addToast("Signup failed", "error", error as string);
@@ -129,7 +131,7 @@ function Page() {
                 </form>
                 <div className="text-center text-sm">
                     <span>Already have an account? </span>
-                    <CustomLink href="/auth/sign-in">Sign in</CustomLink>
+                    <CustomLink href="/sign-in">Sign in</CustomLink>
                 </div>
             </div>
         </div>

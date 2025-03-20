@@ -239,3 +239,6 @@ node_modules
 psd
 thumb
 sketch
+
+### others
+.env.e2e
