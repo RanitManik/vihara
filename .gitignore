@@ -225,7 +225,6 @@ dist
 
 # package-lock
 package-lock.json
-bun.lockb
 
 ### react template
 .DS_*
