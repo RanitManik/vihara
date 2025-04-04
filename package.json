@@ -1,0 +1,49 @@
+{
+  "name": "vihara",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "e2e-tests"
+  ],
+  "scripts": {
+    "install:all": "npm install --workspaces",
+    "install:frontend": "npm install -w frontend",
+    "install:backend": "npm install -w backend",
+    "install:e2e": "npm install -w e2e-tests",
+
+    "format": "npm run format -w frontend && npm run format -w backend && npm run format -w e2e-tests",
+    "format:frontend": "npm run format -w frontend",
+    "format:backend": "npm run format -w backend",
+    "format:e2e": "npm run format -w e2e-tests",
+
+    "lint": "npm run lint -w frontend && npm run lint -w backend",
+    "lint:frontend": "npm run lint -w frontend",
+    "lint:backend": "npm run lint -w backend",
+    "lint:fix": "npm run lint:fix -w backend",
+
+    "build": "npm run build -w frontend && npm run build -w backend",
+    "build:frontend": "npm run build -w frontend",
+    "build:backend": "npm run build -w backend",
+
+    "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w backend\"",
+    "dev:frontend": "npm run dev -w frontend",
+    "dev:backend": "npm run dev -w backend",
+
+    "start": "concurrently \"npm run start -w frontend\" \"npm run start -w backend\"",
+    "start:frontend": "npm run start -w frontend",
+    "start:backend": "npm run start -w backend",
+
+    "test": "npm run test -w e2e-tests",
+    "test:ui": "npm run test:ui -w e2e-tests",
+    "test:headed": "npm run test:headed -w e2e-tests",
+    "test:debug": "npm run test:debug -w e2e-tests",
+    "test:chrome": "npm run test:chrome -w e2e-tests",
+    "test:firefox": "npm run test:firefox -w e2e-tests",
+    "test:webkit": "npm run test:webkit -w e2e-tests",
+    "show-report": "npm run show-report -w e2e-tests"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
