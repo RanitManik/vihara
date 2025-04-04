@@ -14,7 +14,12 @@ function Page() {
     if (isCheckingAuth) {
         return <Loader />;
     } else if (!isAuthenticated) {
-        return <Button onClick={() => router.push("/sign-in")}>Sign in</Button>;
+        return (
+            <div className="grid min-h-svh place-content-center">
+                <h1>Welcome To vihara</h1>
+                <Button onClick={() => router.push("/sign-in")}>Sign in</Button>
+            </div>
+        );
     } else
         return (
             <div>

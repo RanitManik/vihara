@@ -5,6 +5,7 @@ import React, { ReactNode } from "react";
 import { ToastProvider } from "@/context/toast-context";
 import ToastList from "@/components/toast-list";
 import { AuthProvider } from "@/context/auth-context";
+import NextTopLoader from "nextjs-toploader";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -24,6 +25,7 @@ export default function Providers({ children }: ProviderProps) {
             <AuthProvider>
                 <ToastProvider>
                     <ToastList />
+                    <NextTopLoader />
                     {children}
                 </ToastProvider>
             </AuthProvider>

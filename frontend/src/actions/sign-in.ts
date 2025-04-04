@@ -1,4 +1,4 @@
-import { SignInFormData } from "@/app/auth/sign-in/page";
+import { SignInFormData } from "@/app/(auth)/sign-in/page";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
