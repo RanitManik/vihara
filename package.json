@@ -12,6 +12,10 @@
     "install:backend": "npm install -w backend",
     "install:e2e": "npm install -w e2e-tests",
 
+    "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w backend\"",
+    "dev:frontend": "npm run dev -w frontend",
+    "dev:backend": "npm run dev -w backend",
+
     "format": "npm run format -w frontend && npm run format -w backend && npm run format -w e2e-tests",
     "format:frontend": "npm run format -w frontend",
     "format:backend": "npm run format -w backend",
@@ -25,10 +29,6 @@
     "build": "npm run build -w frontend && npm run build -w backend",
     "build:frontend": "npm run build -w frontend",
     "build:backend": "npm run build -w backend",
-
-    "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w backend\"",
-    "dev:frontend": "npm run dev -w frontend",
-    "dev:backend": "npm run dev -w backend",
 
     "start": "concurrently \"npm run start -w frontend\" \"npm run start -w backend\"",
     "start:frontend": "npm run start -w frontend",

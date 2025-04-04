@@ -3,7 +3,7 @@
     "main": "./src/index.ts",
     "scripts": {
         "dev": "nodemon",
-        "build": "npm install && npx tsc",
+        "build": "tsup src/index.ts --format esm --out-dir dist --clean",
         "start": "node ./dist/index.js",
         "e2e": "cross-env DOTENV_CONFIG_PATH=.env.e2e nodemon",
         "lint": "eslint .",
@@ -22,6 +22,8 @@
         "globals": "^15.13.0",
         "nodemon": "^3.1.9",
         "prettier": "^3.4.2",
+        "tsup": "^8.4.0",
+        "tsx": "^4.19.3",
         "typescript-eslint": "^8.18.0"
     },
     "dependencies": {
