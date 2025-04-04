@@ -11,7 +11,7 @@ import * as apiClient from "@/actions";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/context/toast-context";
 
-interface SignInFormData {
+export interface SignInFormData {
     email: string;
     password: string;
     keepSignedIn: boolean;
