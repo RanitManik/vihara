@@ -52,7 +52,8 @@ router.post(
 
             res.cookie("auth_token", token, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
+                secure: process.env.NODE_ENV === "production", // Required for cross-site cookies
+                sameSite: "none", // Required for cross-site cookies
                 maxAge: 86400000,
             });
 

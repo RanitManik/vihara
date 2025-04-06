@@ -21,6 +21,6 @@
 
 @layer base {
     body {
-        @apply bg-white text-foreground;
+        @apply min-h-svh bg-white text-foreground;
     }
 }

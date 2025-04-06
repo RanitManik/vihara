@@ -6,7 +6,9 @@ import userRoutes from "@/routes/users";
 import authRoutes from "@/routes/auth";
 import cookieParser from "cookie-parser";
 
-mongoose.connect(process.env.MONGODB_URI as string);
+mongoose
+    .connect(process.env.MONGODB_URI as string)
+    .then(() => console.log("successfully connected to MongoDB"));
 
 const app = express();
 
@@ -24,5 +26,5 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 
 app.listen(4000, () => {
-    console.log("Server started on port 4000");
+    console.log("Server started");
 });
