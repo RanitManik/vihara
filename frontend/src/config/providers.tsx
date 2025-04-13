@@ -25,7 +25,7 @@ export default function Providers({ children }: ProviderProps) {
             <AuthProvider>
                 <ToastProvider>
                     <ToastList />
-                    <NextTopLoader />
+                    <NextTopLoader showSpinner={false} />
                     {children}
                 </ToastProvider>
             </AuthProvider>

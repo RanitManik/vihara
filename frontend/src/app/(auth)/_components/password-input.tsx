@@ -64,6 +64,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
 
         return (
             <Input
+                className="pr-10"
                 ref={ref}
                 id={generatedId}
                 type={showPassword ? "text" : "password"}

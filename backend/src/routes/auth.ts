@@ -52,8 +52,9 @@ router.post(
 
             res.cookie("auth_token", token, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production", // Required for cross-site cookies
-                sameSite: "none", // Required for cross-site cookies
+                secure: process.env.NODE_ENV === "production",
+                sameSite:
+                    process.env.NODE_ENV === "production" ? "none" : "lax",
                 maxAge: 86400000,
             });
 
