@@ -4,6 +4,7 @@ import * as mongoose from "mongoose";
 import "dotenv/config";
 import userRoutes from "@/routes/users";
 import authRoutes from "@/routes/auth";
+import myHotelRoutes from "@/routes/my-hotels";
 import cookieParser from "cookie-parser";
 import { v2 as cloudinary } from "cloudinary";
 
@@ -31,6 +32,7 @@ app.use(
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/my-hotels", myHotelRoutes);
 
 app.listen(4000, () => {
     console.log("Server started");

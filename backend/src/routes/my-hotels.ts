@@ -2,12 +2,43 @@ import express, { Request, Response } from "express";
 import upload from "@/config/multer";
 import cloudinary from "cloudinary";
 import Hotel, { HotelType } from "@/models/hotel";
+import verifyToken from "@/middleware/auth";
+import { body } from "express-validator";
 
 const router = express.Router();
+
+const hotelValidation = [
+    body("name").notEmpty().withMessage("Name is required"),
+    body("city").notEmpty().withMessage("City is required"),
+    body("country").notEmpty().withMessage("Country is required"),
+    body("address").notEmpty().withMessage("Address is required"),
+    body("description").notEmpty().withMessage("Description is required"),
+    body("type").notEmpty().withMessage("Type is required"),
+    body("adultCount")
+        .isInt({ min: 1 })
+        .withMessage("Adult count must be at least 1"),
+    body("childCount")
+        .isInt({ min: 0 })
+        .withMessage("Child count must be 0 or more"),
+    body("facilities")
+        .isArray({ min: 1 })
+        .withMessage("Facilities must be a non-empty array"),
+    body("facilities.*")
+        .isString()
+        .withMessage("Each facility must be a string"),
+    body("pricePerNight")
+        .isFloat({ gt: 0 })
+        .withMessage("Price per night must be greater than 0"),
+    body("starRating")
+        .isInt({ min: 1, max: 5 })
+        .withMessage("Star rating must be between 1 and 5"),
+];
 
 // api/my-hotels
 router.post(
     "/",
+    verifyToken,
+    hotelValidation,
     upload.array("imageFiles", 6),
     async (req: Request, res: Response) => {
         try {
@@ -56,3 +87,5 @@ router.post(
         }
     },
 );
+
+export default router;
