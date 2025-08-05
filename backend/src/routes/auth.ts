@@ -52,8 +52,9 @@ router.post(
 
             res.cookie("auth_token", token, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production", // Required for cross-site cookies
-                sameSite: "none", // Required for cross-site cookies
+                secure: process.env.NODE_ENV === "production",
+                sameSite:
+                    process.env.NODE_ENV === "production" ? "none" : "lax",
                 maxAge: 86400000,
             });
 
@@ -74,6 +75,9 @@ router.get("/validate-token", verifyToken, (req: Request, res: Response) => {
 router.post("/logout", (req: Request, res: Response) => {
     res.cookie("auth_token", "", {
         expires: new Date(0),
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
     res.send();
 });
