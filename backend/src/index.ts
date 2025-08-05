@@ -14,9 +14,16 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-mongoose
-    .connect(process.env.MONGODB_URI as string)
-    .then(() => console.log("successfully connected to MongoDB"));
+// Choose database URI based on environment
+const mongoUri =
+    process.env.NODE_ENV === "test"
+        ? process.env.MONGODB_URI_E2E
+        : process.env.MONGODB_URI;
+
+mongoose.connect(mongoUri as string).then(() => {
+    const dbType = process.env.NODE_ENV === "test" ? "E2E MongoDB" : "MongoDB";
+    console.log(`Successfully connected to ${dbType}`);
+});
 
 const app = express();
 
