@@ -1,4 +1,4 @@
-import express, { Request, RequestHandler, Response } from "express";
+import express, { Request, Response } from "express";
 import upload from "@/config/multer";
 import cloudinary from "cloudinary";
 import Hotel, { HotelType } from "@/models/hotel";
@@ -50,21 +50,7 @@ router.post(
             // Retrieve the uploaded image files from the request
             const imageFiles = req.files as Express.Multer.File[];
 
-            // Map over the image files and create an array of promises to upload each image to Cloudinary
-            const uploadPromises = imageFiles.map(async (image) => {
-                // Convert the image buffer to a base64 string
-                const b64 = Buffer.from(image.buffer).toString("base64");
-
-                // Create a Data URI for the image using its MIME type and base64 data
-                const dataURI = "data:" + image.mimetype + ";base64," + b64;
-
-                // Upload the image to Cloudinary and return the URL of the uploaded image
-                const res = await cloudinary.v2.uploader.upload(dataURI);
-
-                return res.url;
-            });
-
-            const imageUrls = await Promise.all(uploadPromises);
+            const imageUrls = await uploadImagesToCloudinary(imageFiles);
 
             // create new hotel object and
             // inject the server dependent attributes
@@ -98,9 +84,9 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
     }
 });
 
-const getHotel: RequestHandler = async (req: Request, res: Response) => {
+router.get("/:hotelId", verifyToken, async (req: Request, res: Response) => {
     try {
-        const hotel = await Hotel.findById(req.params.id);
+        const hotel = await Hotel.findById(req.params.hotelId);
         if (!hotel) {
             res.status(404).json({ message: "Hotel not found" });
             return;
@@ -110,8 +96,65 @@ const getHotel: RequestHandler = async (req: Request, res: Response) => {
         console.error(error);
         res.status(500).json({ message: "Something Went Wrong" });
     }
-};
+});
 
-router.get("/:id", verifyToken, getHotel);
+router.put(
+    "/:hotelId",
+    verifyToken,
+    upload.array("imageFiles"),
+    async (req: Request, res: Response) => {
+        try {
+            const updatedHotel: HotelType = req.body;
+
+            const hotel = await Hotel.findOneAndUpdate(
+                { _id: req.params.hotelId, userId: req.userId },
+                updatedHotel,
+                { new: true },
+            );
+
+            if (!hotel) {
+                res.status(404).json({ message: "Hotel not found" });
+                return;
+            }
+
+            /* Upload the images to Cloudinary */
+
+            // Retrieve the uploaded image files from the request
+            const imageFiles = req.files as Express.Multer.File[];
+
+            const updatedImageUrls = await uploadImagesToCloudinary(imageFiles);
+
+            // Append the new image URLs to the existing ones
+            hotel.imageUrls = [...updatedImageUrls, ...(hotel.imageUrls || [])];
+
+            await hotel.save();
+
+            // return the success status
+            res.status(201).json(hotel);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: "Something Went Wrong" });
+        }
+    },
+);
+
+async function uploadImagesToCloudinary(imageFiles: Express.Multer.File[]) {
+    // Map over the image files and create an array of promises to upload each image to Cloudinary
+    const uploadPromises = imageFiles.map(async (image) => {
+        // Convert the image buffer to a base64 string
+        const b64 = Buffer.from(image.buffer).toString("base64");
+
+        // Create a Data URI for the image using its MIME type and base64 data
+        const dataURI = "data:" + image.mimetype + ";base64," + b64;
+
+        // Upload the image to Cloudinary and return the URL of the uploaded image
+        const res = await cloudinary.v2.uploader.upload(dataURI);
+
+        return res.url;
+    });
+
+    const imageUrls = await Promise.all(uploadPromises);
+    return imageUrls;
+}
 
 export default router;
