@@ -1,9 +1,44 @@
 import Hotel from "@/models/hotel";
 import { HotelSearchResponse } from "@/shared/types";
 import express, { Request, Response } from "express";
+import { param, validationResult } from "express-validator";
 
 const router = express.Router();
 
+// /api/hotels/:hotelId
+router.get(
+    "/:hotelId",
+    [param("hotelId").notEmpty().withMessage("Hotel ID is required")],
+    async (req: Request, res: Response) => {
+        // Validate the request parameters
+        const errors = validationResult(req);
+
+        // If there are validation errors, return a 400 response with the errors
+        if (!errors.isEmpty()) {
+            res.status(400).json({ errors: errors.array() });
+            return;
+        }
+
+        try {
+            // Find the hotel by ID
+            const hotel = await Hotel.findById(req.params.hotelId.toString());
+
+            // If the hotel is not found, return a 404 response
+            if (!hotel) {
+                res.status(404).json({ message: "Hotel Not Found" });
+                return;
+            }
+
+            // Return the hotel details
+            res.json(hotel);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: "Something Went Wrong" });
+        }
+    },
+);
+
+// /api/hotels/search
 router.get("/search", async (req: Request, res: Response) => {
     try {
         const query = constructSearchQuery(req.query);
