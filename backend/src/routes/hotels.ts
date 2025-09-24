@@ -9,6 +9,17 @@ const router = express.Router();
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
+// /api/hotels
+router.get("/", async (req: Request, res: Response) => {
+    try {
+        const hotels = await Hotel.find().sort("-lastUpdated");
+        res.json(hotels);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Something went wrong");
+    }
+});
+
 // /api/hotels/:hotelId
 router.get(
     "/:hotelId",
