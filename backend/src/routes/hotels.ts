@@ -1,9 +1,13 @@
 import Hotel from "@/models/hotel";
-import { HotelSearchResponse } from "@/shared/types";
+import { BookingType, HotelSearchResponse } from "@/shared/types";
 import express, { Request, Response } from "express";
 import { param, validationResult } from "express-validator";
+import Stripe from "stripe";
+import verifyToken from "@/middleware/auth";
 
 const router = express.Router();
+
+const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
 // /api/hotels/:hotelId
 router.get(
@@ -31,6 +35,112 @@ router.get(
 
             // Return the hotel details
             res.json(hotel);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: "Something Went Wrong" });
+        }
+    },
+);
+
+// /api/hotels/:hotelId/bookings/payment-intent
+router.post(
+    "/:hotelId/bookings/payment-intent",
+    verifyToken,
+    async (req: Request, res: Response) => {
+        try {
+            const { numbersOfNights } = req.body;
+            const hotelId = req.params.hotelId;
+
+            const hotel = await Hotel.findById(hotelId);
+
+            if (!hotel) {
+                res.status(404).json({ message: "Hotel Not Found" });
+                return;
+            }
+
+            const totalCost = hotel.pricePerNight * numbersOfNights;
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: totalCost,
+                currency: "INR",
+                metadata: {
+                    hotelId,
+                    userId: req.userId as string,
+                },
+            });
+
+            if (!paymentIntent.client_secret) {
+                res.status(500).json({
+                    message: "Error creating Payment Intent",
+                });
+                return;
+            }
+
+            const response = {
+                paymentIntentId: paymentIntent.id,
+                clientSecret: paymentIntent.client_secret.toString(),
+                totalCost,
+            };
+
+            res.send(response);
+            return;
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: "something went wrong" });
+            return;
+        }
+    },
+);
+
+// /api/hotels/:hotelId/bookings
+router.post(
+    "/:hotelId/bookings",
+    verifyToken,
+    async (req: Request, res: Response) => {
+        try {
+            const paymentIntentId = req.body.paymentIntentId;
+
+            const paymentIntent = await stripe.paymentIntents.retrieve(
+                paymentIntentId as string,
+            );
+
+            if (!paymentIntent) {
+                res.status(404).json({ message: "Payment Not Found" });
+                return;
+            }
+
+            if (
+                paymentIntent.metadata.hotelId !== req.params.hotelId ||
+                paymentIntent.metadata.userId !== req.userId
+            ) {
+                res.status(404).json({ message: "Payment Intent Mismatch" });
+                return;
+            }
+
+            if (paymentIntent.status !== "succeeded") {
+                res.status(400).json({
+                    message: `Payment Intent Not Succeeded! Status: ${paymentIntent.status}`,
+                });
+                return;
+            }
+
+            const newBooking: BookingType = {
+                ...req.body,
+                userId: req.userId,
+            };
+
+            const hotel = await Hotel.findByIdAndUpdate(
+                req.params.hotelId,
+                { $push: { bookings: newBooking } },
+                { new: true },
+            );
+
+            if (!hotel) {
+                res.status(404).json({ message: "Hotel Not Found" });
+                return;
+            }
+
+            res.status(201).json({ booking: newBooking });
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: "Something Went Wrong" });
