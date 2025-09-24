@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { Request, RequestHandler, Response } from "express";
 import upload from "@/config/multer";
 import cloudinary from "cloudinary";
 import Hotel, { HotelType } from "@/models/hotel";
@@ -87,5 +87,31 @@ router.post(
         }
     },
 );
+
+router.get("/", verifyToken, async (req: Request, res: Response) => {
+    try {
+        const hotels = await Hotel.find({ userId: req.userId });
+        res.json(hotels);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Something Went Wrong" });
+    }
+});
+
+const getHotel: RequestHandler = async (req: Request, res: Response) => {
+    try {
+        const hotel = await Hotel.findById(req.params.id);
+        if (!hotel) {
+            res.status(404).json({ message: "Hotel not found" });
+            return;
+        }
+        res.json(hotel);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Something Went Wrong" });
+    }
+};
+
+router.get("/:id", verifyToken, getHotel);
 
 export default router;
