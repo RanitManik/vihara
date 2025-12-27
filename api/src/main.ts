@@ -9,7 +9,7 @@ import hotelRoutes from "./routes/hotels";
 import bookingRoutes from "./routes/my-bookings";
 import cookieParser from "cookie-parser";
 import { v2 as cloudinary } from "cloudinary";
-import { logServerStartup, getNetworkIP } from "./utils/startup-utils";
+import { logServerStartup } from "./utils/startup-utils";
 
 const startTime = process.hrtime.bigint();
 const expressPackage = require("express/package.json");
