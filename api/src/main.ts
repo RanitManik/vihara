@@ -9,6 +9,11 @@ import hotelRoutes from "./routes/hotels";
 import bookingRoutes from "./routes/my-bookings";
 import cookieParser from "cookie-parser";
 import { v2 as cloudinary } from "cloudinary";
+import { logServerStartup, getNetworkIP } from "./utils/startup-utils";
+
+const startTime = process.hrtime.bigint();
+const expressPackage = require("express/package.json");
+const expressVersion = expressPackage.version;
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -45,6 +50,8 @@ app.use("/api/my-hotels", myHotelRoutes);
 app.use("/api/hotels", hotelRoutes);
 app.use("/api/my-bookings", bookingRoutes);
 
-app.listen(4000, () => {
-  console.log("Server started on http://localhost:4000");
+const port = parseInt(process.env.PORT || "4000", 10);
+
+app.listen(port, () => {
+  logServerStartup(port, expressVersion, startTime);
 });
