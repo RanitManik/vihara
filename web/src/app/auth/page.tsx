@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { apiClient } from "@/lib/api-client";
+import { useAppContext } from "@/contexts/AppContext";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -66,6 +67,8 @@ export default function AuthPage() {
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const router = useRouter();
 
+  const { validateToken } = useAppContext();
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTestimonialIndex((prev) => (prev + 1) % testimonials.length);
@@ -94,6 +97,7 @@ export default function AuthPage() {
   async function onLoginSubmit(values: z.infer<typeof loginSchema>) {
     try {
       await apiClient.post("/api/auth/login", values);
+      await validateToken();
       toast.success("Welcome back!");
       router.push("/");
     } catch (error) {
@@ -106,8 +110,10 @@ export default function AuthPage() {
   async function onRegisterSubmit(values: z.infer<typeof registerSchema>) {
     try {
       await apiClient.post("/api/users/register", values);
+      await validateToken();
       toast.success("Account created successfully!");
-      setAuthMode("login");
+      setAuthMode("login"); // Optionally redirect to home or login
+      router.push("/");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Failed to create account";

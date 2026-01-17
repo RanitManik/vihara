@@ -1,5 +1,8 @@
 import "./global.css";
+import { AppProvider } from "@/contexts/AppContext";
 import { Toaster } from "@/components/ui/sonner";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 export const metadata = {
   title: "Vihara - Hotel Bookings",
@@ -13,9 +16,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        {children}
-        <Toaster position="top-center" richColors />
+      <body className="flex min-h-screen flex-col">
+        <AppProvider>
+          <Header />
+          <div className="flex flex-1 flex-col">{children}</div>
+          <Footer />
+          <Toaster position="top-center" richColors />
+        </AppProvider>
       </body>
     </html>
   );
