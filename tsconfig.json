@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./api"
+    },
+    {
+      "path": "./web"
+    },
+    {
+      "path": "./web-e2e"
+    }
+  ]
+}
