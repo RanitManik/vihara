@@ -1,27 +1,91 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { ArrowRight, Sparkles, Trees } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+
 import { SearchBar } from "./SearchBar";
 
+const heroImages = [
+  "/hotels/hotel-image-01.jpg",
+  "/hotels/hotel-image-04.jpg",
+  "/hotels/hotel-image-08.jpg",
+  "/hotels/hotel-image-12.jpg",
+];
+
 export function Hero() {
+  const [activeImage, setActiveImage] = useState(0);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setActiveImage((current) => (current + 1) % heroImages.length);
+    }, 4500);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
   return (
-    <div className="relative flex flex-col items-center justify-center gap-8 px-4 py-24 pb-32 text-center md:pb-48 lg:py-32">
-      {/* Background Gradient/Image Placeholder */}
-      <div className="absolute inset-0 -z-10 bg-slate-950">
-        {/* You would typically use an Image component here with object-cover */}
-        <div className="from-primary/20 via-background to-background absolute inset-0 bg-gradient-to-tr opacity-40"></div>
-        <div className="absolute inset-0 bg-[url('/assets/hero-pattern.svg')] opacity-10"></div>
-      </div>
+    <section className="relative overflow-hidden px-4 pt-6 pb-14 sm:px-6 lg:px-8">
+      <div className="container-shell">
+        <div className="relative overflow-hidden rounded-[2rem] border border-white/30 bg-[#261b16] px-6 py-8 text-white sm:px-8 lg:px-10 lg:py-10">
+          <div className="absolute inset-0">
+            {heroImages.map((src, index) => (
+              <Image
+                key={src}
+                src={src}
+                alt="Curated hotel background"
+                fill
+                priority={index === 0}
+                className={`object-cover object-center transition-opacity duration-1000 ${
+                  index === activeImage ? "opacity-35" : "opacity-0"
+                }`}
+              />
+            ))}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(244,196,133,0.32),transparent_30%),linear-gradient(135deg,rgba(20,14,10,0.88),rgba(20,14,10,0.45)_44%,rgba(20,14,10,0.88))]" />
+          </div>
 
-      <div className="space-y-4">
-        <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-          Find your next <span className="text-primary">stay</span>
-        </h1>
-        <p className="text-muted-foreground mx-auto max-w-[700px] text-lg sm:text-xl">
-          Search low prices on hotels for your dream vacation...
-        </p>
-      </div>
+          <div className="relative space-y-7">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold backdrop-blur-md">
+              <Sparkles className="h-4 w-4 text-amber-300" />
+              Curated escapes for design-forward travelers
+            </div>
 
-      <div className="mt-8 w-full max-w-5xl">
-        <SearchBar />
+            <div className="space-y-5">
+              <h1 className="font-heading max-w-[15ch] text-5xl font-medium text-balance sm:text-6xl xl:max-w-[18ch] 2xl:text-7xl">
+                Stay somewhere that shapes the whole trip.
+              </h1>
+              <p className="max-w-2xl text-base leading-7 text-white/78 sm:text-lg">
+                Vihara helps you discover hotels with atmosphere, not just
+                availability. Search beautiful stays, book faster, and move
+                through your journey with less friction.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3 text-sm">
+              <Link
+                href="/search"
+                className="group inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur-md transition-all duration-200 hover:border-white/25 hover:bg-white/20"
+              >
+                <Trees className="h-4 w-4 text-emerald-300" />
+
+                <span className="flex items-center gap-2">
+                  <span className="text-white/70">
+                    Boutique, resort & city stays
+                  </span>
+                  <span className="font-medium text-white">Explore</span>
+                </span>
+
+                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+              </Link>
+            </div>
+
+            <div className="pt-2">
+              <SearchBar />
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

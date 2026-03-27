@@ -1,78 +1,182 @@
 "use client";
 
-import Link from "next/link";
-import { Button } from "./ui/button";
-import { usePathname, useRouter } from "next/navigation"; // Added useRouter
 import Image from "next/image";
+import Link from "next/link";
+import { Compass, LogOut, Menu, Sparkles } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { toast } from "sonner";
+
 import { useAppContext } from "@/contexts/AppContext";
 import { apiClient } from "@/lib/api-client";
-import { toast } from "sonner"; // Added toast
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
+
+const guestLinks = [
+  { href: "/", label: "Explore" },
+  { href: "/search", label: "Discover stays" },
+  { href: "/auth", label: "Sign in" },
+];
+
+const memberLinks = [
+  { href: "/search", label: "Discover stays" },
+  { href: "/my-bookings", label: "My bookings" },
+  { href: "/my-hotels", label: "My hotels" },
+];
 
 export function Header() {
   const pathname = usePathname();
-  const router = useRouter();
   const { isLoggedIn, validateToken } = useAppContext();
 
-  // Hide header on auth pages if desired, or keep it for consistency.
-  // For now, we'll keep it but maybe simplify it.
-  const isAuthPage = pathname === "/auth";
+  if (pathname === "/auth") {
+    return null;
+  }
 
-  if (isAuthPage) return null;
+  const links = isLoggedIn ? memberLinks : guestLinks;
 
   return (
-    <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
-        <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2">
+    <header className="sticky top-0 z-50 px-3 pt-3 sm:px-4">
+      <div className="surface-panel mx-auto flex h-18 w-full max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+        <Link href="/" className="flex items-center gap-3">
+          <div className="bg-primary/12 border-primary/20 flex h-11 w-11 items-center justify-center rounded-2xl border">
             <Image
               src="/logo/logo.svg"
-              alt="Vihara Logo"
-              width={32}
-              height={32}
+              alt="Vihara logo"
+              width={24}
+              height={24}
               className="rounded-sm"
             />
-            <span className="text-xl font-bold tracking-tight">Vihara</span>
-          </Link>
-        </div>
+          </div>
+          <div className="hidden sm:block">
+            <p className="text-muted-foreground text-[0.65rem] font-semibold tracking-[0.24em] uppercase">
+              Stay beautifully
+            </p>
+            <p className="font-heading text-3xl leading-none font-semibold">
+              Vihara
+            </p>
+          </div>
+        </Link>
 
-        <nav className="flex items-center gap-4">
-          {isLoggedIn ? (
-            <>
-              <Button variant="ghost" asChild>
-                <Link href="/my-bookings">My Bookings</Link>
-              </Button>
-              <Button variant="ghost" asChild>
-                <Link href="/my-hotels">My Hotels</Link>
-              </Button>
-              <Button
-                variant="default"
-                onClick={async () => {
-                  try {
-                    await apiClient.post("/api/auth/logout", {});
-                    await validateToken();
-                    toast.success("Signed Out!");
-                    // Redirect to home or auth as per flow.
-                    // User specifically complained about "not redirecting to auth page", so we'll go there.
-                    // router.push("/auth");
-                  } catch (error) {
-                    console.error("Logout failed", error);
-                  }
-                }}
+        <nav className="hidden items-center gap-2 lg:flex">
+          {links.map((link) => {
+            const isActive =
+              pathname === link.href ||
+              (link.href !== "/" && pathname.startsWith(link.href));
+
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "font-body rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+                  isActive
+                    ? "bg-primary text-primary-foreground shadow-lg"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                )}
               >
-                Sign Out
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="hidden items-center gap-3 lg:flex">
+          {!isLoggedIn ? (
+            <>
+              <div className="text-muted-foreground flex items-center gap-2 rounded-full border border-white/40 bg-white/50 px-3 py-2 text-sm">
+                <Sparkles className="h-4 w-4 text-amber-600" />
+                Handpicked boutique stays
+              </div>
+              <Button asChild className="rounded-full px-6">
+                <Link href="/auth">Start booking</Link>
               </Button>
             </>
           ) : (
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" asChild className="hidden sm:inline-flex">
-                <Link href="/auth">Sign In</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/auth">Get Started</Link>
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              className="rounded-full px-5"
+              onClick={async () => {
+                try {
+                  await apiClient.post("/api/auth/logout", {});
+                  await validateToken();
+                  toast.success("Signed out successfully.");
+                } catch (error) {
+                  console.error("Logout failed", error);
+                  toast.error("Unable to sign out right now.");
+                }
+              }}
+            >
+              <LogOut className="h-4 w-4" />
+              Sign out
+            </Button>
           )}
-        </nav>
+        </div>
+
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full lg:hidden"
+              aria-label="Open navigation"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-[88vw] max-w-sm">
+            <SheetHeader>
+              <SheetTitle className="font-heading text-3xl">Vihara</SheetTitle>
+            </SheetHeader>
+            <div className="mt-8 space-y-3">
+              {links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "flex items-center justify-between rounded-2xl border px-4 py-4 text-base font-semibold",
+                    pathname === link.href ||
+                      (link.href !== "/" && pathname.startsWith(link.href))
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-card border-border text-foreground",
+                  )}
+                >
+                  {link.label}
+                  <Compass className="h-4 w-4" />
+                </Link>
+              ))}
+            </div>
+            <div className="mt-8">
+              {!isLoggedIn ? (
+                <Button asChild className="w-full rounded-full">
+                  <Link href="/auth">Create account</Link>
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  className="w-full rounded-full"
+                  onClick={async () => {
+                    try {
+                      await apiClient.post("/api/auth/logout", {});
+                      await validateToken();
+                      toast.success("Signed out successfully.");
+                    } catch (error) {
+                      console.error("Logout failed", error);
+                      toast.error("Unable to sign out right now.");
+                    }
+                  }}
+                >
+                  Sign out
+                </Button>
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </header>
   );

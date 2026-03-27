@@ -1,30 +1,92 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState, Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { SlidersHorizontal } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+
+import { FacilitiesFilter } from "@/components/FacilitiesFilter";
+import { FilterSheet } from "@/components/FilterSheet";
+import { HotelTypesFilter } from "@/components/HotelTypesFilter";
+import { SearchResultsSkeleton } from "@/components/PageSkeletons";
+import { Pagination } from "@/components/Pagination";
+import { PriceFilter } from "@/components/PriceFilter";
+import { SearchBar } from "@/components/SearchBar";
+import { SearchResultsCard } from "@/components/SearchResultsCard";
+import { StarRatingFilter } from "@/components/StarRatingFilter";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { apiClient } from "@/lib/api-client";
 import { HotelSearchResponse } from "@/shared-types";
-import { SearchResultsCard } from "@/components/SearchResultsCard";
-import { Pagination } from "@/components/Pagination";
-import { StarRatingFilter } from "@/components/StarRatingFilter";
-import { HotelTypesFilter } from "@/components/HotelTypesFilter";
-import { FacilitiesFilter } from "@/components/FacilitiesFilter";
-import { PriceFilter } from "@/components/PriceFilter";
-import { FilterSheet } from "@/components/FilterSheet";
+
+function parsePositiveInteger(value: string | null, fallback: number) {
+  const parsedValue = Number.parseInt(value ?? "", 10);
+
+  return Number.isFinite(parsedValue) && parsedValue > 0
+    ? parsedValue
+    : fallback;
+}
 
 function SearchGrid() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [hotelData, setHotelData] = useState<HotelSearchResponse | null>(null);
-  const [page, setPage] = useState<number>(1);
-  const [selectedStars, setSelectedStars] = useState<string[]>([]);
-  const [selectedHotelTypes, setSelectedHotelTypes] = useState<string[]>([]);
-  const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
-  const [selectedPrice, setSelectedPrice] = useState<number | undefined>();
-  const [sortOption, setSortOption] = useState<string>("");
+  const [isFetching, setIsFetching] = useState(true);
+  const page = parsePositiveInteger(searchParams.get("page"), 1);
+  const selectedStars = searchParams.getAll("stars");
+  const selectedHotelTypes = searchParams.getAll("types");
+  const selectedFacilities = searchParams.getAll("facilities");
+  const selectedPrice = parsePositiveInteger(
+    searchParams.get("maxPrice"),
+    30000,
+  );
+  const sortOption = searchParams.get("sortOption") || "default";
+
+  const updateSearchParams = (
+    updates: Record<string, string | string[] | undefined>,
+    {
+      resetPage = false,
+    }: {
+      resetPage?: boolean;
+    } = {},
+  ) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    Object.entries(updates).forEach(([key, value]) => {
+      params.delete(key);
+
+      if (!value || (Array.isArray(value) && value.length === 0)) {
+        return;
+      }
+
+      if (Array.isArray(value)) {
+        value.forEach((item) => params.append(key, item));
+        return;
+      }
+
+      params.set(key, value);
+    });
+
+    if (resetPage) {
+      params.set("page", "1");
+    } else if (!params.get("page")) {
+      params.set("page", "1");
+    }
+
+    router.replace(`/search?${params.toString()}`, {
+      scroll: false,
+    });
+  };
 
   useEffect(() => {
     const fetchHotels = async () => {
-      const searchParamsObj: any = {
+      setIsFetching(true);
+
+      const searchParamsObj: Record<string, string | string[] | undefined> = {
         destination: searchParams.get("destination") || "",
         checkIn: searchParams.get("checkIn") || "",
         checkOut: searchParams.get("checkOut") || "",
@@ -35,21 +97,22 @@ function SearchGrid() {
         types: selectedHotelTypes,
         facilities: selectedFacilities,
         maxPrice: selectedPrice?.toString(),
-        sortOption,
+        sortOption: sortOption === "default" ? undefined : sortOption,
       };
 
       const params = new URLSearchParams();
-      // Only append valid keys
-      Object.keys(searchParamsObj).forEach((key) => {
-        if (searchParamsObj[key]) {
-          if (Array.isArray(searchParamsObj[key])) {
-            searchParamsObj[key].forEach((val: string) =>
-              params.append(key, val),
-            );
-          } else {
-            params.append(key, searchParamsObj[key]);
-          }
+
+      Object.entries(searchParamsObj).forEach(([key, value]) => {
+        if (!value || (Array.isArray(value) && value.length === 0)) {
+          return;
         }
+
+        if (Array.isArray(value)) {
+          value.forEach((item) => params.append(key, item));
+          return;
+        }
+
+        params.append(key, value);
       });
 
       try {
@@ -59,156 +122,241 @@ function SearchGrid() {
         setHotelData(data);
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsFetching(false);
       }
     };
 
     fetchHotels();
-  }, [
-    searchParams,
-    page,
-    selectedStars,
-    selectedHotelTypes,
-    selectedFacilities,
-    selectedPrice,
-    sortOption,
-  ]);
+  }, [searchParams]);
 
-  const handleStarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const starRating = event.target.value;
-    setSelectedStars((prev) =>
-      event.target.checked
-        ? [...prev, starRating]
-        : prev.filter((star) => star !== starRating),
-    );
-  };
-
-  const handleHotelTypeChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+  const toggleValue = (
+    key: "stars" | "types" | "facilities",
+    value: string,
+    checked: boolean,
+    items: string[],
   ) => {
-    const hotelType = event.target.value;
-    setSelectedHotelTypes((prev) =>
-      event.target.checked
-        ? [...prev, hotelType]
-        : prev.filter((type) => type !== hotelType),
+    updateSearchParams(
+      {
+        [key]: checked
+          ? [...items, value]
+          : items.filter((item) => item !== value),
+      },
+      {
+        resetPage: true,
+      },
     );
   };
 
-  const handleFacilityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const facility = event.target.value;
-    setSelectedFacilities((prev) =>
-      event.target.checked
-        ? [...prev, facility]
-        : prev.filter((prevFacility) => prevFacility !== facility),
-    );
-  };
+  const showResultsSkeleton = isFetching;
 
   return (
-    <div className="container mx-auto px-4 py-10">
-      {/* Mobile Filter Sheet */}
-      <FilterSheet>
-        <div className="space-y-5">
-          <h3 className="border-border border-b pb-5 text-lg font-semibold">
-            Filter by:
-          </h3>
-          <StarRatingFilter
-            selectedStars={selectedStars}
-            onChange={handleStarChange}
-          />
-          <HotelTypesFilter
-            selectedHotelTypes={selectedHotelTypes}
-            onChange={handleHotelTypeChange}
-          />
-          <FacilitiesFilter
-            selectedFacilities={selectedFacilities}
-            onChange={handleFacilityChange}
-          />
-          <PriceFilter
-            selectedPrice={selectedPrice}
-            onChange={(value?: number) => setSelectedPrice(value)}
-          />
-        </div>
-      </FilterSheet>
+    <main className="px-4 pb-14 pt-6 sm:px-6 lg:px-8">
+      <div className="container-shell space-y-6">
+        <section className="space-y-4">
+          <SearchBar />
+          {/* <div className="surface-panel flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="section-kicker">Search results</p>
+              <p className="text-muted-foreground mt-1 text-sm leading-6">
+                Adjust destination, dates, guests, and filters without leaving
+                the shortlist.
+              </p>
+            </div>
+            <div className="bg-secondary text-secondary-foreground inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold">
+              <SlidersHorizontal className="h-4 w-4" />
+              {hotelData
+                ? `${hotelData.pagination.totalHotels} stays available`
+                : "Finding the best matches"}
+            </div>
+          </div> */}
+        </section>
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[250px_1fr]">
-        <div className="border-border bg-background sticky top-24 hidden h-fit rounded-lg border p-5 lg:block">
-          <div className="space-y-5">
-            <h3 className="border-border border-b pb-5 text-lg font-semibold">
-              Filter by:
-            </h3>
+        <FilterSheet>
+          <div className="space-y-4">
             <StarRatingFilter
               selectedStars={selectedStars}
-              onChange={handleStarChange}
+              onChange={(value, checked) =>
+                toggleValue("stars", value, checked, selectedStars)
+              }
             />
             <HotelTypesFilter
               selectedHotelTypes={selectedHotelTypes}
-              onChange={handleHotelTypeChange}
-            />
-            <FacilitiesFilter
-              selectedFacilities={selectedFacilities}
-              onChange={handleFacilityChange}
+              onChange={(value, checked) =>
+                toggleValue(
+                  "types",
+                  value,
+                  checked,
+                  selectedHotelTypes,
+                )
+              }
             />
             <PriceFilter
               selectedPrice={selectedPrice}
-              onChange={(value?: number) => setSelectedPrice(value)}
+              onChange={(value) =>
+                updateSearchParams(
+                  {
+                    maxPrice: value?.toString(),
+                  },
+                  {
+                    resetPage: true,
+                  },
+                )
+              }
+            />
+            <FacilitiesFilter
+              selectedFacilities={selectedFacilities}
+              onChange={(value, checked) =>
+                toggleValue(
+                  "facilities",
+                  value,
+                  checked,
+                  selectedFacilities,
+                )
+              }
             />
           </div>
-        </div>
+        </FilterSheet>
 
-        <div className="flex flex-col gap-5">
-          <div className="flex items-center justify-between">
-            <span className="text-xl font-bold">
-              {hotelData
-                ? `${hotelData.pagination.totalHotels} hotels found`
-                : "Finding hotels..."}
-              {searchParams.get("destination")
-                ? ` in ${searchParams.get("destination")}`
-                : ""}
-            </span>
-            <select
-              value={sortOption}
-              onChange={(event) => setSortOption(event.target.value)}
-              className="rounded-md border p-2 text-sm"
-            >
-              <option value="">Sort By</option>
-              <option value="starRating">Star Rating</option>
-              <option value="pricePerNightAsc">
-                Price Per Night (low to high)
-              </option>
-              <option value="pricePerNightDesc">
-                Price Per Night (high to low)
-              </option>
-            </select>
-          </div>
-
-          {hotelData?.data.map((hotel) => (
-            <SearchResultsCard key={hotel._id} hotel={hotel} />
-          ))}
-
-          {hotelData?.data.length === 0 && (
-            <div className="flex w-full items-center justify-center py-20">
-              <p className="text-muted-foreground">
-                No hotels found matching your criteria.
-              </p>
+        <div className="grid gap-6 lg:grid-cols-[400px_1fr] lg:items-start">
+          <aside className="surface-panel hidden p-6 lg:block">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <p className="section-kicker">Control the shortlist</p>
+                <h3 className="font-heading text-3xl leading-none font-semibold">
+                  Refine your search
+                </h3>
+                <p className="text-muted-foreground text-sm leading-6">
+                  Premium stays, clearer filters, and less browser-default
+                  chaos.
+                </p>
+              </div>
+              <StarRatingFilter
+                selectedStars={selectedStars}
+                onChange={(value, checked) =>
+                  toggleValue("stars", value, checked, selectedStars)
+                }
+              />
+              <HotelTypesFilter
+                selectedHotelTypes={selectedHotelTypes}
+                onChange={(value, checked) =>
+                  toggleValue(
+                    "types",
+                    value,
+                    checked,
+                    selectedHotelTypes,
+                  )
+                }
+              />
+              <PriceFilter
+                selectedPrice={selectedPrice}
+                onChange={(value) =>
+                  updateSearchParams(
+                    {
+                      maxPrice: value?.toString(),
+                    },
+                    {
+                      resetPage: true,
+                    },
+                  )
+                }
+              />
+              <FacilitiesFilter
+                selectedFacilities={selectedFacilities}
+                onChange={(value, checked) =>
+                  toggleValue(
+                    "facilities",
+                    value,
+                    checked,
+                    selectedFacilities,
+                  )
+                }
+              />
             </div>
-          )}
+          </aside>
 
-          {hotelData && (
-            <Pagination
-              page={hotelData.pagination.page || 1}
-              pages={hotelData.pagination.totalPages || 1}
-              onPageChange={(page) => setPage(page)}
-            />
-          )}
+          <section className="space-y-5">
+            <div className="surface-panel flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold tracking-[0.18em] uppercase">
+                  {hotelData?.pagination?.totalHotels} Results
+                </p>
+                <p className="text-muted-foreground mt-1 text-sm">
+                  Sort and compare the stays that best fit your pace and budget.
+                </p>
+              </div>
+              <Select
+                value={sortOption}
+                onValueChange={(value) =>
+                  updateSearchParams(
+                    {
+                      sortOption: value === "default" ? undefined : value,
+                    },
+                    {
+                      resetPage: true,
+                    },
+                  )
+                }
+              >
+                <SelectTrigger className="h-11 w-full rounded-full px-4 sm:w-[240px]">
+                  <SelectValue placeholder="Sort by relevance" />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  <SelectItem value="default">Sort by relevance</SelectItem>
+                  <SelectItem value="starRating">Highest rating</SelectItem>
+                  <SelectItem value="pricePerNightAsc">
+                    Price: low to high
+                  </SelectItem>
+                  <SelectItem value="pricePerNightDesc">
+                    Price: high to low
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {showResultsSkeleton ? <SearchResultsSkeleton /> : null}
+
+            {!showResultsSkeleton &&
+              hotelData?.data.map((hotel) => (
+                <SearchResultsCard key={hotel._id} hotel={hotel} />
+              ))}
+
+            {!showResultsSkeleton && hotelData?.data.length === 0 ? (
+              <div className="surface-panel flex min-h-72 items-center justify-center p-8 text-center">
+                <div className="space-y-3">
+                  <h2 className="font-heading text-4xl leading-none font-semibold">
+                    No hotels matched this search.
+                  </h2>
+                  <p className="text-muted-foreground max-w-md text-sm leading-6">
+                    Try widening the price cap, removing a few filters, or
+                    searching a nearby destination.
+                  </p>
+                </div>
+              </div>
+            ) : null}
+
+            {!showResultsSkeleton && hotelData ? (
+              <Pagination
+                page={hotelData.pagination.page || 1}
+                pages={hotelData.pagination.totalPages || 1}
+                onPageChange={(nextPage) =>
+                  updateSearchParams({
+                    page: nextPage.toString(),
+                  })
+                }
+              />
+            ) : null}
+          </section>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
 export default function SearchPage() {
   return (
     <Suspense
-      fallback={<div className="container mx-auto p-10">Loading...</div>}
+      fallback={<div className="container-shell px-4 py-12">Loading...</div>}
     >
       <SearchGrid />
     </Suspense>

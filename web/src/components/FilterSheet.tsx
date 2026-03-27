@@ -1,5 +1,9 @@
 "use client";
 
+import { ReactNode } from "react";
+import { Filter } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
@@ -8,9 +12,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Filter } from "lucide-react";
-import { ReactNode } from "react";
 
 interface FilterSheetProps {
   children: ReactNode;
@@ -22,22 +23,26 @@ export function FilterSheet({ children }: FilterSheetProps) {
       <SheetTrigger asChild>
         <Button
           variant="outline"
-          className="mb-4 flex w-full items-center gap-2 lg:hidden"
+          className="surface-panel mb-4 flex h-12 w-full items-center justify-center gap-2 rounded-full lg:hidden"
         >
-          <Filter className="h-4 w-4" /> Attributes & Filters
+          <Filter className="h-4 w-4" />
+          Refine your search
         </Button>
       </SheetTrigger>
       <SheetContent
         side="left"
-        className="w-[300px] overflow-y-auto sm:w-[400px]"
+        className="w-[92vw] overflow-y-auto border-r border-border/60 bg-[linear-gradient(180deg,rgba(255,250,243,0.98),rgba(250,244,232,0.98))] sm:w-[430px]"
       >
-        <SheetHeader>
-          <SheetTitle>Filters</SheetTitle>
-          <SheetDescription>
-            Filter hotels by your preferences.
+        <SheetHeader className="text-left">
+          <SheetTitle className="font-heading text-4xl leading-none">
+            Refine your search
+          </SheetTitle>
+          <SheetDescription className="text-sm leading-6">
+            Narrow the results with better controls for price, category, and
+            amenities.
           </SheetDescription>
         </SheetHeader>
-        <div className="mt-6">{children}</div>
+        <div className="mt-8">{children}</div>
       </SheetContent>
     </Sheet>
   );

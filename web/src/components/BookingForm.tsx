@@ -1,24 +1,20 @@
 "use client";
 
-import {
-  useStripe,
-  useElements,
-  PaymentElement,
-} from "@stripe/react-stripe-js";
-import { useForm } from "react-hook-form";
-
-import { useParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { apiClient } from "@/lib/api-client";
 import { useState } from "react";
+import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { useForm } from "react-hook-form";
+import { useParams } from "next/navigation";
 import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { apiClient } from "@/lib/api-client";
 
 type Props = {
   currentUser: {
     firstName: string;
     email: string;
-  }; // Mocked user type for now, or match backend User
+  };
   paymentIntent: {
     paymentIntentId: string;
     clientSecret: string;
@@ -44,7 +40,6 @@ export function BookingForm({ currentUser, paymentIntent }: Props) {
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
 
-  // In a real app we'd get this from context or props
   const searchParams = new URLSearchParams(window.location.search);
   const checkIn = searchParams.get("checkIn") || "";
   const checkOut = searchParams.get("checkOut") || "";
@@ -66,7 +61,9 @@ export function BookingForm({ currentUser, paymentIntent }: Props) {
   });
 
   const onSubmit = async (formData: BookingFormData) => {
-    if (!stripe || !elements) return;
+    if (!stripe || !elements) {
+      return;
+    }
 
     setIsLoading(true);
 
@@ -75,13 +72,16 @@ export function BookingForm({ currentUser, paymentIntent }: Props) {
       confirmParams: {
         return_url: `${window.location.origin}/my-bookings`,
       },
-      redirect: "if_required", // Prevent auto redirect
+      redirect: "if_required",
     });
 
     if (result.error) {
       toast.error(result.error.message);
       setIsLoading(false);
-    } else if (result.paymentIntent?.status === "succeeded") {
+      return;
+    }
+
+    if (result.paymentIntent?.status === "succeeded") {
       try {
         await apiClient.post(`/api/hotels/${hotelId}/bookings`, {
           paymentIntentId: result.paymentIntent.id,
@@ -89,12 +89,11 @@ export function BookingForm({ currentUser, paymentIntent }: Props) {
           checkOut: formData.checkOut,
           adultCount: formData.adultCount,
           childCount: formData.childCount,
-          totalCost: paymentIntent.totalCost, // Use the totalCost from paymentIntent props
+          totalCost: paymentIntent.totalCost,
         });
         toast.success("Booking saved!");
-        // Now redirect
         window.location.href = "/my-bookings";
-      } catch (error) {
+      } catch {
         toast.error("Error saving booking");
         setIsLoading(false);
       }
@@ -102,80 +101,75 @@ export function BookingForm({ currentUser, paymentIntent }: Props) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="border-border grid grid-cols-1 gap-5 rounded-lg border p-5 md:grid-cols-2"
-    >
-      <Card className="border-none shadow-none">
-        <CardHeader>
-          <CardTitle>Confirm Your Details</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          <div className="grid grid-cols-2 gap-4">
-            <label className="flex-1 text-sm font-bold text-gray-700">
-              First Name
-              <input
-                className="mt-1 w-full rounded border bg-gray-200 px-3 py-2 font-normal text-gray-700"
-                type="text"
-                readOnly
-                disabled
-                {...register("firstName")}
-              />
-            </label>
-            <label className="flex-1 text-sm font-bold text-gray-700">
-              Last Name
-              <input
-                className="mt-1 w-full rounded border bg-gray-200 px-3 py-2 font-normal text-gray-700"
-                type="text"
-                readOnly
-                disabled
-                {...register("lastName")} // Assuming last name might be in props too, simplified here
-              />
-            </label>
-            <label className="col-span-2 flex-1 text-sm font-bold text-gray-700">
-              Email
-              <input
-                className="mt-1 w-full rounded border bg-gray-200 px-3 py-2 font-normal text-gray-700"
-                type="text"
-                readOnly
-                disabled
-                {...register("email")}
-              />
-            </label>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-none shadow-none">
-        <CardHeader>
-          <CardTitle>Total Price Breakdown</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* Summary logic here would usually take price/night * nights */}
-          <div className="flex flex-col gap-4">
-            <div className="text-xl font-bold">
-              Total Cost: ₹{(paymentIntent.totalCost / 100).toFixed(2)}
+    <div className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <section className="surface-panel p-6 sm:p-8">
+          <div className="space-y-5">
+            <div>
+              <p className="section-kicker">Guest details</p>
+              <h2 className="font-heading mt-3 text-4xl leading-none font-semibold">
+                Confirm your details
+              </h2>
             </div>
-            <div className="text-xs">Includes taxes and fees</div>
-          </div>
-        </CardContent>
-      </Card>
 
-      <Card className="col-span-1 border-none shadow-none md:col-span-2">
-        <CardHeader>
-          <CardTitle>Payment Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PaymentElement />
-          <Button
-            disabled={isLoading}
-            type="submit"
-            className="mt-4 w-full text-lg font-bold"
-          >
-            {isLoading ? "Booking..." : "Confirm Booking"}
-          </Button>
-        </CardContent>
-      </Card>
-    </form>
+            <div className="grid gap-5 md:grid-cols-2">
+              <label className="space-y-2">
+                <span className="text-sm font-semibold">First name</span>
+                <Input
+                  type="text"
+                  readOnly
+                  disabled
+                  className="h-12 rounded-2xl bg-secondary"
+                  {...register("firstName")}
+                />
+              </label>
+              <label className="space-y-2">
+                <span className="text-sm font-semibold">Last name</span>
+                <Input
+                  type="text"
+                  readOnly
+                  disabled
+                  className="h-12 rounded-2xl bg-secondary"
+                  {...register("lastName")}
+                />
+              </label>
+              <label className="space-y-2 md:col-span-2">
+                <span className="text-sm font-semibold">Email</span>
+                <Input
+                  type="text"
+                  readOnly
+                  disabled
+                  className="h-12 rounded-2xl bg-secondary"
+                  {...register("email")}
+                />
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section className="surface-panel p-6 sm:p-8">
+          <div className="space-y-5">
+            <div>
+              <p className="section-kicker">Payment</p>
+              <h2 className="font-heading mt-3 text-4xl leading-none font-semibold">
+                Secure checkout
+              </h2>
+            </div>
+
+            <div className="rounded-[1.4rem] border border-border/70 bg-background/80 p-4">
+              <PaymentElement />
+            </div>
+
+            <Button
+              disabled={isLoading}
+              type="submit"
+              className="h-12 w-full rounded-full text-base font-semibold"
+            >
+              {isLoading ? "Booking..." : "Confirm booking"}
+            </Button>
+          </div>
+        </section>
+      </form>
+    </div>
   );
 }

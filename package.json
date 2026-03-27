@@ -18,6 +18,7 @@
     "lint:api": "nx lint api",
     "lint:web": "nx lint web",
     "nx": "nx",
+    "seed:hotels": "nx run api:seed-hotels",
     "test": "nx run-many --target=test --all",
     "test:api": "nx test api",
     "test:web": "nx test web",

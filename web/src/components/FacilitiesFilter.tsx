@@ -1,29 +1,34 @@
 import { hotelFacilities } from "@/lib/hotel-options";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 type Props = {
   selectedFacilities: string[];
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (value: string, checked: boolean) => void;
 };
 
 export function FacilitiesFilter({ selectedFacilities, onChange }: Props) {
   return (
-    <div className="border-border border-b pb-5">
-      <h4 className="text-md mb-2 font-semibold">Facilities</h4>
-      {hotelFacilities.map((facility) => (
-        <label
-          key={facility}
-          className="flex cursor-pointer items-center space-x-2 py-1"
-        >
-          <input
-            type="checkbox"
-            className="text-primary focus:ring-primary rounded border-gray-300"
-            value={facility}
-            checked={selectedFacilities.includes(facility)}
-            onChange={onChange}
-          />
-          <span className="text-foreground text-sm">{facility}</span>
-        </label>
-      ))}
+    <div className="space-y-3">
+      <h4 className="font-heading text-xl leading-none font-semibold">
+        Facilities
+      </h4>
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+        {hotelFacilities.map((facility) => (
+          <Label
+            key={facility}
+            className="flex cursor-pointer items-center gap-3 rounded-xl border border-border/70 bg-background/70 px-3 py-2.5 text-sm font-medium"
+          >
+            <Checkbox
+              checked={selectedFacilities.includes(facility)}
+              onCheckedChange={(checked) =>
+                onChange(facility, checked === true)
+              }
+            />
+            <span>{facility}</span>
+          </Label>
+        ))}
+      </div>
     </div>
   );
 }

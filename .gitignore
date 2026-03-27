@@ -47,3 +47,6 @@ out
 .env
 .env.local
 .env.*.local
+
+# tsbuildinfo files
+tsconfig.tsbuildinfo

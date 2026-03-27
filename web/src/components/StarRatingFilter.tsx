@@ -1,27 +1,49 @@
+import { Star } from "lucide-react";
+
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+
 type Props = {
   selectedStars: string[];
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (value: string, checked: boolean) => void;
 };
 
 export function StarRatingFilter({ selectedStars, onChange }: Props) {
   return (
-    <div className="border-border border-b pb-5">
-      <h4 className="text-md mb-2 font-semibold">Property Rating</h4>
-      {["5", "4", "3", "2", "1"].map((star) => (
-        <label
-          key={star}
-          className="flex cursor-pointer items-center space-x-2 py-1"
-        >
-          <input
-            type="checkbox"
-            className="text-primary focus:ring-primary rounded border-gray-300"
-            value={star}
-            checked={selectedStars.includes(star)}
-            onChange={onChange}
-          />
-          <span className="text-foreground text-sm">{star} Stars</span>
-        </label>
-      ))}
+    <div className="border-border/70 space-y-3 border-b pb-4">
+      <h4 className="font-heading text-xl leading-none font-semibold">
+        Property rating
+      </h4>
+      <div className="space-y-2">
+        {["5", "4", "3", "2", "1"].map((star) => {
+          const checked = selectedStars.includes(star);
+
+          return (
+            <Label
+              key={star}
+              className="flex cursor-pointer items-center justify-between rounded-xl border border-border/70 bg-background/70 px-3 py-2.5"
+            >
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  checked={checked}
+                  onCheckedChange={(nextChecked) =>
+                    onChange(star, nextChecked === true)
+                  }
+                />
+                <span className="text-sm font-medium">{star} stars & up</span>
+              </div>
+              <div className="flex items-center gap-1 text-amber-500">
+                {Array.from({ length: Number(star) }).map((_, index) => (
+                  <Star
+                    key={index}
+                    className="h-3.5 w-3.5 fill-current text-current"
+                  />
+                ))}
+              </div>
+            </Label>
+          );
+        })}
+      </div>
     </div>
   );
 }

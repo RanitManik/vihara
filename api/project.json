@@ -91,6 +91,13 @@
         "command": "tsc --noEmit --project tsconfig.app.json",
         "cwd": "api"
       }
+    },
+    "seed-hotels": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node --project api/tsconfig.app.json api/src/scripts/seed-hotels.ts",
+        "cwd": "."
+      }
     }
   }
 }
