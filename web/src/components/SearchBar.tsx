@@ -165,7 +165,7 @@ export function SearchBar({ className }: SearchBarProps) {
             </p>
             <Input
               placeholder="Jaipur, Kyoto, or a quiet coast"
-              className="h-auto rounded-none border-0 bg-transparent px-0 py-0.5 text-base shadow-none focus-visible:ring-0 text-foreground"
+              className="text-foreground h-auto rounded-none border-0 bg-transparent px-0 py-0.5 text-base shadow-none focus-visible:ring-0"
               value={destination}
               onChange={(event) => setDestination(event.target.value)}
             />
@@ -185,10 +185,10 @@ export function SearchBar({ className }: SearchBarProps) {
                 <CalendarIcon className="h-4.5 w-4.5" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-[0.75rem] font-semibold tracking-[0.26em] uppercase text-foreground">
+                <p className="text-foreground text-[0.75rem] font-semibold tracking-[0.26em] uppercase">
                   Dates
                 </p>
-                <p className="truncate pt-0.5 text-base text-foreground">
+                <p className="text-foreground truncate pt-0.5 text-base">
                   {date?.from ? (
                     date.to ? (
                       `${format(date.from, "MMM dd")} - ${format(date.to, "MMM dd")}`
@@ -231,7 +231,7 @@ export function SearchBar({ className }: SearchBarProps) {
                 <p className="text-muted-foreground text-[0.75rem] font-semibold tracking-[0.26em] uppercase">
                   Guests
                 </p>
-                <p className="truncate pt-0.5 text-base text-foreground">
+                <p className="text-foreground truncate pt-0.5 text-base">
                   {adultCount} adults · {childCount} children · {roomCount} room
                   {roomCount > 1 ? "s" : ""}
                 </p>

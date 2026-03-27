@@ -77,7 +77,7 @@ export default function BookingPage() {
 
   if (!hotel || !paymentIntentData) {
     return (
-      <main className="px-4 pb-14 pt-6 sm:px-6 lg:px-8">
+      <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
         <div className="container-shell">
           <BookingPageSkeleton />
         </div>
@@ -86,7 +86,7 @@ export default function BookingPage() {
   }
 
   return (
-    <main className="px-4 pb-14 pt-6 sm:px-6 lg:px-8">
+    <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
       <div className="container-shell space-y-6">
         <section className="surface-panel px-6 py-8 sm:px-8">
           <div className="space-y-3">

@@ -40,38 +40,12 @@ const registerSchema = z.object({
     .min(8, { message: "Password must be at least 8 characters" }),
 });
 
-const testimonials = [
-  {
-    quote:
-      "Every great trip starts with a stay that sets the mood for everything after it.",
-    author: "Vihara journal",
-  },
-  {
-    quote:
-      "Travel is richer when the booking flow feels effortless and the destination still feels full of possibility.",
-    author: "Frequent guests",
-  },
-  {
-    quote:
-      "The right hotel can turn a good city break into a story you keep retelling.",
-    author: "Editorial note",
-  },
-];
-
 export default function AuthPage() {
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
   const [showPassword, setShowPassword] = useState(false);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const router = useRouter();
   const { validateToken } = useAppContext();
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTestimonialIndex((previous) => (previous + 1) % testimonials.length);
-    }, 4500);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -134,7 +108,7 @@ export default function AuthPage() {
 
   return (
     <main className="">
-      <div className="grid  overflow-hidden min-h-screen bg-[#201612] lg:grid-cols-[1.05fr_0.95fr]">
+      <div className="grid min-h-screen overflow-hidden bg-[#201612] lg:grid-cols-[1.05fr_0.95fr]">
         <section className="relative hidden overflow-hidden p-8 text-white lg:flex lg:flex-col lg:justify-between xl:p-10">
           <Image
             src="/hotels/hotel-image-03.jpg"
@@ -146,22 +120,20 @@ export default function AuthPage() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(238,193,136,0.28),transparent_28%),linear-gradient(180deg,rgba(16,11,9,0.2),rgba(16,11,9,0.88))]" />
 
           <div className="relative z-10 flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md">
-              <Image
-                src="/logo/logo.svg"
-                alt="Vihara logo"
-                width={24}
-                height={24}
-              />
-            </div>
-            <div>
-              <p className="text-xs font-semibold tracking-[0.24em] uppercase text-white/70">
-                Boutique booking platform
-              </p>
-              <h1 className="font-heading text-4xl leading-none font-semibold">
+            <Link href="/" className="flex items-center gap-3">
+              <div className="bg-primary/20 border-primary/30 flex h-11 w-11 items-center justify-center rounded-2xl border">
+                <Image
+                  src="/logo/logo.svg"
+                  alt="Vihara logo"
+                  width={24}
+                  height={24}
+                  className="rounded-sm"
+                />
+              </div>
+              <p className="font-heading text-3xl leading-none font-semibold">
                 Vihara
-              </h1>
-            </div>
+              </p>
+            </Link>
           </div>
 
           <div className="relative z-10 space-y-8">
@@ -179,36 +151,6 @@ export default function AuthPage() {
                 in a flow that feels polished from the first click.
               </p>
             </div>
-
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div className="rounded-[1.5rem] border border-white/15 bg-white/10 p-4 backdrop-blur-md">
-                <Stars className="h-5 w-5 text-amber-300" />
-                <p className="mt-4 text-3xl font-semibold">4.9</p>
-                <p className="text-sm text-white/70">guest satisfaction</p>
-              </div>
-              <div className="rounded-[1.5rem] border border-white/15 bg-white/10 p-4 backdrop-blur-md">
-                <Users className="h-5 w-5 text-amber-300" />
-                <p className="mt-4 text-3xl font-semibold">12k+</p>
-                <p className="text-sm text-white/70">happy travelers</p>
-              </div>
-              <div className="rounded-[1.5rem] border border-white/15 bg-white/10 p-4 backdrop-blur-md">
-                <Sparkles className="h-5 w-5 text-amber-300" />
-                <p className="mt-4 text-3xl font-semibold">46</p>
-                <p className="text-sm text-white/70">cities featured</p>
-              </div>
-            </div>
-
-            <div
-              key={testimonialIndex}
-              className="animate-in fade-in slide-in-from-bottom-4 rounded-[1.75rem] border border-white/15 bg-white/10 p-6 backdrop-blur-md duration-700"
-            >
-              <p className="text-xl leading-8 text-white/92">
-                “{testimonials[testimonialIndex].quote}”
-              </p>
-              <p className="mt-4 text-sm font-semibold tracking-[0.18em] uppercase text-white/58">
-                {testimonials[testimonialIndex].author}
-              </p>
-            </div>
           </div>
         </section>
 
@@ -224,7 +166,7 @@ export default function AuthPage() {
                 />
               </div>
               <div>
-                <p className="text-xs font-semibold tracking-[0.22em] uppercase text-muted-foreground">
+                <p className="text-muted-foreground text-xs font-semibold tracking-[0.22em] uppercase">
                   Stay beautifully
                 </p>
                 <h2 className="font-heading text-3xl leading-none font-semibold">
@@ -254,7 +196,7 @@ export default function AuthPage() {
                   }
                   className="w-full"
                 >
-                  <TabsList className="grid h-12 w-full grid-cols-2 rounded-full bg-secondary p-1">
+                  <TabsList className="bg-secondary grid h-12 w-full grid-cols-2 rounded-full p-1">
                     <TabsTrigger value="login" className="rounded-full">
                       Login
                     </TabsTrigger>
@@ -319,7 +261,7 @@ export default function AuthPage() {
                                 />
                                 <button
                                   type="button"
-                                  className="text-muted-foreground hover:text-foreground absolute right-4 top-1/2 -translate-y-1/2"
+                                  className="text-muted-foreground hover:text-foreground absolute top-1/2 right-4 -translate-y-1/2"
                                   onClick={() =>
                                     setShowPassword((current) => !current)
                                   }
@@ -413,7 +355,7 @@ export default function AuthPage() {
                                 value={field.value ?? ""}
                                 onBlur={field.onBlur}
                                 onChange={field.onChange}
-                                />
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -439,7 +381,7 @@ export default function AuthPage() {
                                 />
                                 <button
                                   type="button"
-                                  className="text-muted-foreground hover:text-foreground absolute right-4 top-1/2 -translate-y-1/2"
+                                  className="text-muted-foreground hover:text-foreground absolute top-1/2 right-4 -translate-y-1/2"
                                   onClick={() =>
                                     setShowPassword((current) => !current)
                                   }

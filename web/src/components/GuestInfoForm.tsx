@@ -127,7 +127,7 @@ export function GuestInfoForm({ hotelId, pricePerNight }: Props) {
               type="number"
               min={1}
               max={20}
-              className="border-input bg-background h-12 w-full rounded-2xl border px-4 outline-none focus:ring-2 focus:ring-ring/40"
+              className="border-input bg-background focus:ring-ring/40 h-12 w-full rounded-2xl border px-4 outline-none focus:ring-2"
               {...register("adultCount", {
                 required: "This field is required",
                 min: {
@@ -145,7 +145,7 @@ export function GuestInfoForm({ hotelId, pricePerNight }: Props) {
               type="number"
               min={0}
               max={20}
-              className="border-input bg-background h-12 w-full rounded-2xl border px-4 outline-none focus:ring-2 focus:ring-ring/40"
+              className="border-input bg-background focus:ring-ring/40 h-12 w-full rounded-2xl border px-4 outline-none focus:ring-2"
               {...register("childCount", {
                 valueAsNumber: true,
               })}

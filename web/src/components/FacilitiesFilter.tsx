@@ -17,7 +17,7 @@ export function FacilitiesFilter({ selectedFacilities, onChange }: Props) {
         {hotelFacilities.map((facility) => (
           <Label
             key={facility}
-            className="flex cursor-pointer items-center gap-3 rounded-xl border border-border/70 bg-background/70 px-3 py-2.5 text-sm font-medium"
+            className="border-border/70 bg-background/70 flex cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-medium"
           >
             <Checkbox
               checked={selectedFacilities.includes(facility)}

@@ -87,8 +87,9 @@ function normalizeHotelType(type?: string | null) {
   const normalizedType = type.trim().toLowerCase();
 
   return (
-    hotelTypes.find((option) => option.trim().toLowerCase() === normalizedType) ??
-    type
+    hotelTypes.find(
+      (option) => option.trim().toLowerCase() === normalizedType,
+    ) ?? type
   );
 }
 

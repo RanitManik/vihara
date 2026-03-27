@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 const destinations = [
-
   {
     city: "Paris",
     image: "/trending-locations/paris.jpg",

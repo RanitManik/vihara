@@ -53,14 +53,9 @@ export function Header() {
               className="rounded-sm"
             />
           </div>
-          <div className="hidden sm:block">
-            <p className="text-muted-foreground text-[0.65rem] font-semibold tracking-[0.24em] uppercase">
-              Stay beautifully
-            </p>
-            <p className="font-heading text-3xl leading-none font-semibold">
-              Vihara
-            </p>
-          </div>
+          <p className="font-heading text-3xl leading-none font-semibold">
+            Vihara
+          </p>
         </Link>
 
         <nav className="hidden items-center gap-2 lg:flex">

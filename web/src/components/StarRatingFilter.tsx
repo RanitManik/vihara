@@ -21,7 +21,7 @@ export function StarRatingFilter({ selectedStars, onChange }: Props) {
           return (
             <Label
               key={star}
-              className="flex cursor-pointer items-center justify-between rounded-xl border border-border/70 bg-background/70 px-3 py-2.5"
+              className="border-border/70 bg-background/70 flex cursor-pointer items-center justify-between rounded-xl border px-3 py-2.5"
             >
               <div className="flex items-center gap-3">
                 <Checkbox

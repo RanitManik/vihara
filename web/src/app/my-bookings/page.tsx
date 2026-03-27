@@ -8,7 +8,10 @@ import { Building2, Calendar, CreditCard, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
 import { HotelType } from "@/shared-types";
-import { PageIntroSkeleton, PortfolioCardsSkeleton } from "@/components/PageSkeletons";
+import {
+  PageIntroSkeleton,
+  PortfolioCardsSkeleton,
+} from "@/components/PageSkeletons";
 
 export default function MyBookings() {
   const [hotels, setHotels] = useState<HotelType[]>([]);
@@ -31,7 +34,7 @@ export default function MyBookings() {
 
   if (loading) {
     return (
-      <main className="px-4 pb-14 pt-6 sm:px-6 lg:px-8">
+      <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
         <div className="container-shell space-y-6">
           <PageIntroSkeleton />
           <PortfolioCardsSkeleton />
@@ -42,7 +45,7 @@ export default function MyBookings() {
 
   if (!hotels.length) {
     return (
-      <main className="px-4 pb-14 pt-6 sm:px-6 lg:px-8">
+      <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
         <div className="container-shell space-y-6">
           <section className="surface-panel px-6 py-8 sm:px-8">
             <div className="space-y-3">
@@ -76,7 +79,7 @@ export default function MyBookings() {
   }
 
   return (
-    <main className="px-4 pb-14 pt-6 sm:px-6 lg:px-8">
+    <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
       <div className="container-shell space-y-6">
         <section className="surface-panel px-6 py-8 sm:px-8">
           <div className="space-y-3">
@@ -106,7 +109,7 @@ export default function MyBookings() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-                  <p className="text-sm tracking-[0.18em] uppercase text-white/70">
+                  <p className="text-sm tracking-[0.18em] text-white/70 uppercase">
                     Upcoming reservation
                   </p>
                   <h2 className="font-heading mt-3 text-4xl leading-none font-semibold">
@@ -144,7 +147,8 @@ export default function MyBookings() {
                             Guests
                           </p>
                           <p className="mt-2 text-base font-semibold">
-                            {booking.adultCount} adults, {booking.childCount} children
+                            {booking.adultCount} adults, {booking.childCount}{" "}
+                            children
                           </p>
                         </div>
 

@@ -93,7 +93,7 @@ export function FeaturedHotels() {
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/55 to-transparent" />
-                <div className="absolute left-4 top-4 flex items-center gap-2 rounded-full bg-black/30 px-3 py-1 text-xs font-semibold tracking-[0.14em] text-white uppercase backdrop-blur-sm">
+                <div className="absolute top-4 left-4 flex items-center gap-2 rounded-full bg-black/30 px-3 py-1 text-xs font-semibold tracking-[0.14em] text-white uppercase backdrop-blur-sm">
                   <Star className="h-3.5 w-3.5 fill-amber-300 text-amber-300" />
                   {hotel.starRating}-star stay
                 </div>

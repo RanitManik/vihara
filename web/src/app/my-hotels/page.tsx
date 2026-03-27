@@ -14,7 +14,10 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { PageIntroSkeleton, PortfolioCardsSkeleton } from "@/components/PageSkeletons";
+import {
+  PageIntroSkeleton,
+  PortfolioCardsSkeleton,
+} from "@/components/PageSkeletons";
 import { apiClient } from "@/lib/api-client";
 import { HotelType } from "@/shared-types";
 
@@ -39,7 +42,7 @@ export default function MyHotels() {
 
   if (loading) {
     return (
-      <main className="px-4 pb-14 pt-6 sm:px-6 lg:px-8">
+      <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
         <div className="container-shell space-y-6">
           <PageIntroSkeleton />
           <PortfolioCardsSkeleton />
@@ -49,7 +52,7 @@ export default function MyHotels() {
   }
 
   return (
-    <main className="px-4 pb-14 pt-6 sm:px-6 lg:px-8">
+    <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
       <div className="container-shell space-y-6">
         <section className="surface-panel px-6 py-8 sm:px-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
@@ -59,7 +62,8 @@ export default function MyHotels() {
                 My hotels
               </h1>
               <p className="text-muted-foreground max-w-2xl text-base leading-7">
-                Review listings and keep every property aligned with a premium guest experience.
+                Review listings and keep every property aligned with a premium
+                guest experience.
               </p>
             </div>
             <Button asChild className="rounded-full px-6">

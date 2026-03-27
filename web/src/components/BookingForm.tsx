@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import {
+  PaymentElement,
+  useElements,
+  useStripe,
+} from "@stripe/react-stripe-js";
 import { useForm } from "react-hook-form";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
@@ -119,7 +123,7 @@ export function BookingForm({ currentUser, paymentIntent }: Props) {
                   type="text"
                   readOnly
                   disabled
-                  className="h-12 rounded-2xl bg-secondary"
+                  className="bg-secondary h-12 rounded-2xl"
                   {...register("firstName")}
                 />
               </label>
@@ -129,7 +133,7 @@ export function BookingForm({ currentUser, paymentIntent }: Props) {
                   type="text"
                   readOnly
                   disabled
-                  className="h-12 rounded-2xl bg-secondary"
+                  className="bg-secondary h-12 rounded-2xl"
                   {...register("lastName")}
                 />
               </label>
@@ -139,7 +143,7 @@ export function BookingForm({ currentUser, paymentIntent }: Props) {
                   type="text"
                   readOnly
                   disabled
-                  className="h-12 rounded-2xl bg-secondary"
+                  className="bg-secondary h-12 rounded-2xl"
                   {...register("email")}
                 />
               </label>
@@ -156,7 +160,7 @@ export function BookingForm({ currentUser, paymentIntent }: Props) {
               </h2>
             </div>
 
-            <div className="rounded-[1.4rem] border border-border/70 bg-background/80 p-4">
+            <div className="border-border/70 bg-background/80 rounded-[1.4rem] border p-4">
               <PaymentElement />
             </div>
 

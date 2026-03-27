@@ -1,6 +1,5 @@
 autoInstallPeers: true
 packages:
-  - 'api'
-  - 'web'
-  - 'web-e2e'
-
+  - "api"
+  - "web"
+  - "web-e2e"
