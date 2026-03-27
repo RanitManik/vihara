@@ -92,7 +92,14 @@ pnpm install
 
 ### 2. Environment Configuration
 
-Create a `.env` file in the root of the repository. You can copy the variables from `.env.example` if available.
+This repo has separate environment files for each app:
+
+- `api/.env` (API server)
+- `web/.env` (Next.js frontend)
+
+Both folders include `.env.example` templates; copy them to the same location before running.
+
+#### 2.1 API env (`api/.env`)
 
 ```env
 # Application
@@ -119,6 +126,13 @@ STRIPE_SECRET_KEY=your_stripe_secret_key
 SEED_HOTEL_COUNT=100
 SEED_USER_ID=seed-user
 SEED_RESET=true
+```
+
+#### 2.2 Web env (`web/.env`)
+
+```env
+NEXT_PUBLIC_BACKEND_URL=http://localhost:4000
+NEXT_PUBLIC_STRIPE_PUB_KEY=your_stripe_publishable_key
 ```
 
 ### 3. Running the Application
