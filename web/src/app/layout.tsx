@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
+import NextTopLoader from "nextjs-toploader";
 
 import "./global.css";
 import { AppProvider } from "@/contexts/AppContext";
@@ -42,6 +43,7 @@ export default function RootLayout({
           <div className="flex flex-1 flex-col">{children}</div>
           <Footer />
           <Toaster position="top-center" richColors />
+          <NextTopLoader color="#dd8f66" showSpinner={false} />
         </AppProvider>
       </body>
     </html>
