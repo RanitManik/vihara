@@ -9,7 +9,9 @@ type Props = {
   onPageChange: (page: number) => void;
 };
 
-function buildPageItems(page: number, pages: number) {
+type PageItem = number | "...";
+
+function buildPageItems(page: number, pages: number): PageItem[] {
   if (pages <= 7) {
     return Array.from({ length: pages }, (_, index) => index + 1);
   }

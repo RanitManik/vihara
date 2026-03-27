@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, MapPin } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 const destinations = [
 
@@ -51,7 +51,7 @@ export function TrendingDestinations() {
       </div>
 
       <div className="grid auto-rows-[230px] gap-4 md:grid-cols-3 lg:auto-rows-[240px]">
-        {destinations.map((destination, index) => (
+        {destinations.map((destination) => (
           <Link
             key={destination.city}
             href={`/search?destination=${encodeURIComponent(destination.city)}`}

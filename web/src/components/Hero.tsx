@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { ArrowRight, Sparkles, Trees } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -81,7 +81,13 @@ export function Hero() {
             </div>
 
             <div className="pt-2">
-              <SearchBar />
+              <Suspense
+                fallback={
+                  <div className="surface-panel mx-auto h-[88px] w-full rounded-[1.8rem] p-3" />
+                }
+              >
+                <SearchBar />
+              </Suspense>
             </div>
           </div>
         </div>

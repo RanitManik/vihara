@@ -1,7 +1,6 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { SlidersHorizontal } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { FacilitiesFilter } from "@/components/FacilitiesFilter";
@@ -34,9 +33,9 @@ function parsePositiveInteger(value: string | null, fallback: number) {
 function SearchGrid() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const searchParamsString = searchParams.toString();
   const [hotelData, setHotelData] = useState<HotelSearchResponse | null>(null);
   const [isFetching, setIsFetching] = useState(true);
-  const page = parsePositiveInteger(searchParams.get("page"), 1);
   const selectedStars = searchParams.getAll("stars");
   const selectedHotelTypes = searchParams.getAll("types");
   const selectedFacilities = searchParams.getAll("facilities");
@@ -86,18 +85,32 @@ function SearchGrid() {
     const fetchHotels = async () => {
       setIsFetching(true);
 
+      const currentSearchParams = new URLSearchParams(searchParamsString);
+      const currentPage = parsePositiveInteger(currentSearchParams.get("page"), 1);
+      const currentSelectedStars = currentSearchParams.getAll("stars");
+      const currentSelectedHotelTypes = currentSearchParams.getAll("types");
+      const currentSelectedFacilities =
+        currentSearchParams.getAll("facilities");
+      const currentSelectedPrice = parsePositiveInteger(
+        currentSearchParams.get("maxPrice"),
+        30000,
+      );
+      const currentSortOption =
+        currentSearchParams.get("sortOption") || "default";
+
       const searchParamsObj: Record<string, string | string[] | undefined> = {
-        destination: searchParams.get("destination") || "",
-        checkIn: searchParams.get("checkIn") || "",
-        checkOut: searchParams.get("checkOut") || "",
-        adultCount: searchParams.get("adultCount") || "",
-        childCount: searchParams.get("childCount") || "",
-        pageNumber: page.toString(),
-        stars: selectedStars,
-        types: selectedHotelTypes,
-        facilities: selectedFacilities,
-        maxPrice: selectedPrice?.toString(),
-        sortOption: sortOption === "default" ? undefined : sortOption,
+        destination: currentSearchParams.get("destination") || "",
+        checkIn: currentSearchParams.get("checkIn") || "",
+        checkOut: currentSearchParams.get("checkOut") || "",
+        adultCount: currentSearchParams.get("adultCount") || "",
+        childCount: currentSearchParams.get("childCount") || "",
+        pageNumber: currentPage.toString(),
+        stars: currentSelectedStars,
+        types: currentSelectedHotelTypes,
+        facilities: currentSelectedFacilities,
+        maxPrice: currentSelectedPrice.toString(),
+        sortOption:
+          currentSortOption === "default" ? undefined : currentSortOption,
       };
 
       const params = new URLSearchParams();
@@ -128,7 +141,7 @@ function SearchGrid() {
     };
 
     fetchHotels();
-  }, [searchParams]);
+  }, [searchParamsString]);
 
   const toggleValue = (
     key: "stars" | "types" | "facilities",

@@ -11,7 +11,7 @@ type ToastMessage = {
 
 type AppContext = {
   isLoggedIn: boolean;
-  stripePromise: Promise<any> | null;
+  stripePromise: null;
   showToast: (toastMessage: ToastMessage) => void;
   validateToken: () => Promise<void>;
 };
@@ -32,7 +32,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       await apiClient.get("/api/auth/validate-token");
       setIsLoggedIn(true);
-    } catch (error) {
+    } catch {
       setIsLoggedIn(false);
     }
   };
