@@ -1,0 +1,53 @@
+name: Auto-merge Dependabot and Release PRs
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+
+    if: github.actor == 'dependabot[bot]' || startsWith(github.event.pull_request.title, 'chore(release):')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        id: install
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        id: lint
+        run: pnpm lint
+
+      - name: Typecheck
+        id: typecheck
+        run: pnpm typecheck
+
+      - name: Build
+        id: build
+        run: pnpm build
+
+      - name: Enable auto-merge
+        if: success()
+        run: gh pr merge "$PR_URL" --auto --merge --delete-branch
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
