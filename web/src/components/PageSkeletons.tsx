@@ -25,7 +25,10 @@ export function SearchResultsSkeleton() {
       </div>
 
       {Array.from({ length: 3 }).map((_, index) => (
-        <div key={index} className="surface-panel grid overflow-hidden p-0 xl:grid-cols-[1.15fr_1fr]">
+        <div
+          key={index}
+          className="surface-panel grid overflow-hidden p-0 xl:grid-cols-[1.15fr_1fr]"
+        >
           <Skeleton className="min-h-[260px] w-full rounded-none" />
           <div className="space-y-5 p-6">
             <Skeleton className="h-4 w-32 rounded-full" />
@@ -86,14 +89,14 @@ export function HotelDetailSkeleton() {
       </div>
       <div className="grid gap-6 xl:grid-cols-[1.25fr_0.75fr]">
         <div className="space-y-6">
-          <div className="surface-panel p-6 sm:p-8 space-y-4">
+          <div className="surface-panel space-y-4 p-6 sm:p-8">
             <Skeleton className="h-3 w-24 rounded-full" />
             <Skeleton className="h-12 w-72 rounded-2xl" />
             <Skeleton className="h-4 w-full rounded-full" />
             <Skeleton className="h-4 w-full rounded-full" />
             <Skeleton className="h-4 w-3/4 rounded-full" />
           </div>
-          <div className="surface-panel p-6 sm:p-8 space-y-4">
+          <div className="surface-panel space-y-4 p-6 sm:p-8">
             <Skeleton className="h-3 w-24 rounded-full" />
             <Skeleton className="h-12 w-64 rounded-2xl" />
             <div className="flex flex-wrap gap-3">
@@ -103,7 +106,7 @@ export function HotelDetailSkeleton() {
             </div>
           </div>
         </div>
-        <div className="surface-panel p-6 sm:p-8 space-y-4">
+        <div className="surface-panel space-y-4 p-6 sm:p-8">
           <Skeleton className="h-3 w-24 rounded-full" />
           <Skeleton className="h-12 w-32 rounded-2xl" />
           <Skeleton className="h-14 w-full rounded-2xl" />
@@ -122,7 +125,7 @@ export function HotelDetailSkeleton() {
 export function BookingPageSkeleton() {
   return (
     <div className="grid gap-6 xl:grid-cols-[0.82fr_1.18fr]">
-      <div className="surface-panel p-6 sm:p-8 space-y-4">
+      <div className="surface-panel space-y-4 p-6 sm:p-8">
         <Skeleton className="h-3 w-28 rounded-full" />
         <Skeleton className="h-10 w-56 rounded-2xl" />
         <Skeleton className="h-20 rounded-2xl" />
@@ -130,7 +133,7 @@ export function BookingPageSkeleton() {
         <Skeleton className="h-20 rounded-2xl" />
       </div>
       <div className="space-y-6">
-        <div className="surface-panel p-6 sm:p-8 space-y-5">
+        <div className="surface-panel space-y-5 p-6 sm:p-8">
           <Skeleton className="h-10 w-56 rounded-2xl" />
           <div className="grid gap-5 md:grid-cols-2">
             <Skeleton className="h-16 rounded-2xl" />
@@ -138,7 +141,7 @@ export function BookingPageSkeleton() {
             <Skeleton className="h-16 rounded-2xl md:col-span-2" />
           </div>
         </div>
-        <div className="surface-panel p-6 sm:p-8 space-y-5">
+        <div className="surface-panel space-y-5 p-6 sm:p-8">
           <Skeleton className="h-10 w-48 rounded-2xl" />
           <Skeleton className="h-24 rounded-2xl" />
           <Skeleton className="h-12 w-full rounded-full" />

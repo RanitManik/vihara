@@ -30,7 +30,7 @@ const footerColumns = [
 
 export function Footer() {
   return (
-    <footer className="px-4 pb-4 pt-12 sm:px-6 lg:px-8">
+    <footer className="px-4 pt-12 pb-4 sm:px-6 lg:px-8">
       <div className="container-shell surface-panel overflow-hidden px-6 py-8 sm:px-8 sm:py-10">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
           <div className="space-y-6">
@@ -63,14 +63,20 @@ export function Footer() {
 
             <div className="text-muted-foreground flex flex-wrap items-center gap-4 text-sm">
               <div className="flex items-center gap-2">
-                <MapPinned className="h-4 w-4 text-primary" />
+                <MapPinned className="text-primary h-4 w-4" />
                 Curated across modern cities and slow-travel destinations
               </div>
               <div className="flex items-center gap-3">
-                <Link href="#" className="hover:text-foreground transition-colors">
+                <Link
+                  href="#"
+                  className="hover:text-foreground transition-colors"
+                >
                   <Instagram className="h-4 w-4" />
                 </Link>
-                <Link href="#" className="hover:text-foreground transition-colors">
+                <Link
+                  href="#"
+                  className="hover:text-foreground transition-colors"
+                >
                   <Twitter className="h-4 w-4" />
                 </Link>
               </div>
@@ -100,7 +106,10 @@ export function Footer() {
         </div>
 
         <div className="border-border/70 text-muted-foreground mt-10 flex flex-col gap-3 border-t pt-6 text-sm sm:flex-row sm:items-center sm:justify-between">
-          <p>&copy; {new Date().getFullYear()} Vihara. Designed for calmer travel.</p>
+          <p>
+            &copy; {new Date().getFullYear()} Vihara. Designed for calmer
+            travel.
+          </p>
           <div className="flex gap-5">
             <Link href="#" className="hover:text-foreground transition-colors">
               Privacy

@@ -67,7 +67,7 @@ export default function HotelDetail() {
 
   if (loading) {
     return (
-      <main className="px-4 pb-14 pt-6 sm:px-6 lg:px-8">
+      <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
         <div className="container-shell">
           <HotelDetailSkeleton />
         </div>
@@ -98,7 +98,7 @@ export default function HotelDetail() {
 
   return (
     <>
-      <main className="px-4 pb-14 pt-6 sm:px-6 lg:px-8">
+      <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
         <div className="container-shell space-y-6">
           <section className="surface-panel overflow-hidden p-0">
             <div className="relative min-h-115 overflow-hidden">
@@ -109,7 +109,7 @@ export default function HotelDetail() {
                   alt={`${hotel.name} image ${index + 1}`}
                   fill
                   priority={index === 0}
-                  className={`object-cover will-change-opacity transition-opacity duration-600 ease-linear ${
+                  className={`will-change-opacity object-cover transition-opacity duration-600 ease-linear ${
                     index === activeImageIndex ? "opacity-100" : "opacity-0"
                   }`}
                 />
@@ -128,7 +128,7 @@ export default function HotelDetail() {
               <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8 lg:p-10">
                 <div className="max-w-4xl space-y-4 text-white">
                   <div className="flex flex-wrap items-center gap-3">
-                    <Badge className="bg-white/15 rounded-full border border-white/15 px-3 py-1 text-[0.72rem] tracking-[0.18em] uppercase text-white backdrop-blur-sm">
+                    <Badge className="rounded-full border border-white/15 bg-white/15 px-3 py-1 text-[0.72rem] tracking-[0.18em] text-white uppercase backdrop-blur-sm">
                       {hotel.type}
                     </Badge>
                     <div className="flex items-center gap-2 rounded-full bg-white/12 px-3 py-1 text-sm backdrop-blur-sm">
@@ -177,7 +177,7 @@ export default function HotelDetail() {
                 <h2 className="font-heading mt-3 text-5xl leading-none font-semibold">
                   Designed for a better pause.
                 </h2>
-                <p className="text-muted-foreground mt-5 whitespace-pre-line text-base leading-8">
+                <p className="text-muted-foreground mt-5 text-base leading-8 whitespace-pre-line">
                   {hotel.description}
                 </p>
               </article>

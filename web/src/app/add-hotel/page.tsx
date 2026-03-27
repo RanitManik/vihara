@@ -27,7 +27,7 @@ export default function AddHotel() {
   };
 
   return (
-    <main className="px-4 pb-14 pt-6 sm:px-6 lg:px-8">
+    <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
       <div className="container-shell">
         <ManageHotelForm onSave={handleSave} isLoading={isLoading} />
       </div>

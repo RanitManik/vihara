@@ -177,9 +177,11 @@ function buildHotel(index: number, imageUrls: string[]) {
   const secondImage = imageUrls[(index + 1) % imageUrls.length];
   const thirdImage = imageUrls[(index + 2) % imageUrls.length];
 
-  const selectedFacilities = hotelFacilities.filter((_, facilityIndex) => {
-    return (facilityIndex + index) % 2 === 0 || facilityIndex < 3;
-  }).slice(0, 5);
+  const selectedFacilities = hotelFacilities
+    .filter((_, facilityIndex) => {
+      return (facilityIndex + index) % 2 === 0 || facilityIndex < 3;
+    })
+    .slice(0, 5);
 
   return {
     userId: SEED_USER_ID,

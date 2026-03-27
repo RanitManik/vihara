@@ -105,7 +105,7 @@ export function HomesGuestsLove() {
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute left-4 top-4 flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold tracking-[0.16em] uppercase text-[#5b3a28]">
+                <div className="absolute top-4 left-4 flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold tracking-[0.16em] text-[#5b3a28] uppercase">
                   <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
                   {hotel.starRating} stars
                 </div>

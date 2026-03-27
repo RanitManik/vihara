@@ -21,7 +21,7 @@ export function SearchResultsCard({ hotel }: Props) {
           className="object-cover transition-transform duration-500 hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-        <div className="absolute left-4 top-4 flex items-center gap-2 rounded-full bg-white/88 px-3 py-1 text-xs font-semibold tracking-[0.16em] text-[#4c3323] uppercase backdrop-blur-sm">
+        <div className="absolute top-4 left-4 flex items-center gap-2 rounded-full bg-white/88 px-3 py-1 text-xs font-semibold tracking-[0.16em] text-[#4c3323] uppercase backdrop-blur-sm">
           <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
           {hotel.starRating} stars
         </div>
@@ -42,7 +42,7 @@ export function SearchResultsCard({ hotel }: Props) {
           <div className="space-y-3">
             <Link
               href={`/detail/${hotel._id}`}
-              className="font-heading block text-4xl leading-none font-semibold transition-colors hover:text-primary"
+              className="font-heading hover:text-primary block text-4xl leading-none font-semibold transition-colors"
             >
               {hotel.name}
             </Link>
@@ -68,7 +68,7 @@ export function SearchResultsCard({ hotel }: Props) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 border-t border-border/70 pt-5 sm:flex-row sm:items-end sm:justify-between">
+        <div className="border-border/70 flex flex-col gap-4 border-t pt-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="font-heading text-5xl leading-none font-semibold">
               ₹{hotel.pricePerNight}

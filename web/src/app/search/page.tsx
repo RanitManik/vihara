@@ -86,7 +86,10 @@ function SearchGrid() {
       setIsFetching(true);
 
       const currentSearchParams = new URLSearchParams(searchParamsString);
-      const currentPage = parsePositiveInteger(currentSearchParams.get("page"), 1);
+      const currentPage = parsePositiveInteger(
+        currentSearchParams.get("page"),
+        1,
+      );
       const currentSelectedStars = currentSearchParams.getAll("stars");
       const currentSelectedHotelTypes = currentSearchParams.getAll("types");
       const currentSelectedFacilities =
@@ -164,7 +167,7 @@ function SearchGrid() {
   const showResultsSkeleton = isFetching;
 
   return (
-    <main className="px-4 pb-14 pt-6 sm:px-6 lg:px-8">
+    <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
       <div className="container-shell space-y-6">
         <section className="space-y-4">
           <SearchBar />
@@ -196,12 +199,7 @@ function SearchGrid() {
             <HotelTypesFilter
               selectedHotelTypes={selectedHotelTypes}
               onChange={(value, checked) =>
-                toggleValue(
-                  "types",
-                  value,
-                  checked,
-                  selectedHotelTypes,
-                )
+                toggleValue("types", value, checked, selectedHotelTypes)
               }
             />
             <PriceFilter
@@ -220,12 +218,7 @@ function SearchGrid() {
             <FacilitiesFilter
               selectedFacilities={selectedFacilities}
               onChange={(value, checked) =>
-                toggleValue(
-                  "facilities",
-                  value,
-                  checked,
-                  selectedFacilities,
-                )
+                toggleValue("facilities", value, checked, selectedFacilities)
               }
             />
           </div>
@@ -253,12 +246,7 @@ function SearchGrid() {
               <HotelTypesFilter
                 selectedHotelTypes={selectedHotelTypes}
                 onChange={(value, checked) =>
-                  toggleValue(
-                    "types",
-                    value,
-                    checked,
-                    selectedHotelTypes,
-                  )
+                  toggleValue("types", value, checked, selectedHotelTypes)
                 }
               />
               <PriceFilter
@@ -277,12 +265,7 @@ function SearchGrid() {
               <FacilitiesFilter
                 selectedFacilities={selectedFacilities}
                 onChange={(value, checked) =>
-                  toggleValue(
-                    "facilities",
-                    value,
-                    checked,
-                    selectedFacilities,
-                  )
+                  toggleValue("facilities", value, checked, selectedFacilities)
                 }
               />
             </div>

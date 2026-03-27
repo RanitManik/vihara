@@ -56,8 +56,8 @@ export function BrowseByHotelType() {
             Start with the kind of stay you want.
           </h2>
           <p className="text-muted-foreground text-base leading-7">
-            Different moods, different trips. Browse by property type before
-            you even choose the destination.
+            Different moods, different trips. Browse by property type before you
+            even choose the destination.
           </p>
         </div>
         <Link
@@ -136,7 +136,7 @@ export function BrowseByHotelType() {
           disabled={!canScrollPrev}
           onClick={() => api?.scrollPrev()}
           className={cn(
-            "absolute -left-6 top-28 z-10 h-12 w-12 rounded-full bg-white shadow-lg",
+            "absolute top-28 -left-6 z-10 h-12 w-12 rounded-full bg-white shadow-lg",
             !canScrollPrev && "opacity-60",
           )}
         >
@@ -150,7 +150,7 @@ export function BrowseByHotelType() {
           disabled={!canScrollNext}
           onClick={() => api?.scrollNext()}
           className={cn(
-            "absolute -right-6 top-28 z-10 h-12 w-12 rounded-full bg-white shadow-lg",
+            "absolute top-28 -right-6 z-10 h-12 w-12 rounded-full bg-white shadow-lg",
             !canScrollNext && "opacity-60",
           )}
         >
