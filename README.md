@@ -12,50 +12,86 @@
 
 </div>
 
-> A modern, full-stack hotel booking platform built with enterprise-grade monorepo tooling.
-
 Vihara is a comprehensive accommodation booking application that allows users to search, book, and manage hotel reservations. It also includes vendor features, enabling hotel owners to list and manage their properties. The project is structured as an **Nx monorepo**, ensuring seamless code sharing, consistent tooling, and scalable development across the frontend and backend.
 
+<details>
+<summary><strong>Table of Contents</strong> (Click to Expand)</summary>
 
+- [**Problem Statement**](#problem-statement)
+- [**Solution Overview**](#solution-overview)
+- [**Features**](#features)
+  - [Core Functionality](#core-functionality)
+  - [Access Control & Security](#access-control--security)
+  - [Technical Features](#technical-features)
+- [**Tech Stack**](#tech-stack)
+  - [Frontend](#frontend)
+  - [Backend](#backend)
+  - [Database & Infrastructure](#database--infrastructure)
+  - [DevOps & Monitoring](#devops--monitoring)
+- [**Architecture**](#architecture)
+  - [Data Model](#data-model)
+  - [Access Control Matrix](#access-control-matrix)
+- [**Documentation**](#documentation)
+- [**Getting Started**](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [**Development**](#development)
+  - [Available Scripts](#available-scripts)
+  - [Project Structure](#project-structure)
+  - [Code Quality](#code-quality)
+- [**Testing**](#testing)
+- [**Deployment**](#deployment)
+- [**Monitoring & Observability**](#monitoring--observability)
+  - [Metrics](#metrics)
+  - [Health Checks](#health-checks)
+  - [Logging](#logging)
+- [**Security**](#security)
+- [**Performance**](#performance)
+- [**Contributing**](#contributing)
+- [**License**](#license)
+- [**Acknowledgments**](#acknowledgments)
+
+</details>
 
 ## ✨ Features
 
-* **User Authentication:** Secure signup, login, and session management using JWT.
-* **Hotel Search & Filtering:** Advanced search capabilities by destination, guest count, facilities, star rating, and price.
-* **Booking & Payments:** Integrated checkout flow with Stripe for secure payment processing.
-* **Property Management:** Dedicated dashboard for hotel owners to add, edit, and remove their listings.
-* **Image Management:** Cloudinary integration for optimized hotel image uploads and storage.
-* **Robust Testing:** Comprehensive test coverage utilizing Jest for unit tests and Playwright for end-to-end (E2E) testing.
+- **User Authentication:** Secure signup, login, and session management using JWT.
+- **Hotel Search & Filtering:** Advanced search capabilities by destination, guest count, facilities, star rating, and price.
+- **Booking & Payments:** Integrated checkout flow with Stripe for secure payment processing.
+- **Property Management:** Dedicated dashboard for hotel owners to add, edit, and remove their listings.
+- **Image Management:** Cloudinary integration for optimized hotel image uploads and storage.
+- **Robust Testing:** Comprehensive test coverage utilizing Jest for unit tests and Playwright for end-to-end (E2E) testing.
 
 ## 🛠 Tech Stack
 
-| Category | Technologies |
-| :--- | :--- |
-| **Frontend** | Next.js (App Router), React, Tailwind CSS |
-| **Backend** | Node.js, Express.js |
-| **Database & ORM** | MongoDB, Mongoose |
-| **Infrastructure & Services** | Cloudinary (Images), Stripe (Payments) |
-| **Monorepo & Tooling** | Nx, TypeScript, ESLint, Prettier |
-| **Testing** | Jest (Unit), Playwright (E2E) |
+| Category                      | Technologies                              |
+| :---------------------------- | :---------------------------------------- |
+| **Frontend**                  | Next.js (App Router), React, Tailwind CSS |
+| **Backend**                   | Node.js, Express.js                       |
+| **Database & ORM**            | MongoDB, Mongoose                         |
+| **Infrastructure & Services** | Cloudinary (Images), Stripe (Payments)    |
+| **Monorepo & Tooling**        | Nx, TypeScript, ESLint, Prettier          |
+| **Testing**                   | Jest (Unit), Playwright (E2E)             |
 
 ## 📂 Repository Structure
 
 The workspace is managed by Nx, separating concerns while maintaining a unified developer experience:
 
-* `api/` — The REST API server (Express + MongoDB).
-* `web/` — The frontend application (Next.js).
-* `web-e2e/` — Playwright end-to-end test suite for the web application.
+- `api/` — The REST API server (Express + MongoDB).
+- `web/` — The frontend application (Next.js).
+- `web-e2e/` — Playwright end-to-end test suite for the web application.
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
 Ensure you have the following installed and configured:
-* **Node.js:** v20 or higher
-* **Package Manager:** pnpm v9+ (Recommended), npm, or yarn
-* **Database:** A running MongoDB instance (local or MongoDB Atlas)
-* **External Accounts:** * [Cloudinary](https://cloudinary.com/) (for image uploads)
-    * [Stripe](https://stripe.com/) (for payment processing)
+
+- **Node.js:** v20 or higher
+- **Package Manager:** pnpm v9+ (Recommended), npm, or yarn
+- **Database:** A running MongoDB instance (local or MongoDB Atlas)
+- **External Accounts:** \* [Cloudinary](https://cloudinary.com/) (for image uploads)
+  - [Stripe](https://stripe.com/) (for payment processing)
 
 ### 1. Installation
 
@@ -67,7 +103,7 @@ pnpm install
 
 ### 2. Environment Configuration
 
-Create a `.env` file in the root of the repository. You can copy the variables from `.env.example` if available. 
+Create a `.env` file in the root of the repository. You can copy the variables from `.env.example` if available.
 
 ```env
 # Application
@@ -103,8 +139,9 @@ Start both the API and Web development servers concurrently:
 ```bash
 pnpm dev
 ```
-* **Frontend:** `http://localhost:3000`
-* **Backend API:** `http://localhost:4000`
+
+- **Frontend:** `http://localhost:3000`
+- **Backend API:** `http://localhost:4000`
 
 ### 4. Database Seeding
 
@@ -118,18 +155,18 @@ pnpm seed:hotels
 
 Use the following commands from the repository root to manage the monorepo:
 
-| Command | Description |
-| :--- | :--- |
-| `pnpm dev` | Run all development servers concurrently. |
-| `pnpm dev:api` | Run only the API server. |
-| `pnpm dev:web` | Run only the Next.js web application. |
-| `pnpm build` | Build all projects for production. |
-| `pnpm build:api` | Build the API. |
-| `pnpm build:web` | Build the web application. |
-| `pnpm test` | Run unit tests across all projects. |
-| `pnpm e2e` | Run end-to-end tests for all projects. |
-| `pnpm lint` | Run ESLint across the workspace. |
-| `pnpm format` | Format all code using Prettier. |
+| Command          | Description                                     |
+| :--------------- | :---------------------------------------------- |
+| `pnpm dev`       | Run all development servers concurrently.       |
+| `pnpm dev:api`   | Run only the API server.                        |
+| `pnpm dev:web`   | Run only the Next.js web application.           |
+| `pnpm build`     | Build all projects for production.              |
+| `pnpm build:api` | Build the API.                                  |
+| `pnpm build:web` | Build the web application.                      |
+| `pnpm test`      | Run unit tests across all projects.             |
+| `pnpm e2e`       | Run end-to-end tests for all projects.          |
+| `pnpm lint`      | Run ESLint across the workspace.                |
+| `pnpm format`    | Format all code using Prettier.                 |
 | `pnpm typecheck` | Run TypeScript compiler checks on all projects. |
 
 ## 🔌 API Reference
@@ -137,55 +174,63 @@ Use the following commands from the repository root to manage the monorepo:
 **Base URL:** `/api`
 
 ### Authentication
-* `POST /auth/login` - Authenticate user and set HTTP-only cookie
-* `GET /auth/validate-token` - Validate current session (Requires Auth)
-* `POST /auth/logout` - Clear authentication cookie
+
+- `POST /auth/login` - Authenticate user and set HTTP-only cookie
+- `GET /auth/validate-token` - Validate current session (Requires Auth)
+- `POST /auth/logout` - Clear authentication cookie
 
 ### Users
-* `POST /users` - Register a new user
-* `GET /users` - List users
-* `GET /users/:userId` - Get specific user details
-* `PUT /users/:userId` - Update user details
-* `DELETE /users/:userId` - Remove a user
+
+- `POST /users` - Register a new user
+- `GET /users` - List users
+- `GET /users/:userId` - Get specific user details
+- `PUT /users/:userId` - Update user details
+- `DELETE /users/:userId` - Remove a user
 
 ### Hotels (Public)
-* `GET /hotels` - Fetch all hotels
-* `GET /hotels/search` - Search hotels (Accepts queries: `destination`, `adultCount`, `childCount`, `facilities`, `types`, `stars`, `maxPrice`, `sortOption`, `pageNumber`)
-* `GET /hotels/:hotelId` - Get details for a specific hotel
+
+- `GET /hotels` - Fetch all hotels
+- `GET /hotels/search` - Search hotels (Accepts queries: `destination`, `adultCount`, `childCount`, `facilities`, `types`, `stars`, `maxPrice`, `sortOption`, `pageNumber`)
+- `GET /hotels/:hotelId` - Get details for a specific hotel
 
 ### Bookings
-* `POST /hotels/:hotelId/bookings/payment-intent` - Initialize Stripe payment (Requires Auth)
-* `POST /hotels/:hotelId/bookings` - Confirm and create booking (Requires Auth)
-* `GET /my-bookings` - Fetch current user's booked trips (Requires Auth)
+
+- `POST /hotels/:hotelId/bookings/payment-intent` - Initialize Stripe payment (Requires Auth)
+- `POST /hotels/:hotelId/bookings` - Confirm and create booking (Requires Auth)
+- `GET /my-bookings` - Fetch current user's booked trips (Requires Auth)
 
 ### Vendor Operations (My Hotels)
-* `GET /my-hotels` - List properties owned by the current user (Requires Auth)
-* `POST /my-hotels` - Create a new hotel listing (Requires Auth)
-* `PUT /my-hotels/:hotelId` - Update an existing listing (Requires Auth)
-* `DELETE /my-hotels/:hotelId` - Delete a listing (Requires Auth)
+
+- `GET /my-hotels` - List properties owned by the current user (Requires Auth)
+- `POST /my-hotels` - Create a new hotel listing (Requires Auth)
+- `PUT /my-hotels/:hotelId` - Update an existing listing (Requires Auth)
+- `DELETE /my-hotels/:hotelId` - Delete a listing (Requires Auth)
 
 ## 🗄 Data Models
 
 **User**
-* `firstName`, `lastName`, `email` (Unique, Indexed), `password` (Hashed)
+
+- `firstName`, `lastName`, `email` (Unique, Indexed), `password` (Hashed)
 
 **Hotel**
-* **General:** `name`, `city`, `country`, `address`, `description`, `type`
-* **Details:** `adultCount`, `childCount`, `facilities` [Array], `pricePerNight`, `starRating`
-* **Media & Meta:** `imageUrls` [Array], `lastUpdated`
-* **Relations:** `userId` (Owner reference), `bookings` [Array]
+
+- **General:** `name`, `city`, `country`, `address`, `description`, `type`
+- **Details:** `adultCount`, `childCount`, `facilities` [Array], `pricePerNight`, `starRating`
+- **Media & Meta:** `imageUrls` [Array], `lastUpdated`
+- **Relations:** `userId` (Owner reference), `bookings` [Array]
 
 **Booking**
-* **Guest Info:** `firstName`, `lastName`, `email`, `adultCount`, `childCount`
-* **Reservation:** `checkIn`, `checkOut`, `totalCost`
-* **Relations:** `userId` (Guest reference)
+
+- **Guest Info:** `firstName`, `lastName`, `email`, `adultCount`, `childCount`
+- **Reservation:** `checkIn`, `checkOut`, `totalCost`
+- **Relations:** `userId` (Guest reference)
 
 ## 🧪 Testing
 
 The repository maintains strict quality control through automated testing:
 
-* **Unit Tests:** Run `pnpm test` to execute Jest suites.
-* **E2E Tests:** Run `pnpm e2e` to execute the Playwright suite located in `web-e2e/`. Ensure your local servers are running or your `MONGODB_URI_E2E` is properly configured before running E2E workflows.
+- **Unit Tests:** Run `pnpm test` to execute Jest suites.
+- **E2E Tests:** Run `pnpm e2e` to execute the Playwright suite located in `web-e2e/`. Ensure your local servers are running or your `MONGODB_URI_E2E` is properly configured before running E2E workflows.
 
 ## ☁️ Deployment
 
@@ -196,9 +241,9 @@ The repository maintains strict quality control through automated testing:
 
 ## 🚑 Troubleshooting
 
-* **Database Connection Refused:** Verify that your MongoDB service is running and `MONGODB_URI` contains the correct credentials and database name.
-* **Image Upload Failures:** Check that your Cloudinary `CLOUD_NAME`, `API_KEY`, and `API_SECRET` are strictly accurate. Images will fail to seed or upload if these are invalid.
-* **Payment Intent Errors:** Ensure the `STRIPE_SECRET_KEY` is a valid test or live key. Verify that the currency logic in your backend matches your Stripe account's default capabilities.
+- **Database Connection Refused:** Verify that your MongoDB service is running and `MONGODB_URI` contains the correct credentials and database name.
+- **Image Upload Failures:** Check that your Cloudinary `CLOUD_NAME`, `API_KEY`, and `API_SECRET` are strictly accurate. Images will fail to seed or upload if these are invalid.
+- **Payment Intent Errors:** Ensure the `STRIPE_SECRET_KEY` is a valid test or live key. Verify that the currency logic in your backend matches your Stripe account's default capabilities.
 
 ## 🤝 Contribution
 
@@ -213,7 +258,8 @@ Contributions are welcome! To contribute:
 
 ## 📄 License
 
-This project is licensed under the MIT License. 
+This project is licensed under the MIT License.
 
 ---
+
 **Author:** Ranit Kumar Manik
