@@ -84,7 +84,7 @@
     "jest": "^30.3.0",
     "jest-environment-node": "^30.3.0",
     "jest-util": "^30.3.0",
-    "nx": "22.6.2",
+    "nx": "22.6.3",
     "prettier": "~3.6.2",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwindcss": "4.1.18",
