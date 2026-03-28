@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import User from "../models/user.js";
 import { check, validationResult } from "express-validator";
+import jwt from "jsonwebtoken";
 import verifyToken from "../middleware/auth";
 
 const router = express.Router();
@@ -60,9 +61,22 @@ router.post(
       user = new User(req.body);
       await user.save();
 
-      res.status(201).json({
-        message: "User created successfully. Please log in.",
+      const token = jwt.sign(
+        { userId: user._id.toString() },
+        process.env.JWT_SECRET_KEY as string,
+        { expiresIn: "1d" },
+      );
+
+      res.cookie("auth_token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        maxAge: 86400000,
       });
+
+      res
+        .status(201)
+        .json({ userId: user._id, message: "User created and logged in." });
     } catch (error) {
       console.error(error);
       res.status(500).send({ message: "Something went wrong" });
