@@ -80,41 +80,32 @@ export function SearchBar({ className }: SearchBarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [destination, setDestination] = useState("");
-  const [date, setDate] = useState<DateRange | undefined>();
-  const [adultCount, setAdultCount] = useState(2);
-  const [childCount, setChildCount] = useState(0);
-  const [roomCount, setRoomCount] = useState(1);
 
-  useEffect(() => {
+  const [destination, setDestination] = useState(
+    () => searchParams.get("destination") ?? "",
+  );
+  const [date, setDate] = useState<DateRange | undefined>(() => {
     const checkIn = parseDate(searchParams.get("checkIn"));
     const checkOut = parseDate(searchParams.get("checkOut"));
-    const nextAdultCount = Number.parseInt(
-      searchParams.get("adultCount") ?? "2",
-      10,
-    );
-    const nextChildCount = Number.parseInt(
-      searchParams.get("childCount") ?? "0",
-      10,
-    );
-    const nextRoomCount = Number.parseInt(
-      searchParams.get("roomCount") ?? "1",
-      10,
-    );
-
-    setDestination(searchParams.get("destination") ?? "");
-    setDate(
-      checkIn
-        ? {
-            from: checkIn,
-            to: checkOut,
-          }
-        : undefined,
-    );
-    setAdultCount(nextAdultCount > 0 ? nextAdultCount : 2);
-    setChildCount(nextChildCount >= 0 ? nextChildCount : 0);
-    setRoomCount(nextRoomCount > 0 ? nextRoomCount : 1);
-  }, [searchParams]);
+    return checkIn
+      ? {
+          from: checkIn,
+          to: checkOut,
+        }
+      : undefined;
+  });
+  const [adultCount, setAdultCount] = useState(() => {
+    const next = Number.parseInt(searchParams.get("adultCount") ?? "2", 10);
+    return next > 0 ? next : 2;
+  });
+  const [childCount, setChildCount] = useState(() => {
+    const next = Number.parseInt(searchParams.get("childCount") ?? "0", 10);
+    return next >= 0 ? next : 0;
+  });
+  const [roomCount, setRoomCount] = useState(() => {
+    const next = Number.parseInt(searchParams.get("roomCount") ?? "1", 10);
+    return next > 0 ? next : 1;
+  });
 
   const handleSearch = () => {
     const params = new URLSearchParams(searchParams.toString());

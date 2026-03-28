@@ -38,6 +38,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
+    // validateToken performs async auth status fetching implicitly updating React state.
+    // This is intentionally handled here so that user session is initialized on mount.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     validateToken();
   }, []);
 
