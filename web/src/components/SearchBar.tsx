@@ -260,7 +260,7 @@ export function SearchBar({ className }: SearchBarProps) {
         <Button
           onClick={handleSearch}
           size="lg"
-          className="h-18 w-full rounded-4xl px-4 text-base font-semibold shadow-[0_18px_40px_-24px_rgba(130,68,35,0.85)]"
+          className="h-18 w-full rounded-4xl px-4 text-base font-semibold"
         >
           <Search className="h-4 w-4" />
           Search stays
