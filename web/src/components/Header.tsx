@@ -150,7 +150,7 @@ export function Header() {
                 </Button>
               ) : (
                 <Button
-                size="lg"
+                  size="lg"
                   variant="destructive"
                   className="w-full rounded-full"
                   onClick={async () => {

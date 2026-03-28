@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { format } from "date-fns";
 import {
   Calendar as CalendarIcon,
@@ -146,7 +146,7 @@ export function SearchBar({ className }: SearchBarProps) {
       )}
     >
       <div className="grid gap-3 lg:grid-cols-[1.25fr_1fr_1fr_190px]">
-        <div className="bg-background/95 border-border/60 flex h-18 items-center gap-3 rounded-[1.25rem] border px-4">
+        <div className="bg-background/95 border-border/60 flex h-18 items-center gap-3 rounded-4xl border px-4">
           <div className="bg-primary/12 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
             <MapPin className="h-4.5 w-4.5" />
           </div>
@@ -168,7 +168,7 @@ export function SearchBar({ className }: SearchBarProps) {
             <button
               type="button"
               className={cn(
-                "bg-background/95 border-border/60 flex h-18 items-center gap-3 rounded-[1.25rem] border px-4 text-left",
+                "bg-background/95 border-border/60 flex h-18 items-center gap-3 rounded-4xl border px-4 text-left",
                 !date && "text-muted-foreground",
               )}
             >
@@ -213,7 +213,7 @@ export function SearchBar({ className }: SearchBarProps) {
           <PopoverTrigger asChild>
             <button
               type="button"
-              className="bg-background/95 border-border/60 flex h-18 items-center gap-3 rounded-[1.25rem] border px-4 text-left"
+              className="bg-background/95 border-border/60 flex h-18 items-center gap-3 rounded-4xl border px-4 text-left"
             >
               <div className="bg-primary/12 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
                 <Users className="h-4.5 w-4.5" />
@@ -232,7 +232,7 @@ export function SearchBar({ className }: SearchBarProps) {
           </PopoverTrigger>
           <PopoverContent
             align="start"
-            className="w-[360px] rounded-[1.45rem] border border-[#e8e0d7] p-5 shadow-[0_30px_80px_-30px_rgba(60,40,20,0.35)]"
+            className="w-90 rounded-[1.45rem] border border-[#e8e0d7] p-5 shadow-[0_30px_80px_-30px_rgba(60,40,20,0.35)]"
           >
             <div className="space-y-3">
               <GuestRow
@@ -260,7 +260,7 @@ export function SearchBar({ className }: SearchBarProps) {
         <Button
           onClick={handleSearch}
           size="lg"
-          className="h-18 w-full rounded-[1.25rem] px-4 text-base font-semibold shadow-[0_18px_40px_-24px_rgba(130,68,35,0.85)]"
+          className="h-18 w-full rounded-4xl px-4 text-base font-semibold shadow-[0_18px_40px_-24px_rgba(130,68,35,0.85)]"
         >
           <Search className="h-4 w-4" />
           Search stays

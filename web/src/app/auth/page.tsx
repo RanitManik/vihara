@@ -242,12 +242,12 @@ export default function AuthPage() {
                               <FormLabel className="text-sm font-semibold">
                                 Password
                               </FormLabel>
-                              <Link
+                              {/* <Link
                                 href="#"
                                 className="text-primary text-xs font-semibold hover:underline"
                               >
                                 Forgot password?
-                              </Link>
+                              </Link> */}
                             </div>
                             <FormControl>
                               <div className="relative">
