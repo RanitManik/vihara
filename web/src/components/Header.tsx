@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Compass, LogOut, Menu, Sparkles } from "lucide-react";
+import { Compass, LogOut, Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 
@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -84,10 +85,6 @@ export function Header() {
         <div className="hidden items-center gap-3 lg:flex">
           {!isLoggedIn ? (
             <>
-              <div className="text-muted-foreground flex items-center gap-2 rounded-full border border-white/40 bg-white/50 px-3 py-2 text-sm">
-                <Sparkles className="h-4 w-4 text-amber-600" />
-                Handpicked boutique stays
-              </div>
               <Button asChild className="rounded-full px-6">
                 <Link href="/auth">Start booking</Link>
               </Button>
@@ -124,8 +121,8 @@ export function Header() {
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[88vw] max-w-sm">
-            <SheetHeader>
+          <SheetContent side="right" className="px-4">
+            <SheetHeader className="px-0">
               <SheetTitle className="font-heading text-3xl">Vihara</SheetTitle>
             </SheetHeader>
             <div className="mt-8 space-y-3">
@@ -146,14 +143,15 @@ export function Header() {
                 </Link>
               ))}
             </div>
-            <div className="mt-8">
+            <SheetFooter className="px-0">
               {!isLoggedIn ? (
                 <Button asChild className="w-full rounded-full">
                   <Link href="/auth">Create account</Link>
                 </Button>
               ) : (
                 <Button
-                  variant="outline"
+                size="lg"
+                  variant="destructive"
                   className="w-full rounded-full"
                   onClick={async () => {
                     try {
@@ -169,7 +167,7 @@ export function Header() {
                   Sign out
                 </Button>
               )}
-            </div>
+            </SheetFooter>
           </SheetContent>
         </Sheet>
       </div>
