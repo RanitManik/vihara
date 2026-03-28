@@ -100,19 +100,19 @@ export default function MyBookings() {
               key={hotel._id}
               className="surface-panel grid overflow-hidden p-0 lg:grid-cols-[340px_1fr]"
             >
-              <div className="relative min-h-[280px] overflow-hidden">
+              <div className="relative min-h-70 overflow-hidden">
                 <Image
                   src={hotel.imageUrls[0] || "/hotels/hotel-image-01.jpg"}
                   alt={hotel.name}
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/40 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-                  <p className="text-sm tracking-[0.18em] text-white/70 uppercase">
+                  <p className="text-sm tracking-[0.18em] text-white/80 uppercase drop-shadow-[0_1px_8px_rgba(0,0,0,0.8)]">
                     Upcoming reservation
                   </p>
-                  <h2 className="font-heading mt-3 text-4xl leading-none font-semibold">
+                  <h2 className="font-heading mt-3 text-4xl leading-none font-semibold drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
                     {hotel.name}
                   </h2>
                   <p className="mt-2 flex items-center gap-2 text-sm text-white/75">
