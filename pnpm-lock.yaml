@@ -54,8 +54,8 @@ importers:
         specifier: ^19.2.4
         version: 19.2.4(react@19.2.4)
       stripe:
-        specifier: ^20.1.0
-        version: 20.1.0(@types/node@20.19.9)
+        specifier: ^21.0.1
+        version: 21.0.1(@types/node@20.19.9)
     devDependencies:
       '@eslint/js':
         specifier: ^9.8.0
@@ -9623,11 +9623,11 @@ packages:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
 
-  stripe@20.1.0:
-    resolution: {integrity: sha512-o1VNRuMkY76ZCq92U3EH3/XHm/WHp7AerpzDs4Zyo8uE5mFL4QUcv/2SudWsSnhBSp4moO2+ZoGCZ7mT8crPmQ==}
-    engines: {node: '>=16'}
+  stripe@21.0.1:
+    resolution: {integrity: sha512-ocv0j7dWttswDWV2XL/kb6+yiLpDXNXL3RQAOB5OB2kr49z0cEatdQc12+zP/j5nrXk6rAsT4N3y/NUvBbK7Pw==}
+    engines: {node: '>=18'}
     peerDependencies:
-      '@types/node': '>=16'
+      '@types/node': '>=18'
     peerDependenciesMeta:
       '@types/node':
         optional: true
@@ -21935,9 +21935,7 @@ snapshots:
 
   strip-json-comments@3.1.1: {}
 
-  stripe@20.1.0(@types/node@20.19.9):
-    dependencies:
-      qs: 6.14.0
+  stripe@21.0.1(@types/node@20.19.9):
     optionalDependencies:
       '@types/node': 20.19.9
 
