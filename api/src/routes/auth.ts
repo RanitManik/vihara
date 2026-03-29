@@ -1,11 +1,46 @@
 import express, { Request, Response } from "express";
 import { check, validationResult } from "express-validator";
-import User from "../models/user";
+import User, { UserType } from "../models/user";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import verifyToken from "../middleware/auth";
+import passport from "passport";
 
 const router = express.Router();
+
+// /api/auth/google
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] }),
+);
+
+// /api/auth/google/callback
+router.get(
+  "/google/callback",
+  passport.authenticate("google", {
+    session: false,
+    failureRedirect: `${process.env.FRONTEND_URL}/login`,
+  }),
+  (req: Request, res: Response) => {
+    const user = req.user as UserType;
+    const token = jwt.sign(
+      { userId: user._id.toString() },
+      process.env.JWT_SECRET_KEY as string,
+      {
+        expiresIn: "1d",
+      },
+    );
+
+    res.cookie("auth_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 86400000,
+    });
+
+    res.redirect(`${process.env.FRONTEND_URL}`);
+  },
+);
 
 // /api/auth/login
 router.post(
@@ -30,7 +65,7 @@ router.post(
     try {
       const user = await User.findOne({ email });
 
-      if (!user) {
+      if (!user || !user.password) {
         res.status(400).json({ message: "Invalid credentials" });
         return;
       }

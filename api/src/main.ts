@@ -10,6 +10,7 @@ import bookingRoutes from "./routes/my-bookings";
 import cookieParser from "cookie-parser";
 import { v2 as cloudinary } from "cloudinary";
 import { logServerStartup } from "./utils/startup-utils";
+import passport from "./config/passport";
 
 const startTime = process.hrtime.bigint();
 const expressPackage = require("express/package.json");
@@ -37,6 +38,7 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(passport.initialize());
 app.use(
   cors({
     origin: process.env.FRONTEND_URL,
