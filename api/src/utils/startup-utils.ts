@@ -4,7 +4,8 @@ export function getNetworkIP(): string {
   const interfaces = os.networkInterfaces();
   let networkIP = "";
   for (const iface of Object.values(interfaces)) {
-    for (const alias of iface!) {
+    if (!iface) continue;
+    for (const alias of iface) {
       if (alias.family === "IPv4" && !alias.internal) {
         networkIP = alias.address;
         break;

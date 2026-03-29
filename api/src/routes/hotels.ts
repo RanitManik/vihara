@@ -10,8 +10,20 @@ const router = express.Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 // /api/hotels
-const constructSearchQuery = (queryParams: any) => {
-  const constructedQuery: any = {};
+type HotelSearchQuery = {
+  destination?: string;
+  adultCount?: string;
+  childCount?: string;
+  facilities?: string | string[];
+  types?: string | string[];
+  stars?: string | string[];
+  maxPrice?: string;
+  sortOption?: "starRating" | "pricePerNightAsc" | "pricePerNightDesc";
+  pageNumber?: string;
+};
+
+const constructSearchQuery = (queryParams: HotelSearchQuery) => {
+  const constructedQuery: Record<string, unknown> = {};
 
   if (queryParams.destination) {
     // Escape special regex characters to prevent crashes
@@ -87,10 +99,12 @@ const constructSearchQuery = (queryParams: any) => {
 // /api/hotels/search
 router.get("/search", async (req: Request, res: Response) => {
   try {
-    const query = constructSearchQuery(req.query);
+    const query = constructSearchQuery(req.query as HotelSearchQuery);
 
-    let sortOptions = {};
-    switch (req.query.sortOption) {
+    let sortOptions: Record<string, 1 | -1> = {};
+    const searchQuery = req.query as HotelSearchQuery;
+
+    switch (searchQuery.sortOption) {
       case "starRating":
         sortOptions = { starRating: -1 };
         break;

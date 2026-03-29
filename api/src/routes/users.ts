@@ -4,6 +4,8 @@ import { check, validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 import verifyToken from "../middleware/auth";
 
+type AuthRequest = Request & { userId?: string };
+
 const router = express.Router();
 
 // Middleware to validate the request
@@ -22,7 +24,7 @@ router.get(
   verifyToken,
   async (req: Request, res: Response): Promise<void> => {
     // Assuming user is authenticated and user ID is available in req.userId
-    const userId = (req as any).userId; // Type assertion for custom property
+    const userId = (req as AuthRequest).userId;
 
     try {
       const user = await User.findById(userId).select("-password");
