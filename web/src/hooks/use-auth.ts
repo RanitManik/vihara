@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api-client";
+import { apiClient, clearCsrfToken } from "@/lib/api-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { UserType } from "@/shared-types";
@@ -39,6 +39,7 @@ export const useRegister = () => {
       apiClient.post("/api/users/register", values),
     onSuccess: () => {
       toast.success("Registration Successful!");
+      clearCsrfToken();
       queryClient.invalidateQueries({ queryKey: ["validate-token"] });
       router.push("/");
     },
@@ -62,6 +63,7 @@ export const useLogin = () => {
       apiClient.post("/api/auth/login", values),
     onSuccess: () => {
       toast.success("Logged in successfully!");
+      clearCsrfToken();
       queryClient.invalidateQueries({ queryKey: ["validate-token"] });
       router.push("/");
     },
@@ -79,6 +81,7 @@ export const useLogout = () => {
     mutationFn: () => apiClient.post("/api/auth/logout", {}),
     onSuccess: async () => {
       toast.success("Signed out successfully!");
+      clearCsrfToken();
       // Explicitly set to null AND invalidate to ensure all subscribers update
       queryClient.setQueryData(["validate-token"], null);
       await queryClient.invalidateQueries({ queryKey: ["validate-token"] });

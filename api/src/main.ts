@@ -6,6 +6,7 @@ import morgan from "morgan";
 import hpp from "hpp";
 import mongoSanitize from "express-mongo-sanitize";
 import cookieParser from "cookie-parser";
+import csurf from "csurf";
 import { v2 as cloudinary } from "cloudinary";
 import passport from "./config/passport";
 import { env } from "./config/env";
@@ -69,6 +70,27 @@ app.use(rateLimiter);
 app.use(cookieParser());
 app.use(express.json({ limit: "10kb" })); // Body limit for security
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+
+const csrfProtection = csurf({
+  cookie: {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: env.NODE_ENV === "production",
+  },
+});
+
+// CSRF Protection
+app.use((req, res, next) => {
+  if (req.path === "/health") {
+    return next();
+  }
+  return csrfProtection(req, res, next);
+});
+
+// Endpoint to retrieve CSRF token
+app.get("/api/csrf-token", (req, res) => {
+  res.status(200).json({ csrfToken: req.csrfToken() });
+});
 
 // Passport
 app.use(passport.initialize());
