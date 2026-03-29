@@ -3,11 +3,17 @@ import upload from "../config/multer";
 import cloudinary from "cloudinary";
 import Hotel from "../models/hotel";
 import verifyToken from "../middleware/auth";
+import rateLimit from "../middleware/rateLimit";
 import { body } from "express-validator";
 import { HotelType } from "../shared/types";
-import type { File as MulterFile } from "multer";
+
+type MulterFile = Express.Multer.File;
+type MulterRequest = Request & { files?: MulterFile[]; userId?: string };
 
 const router = express.Router();
+
+router.use(rateLimit);
+router.use(verifyToken);
 
 const hotelValidation = [
   body("name").notEmpty().withMessage("Name is required"),
@@ -37,7 +43,6 @@ const hotelValidation = [
 // api/my-hotels
 router.post(
   "/",
-  verifyToken,
   hotelValidation,
   upload.array("imageFiles", 6),
   async (req: Request, res: Response) => {
@@ -48,7 +53,8 @@ router.post(
       /* Upload the images to Cloudinary */
 
       // Retrieve the uploaded image files from the request
-      const imageFiles = ((req as any).files as MulterFile[]) || [];
+      const reqWithFiles = req as MulterRequest;
+      const imageFiles = reqWithFiles.files ?? [];
 
       const imageUrls = await uploadImagesToCloudinary(imageFiles);
 
@@ -74,9 +80,10 @@ router.post(
   },
 );
 
-router.get("/", verifyToken, async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
+  const authReq = req as MulterRequest;
   try {
-    const hotels = await Hotel.find({ userId: req.userId });
+    const hotels = await Hotel.find({ userId: authReq.userId });
     res.json(hotels);
   } catch (error) {
     console.error(error);
@@ -84,7 +91,7 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
   }
 });
 
-router.get("/:hotelId", verifyToken, async (req: Request, res: Response) => {
+router.get("/:hotelId", async (req: Request, res: Response) => {
   try {
     const hotel = await Hotel.findById(req.params.hotelId);
     if (!hotel) {
@@ -100,14 +107,14 @@ router.get("/:hotelId", verifyToken, async (req: Request, res: Response) => {
 
 router.put(
   "/:hotelId",
-  verifyToken,
   upload.array("imageFiles"),
   async (req: Request, res: Response) => {
     try {
       const updatedHotel: HotelType = req.body;
 
+      const authReq = req as MulterRequest;
       const hotel = await Hotel.findOneAndUpdate(
-        { _id: req.params.hotelId, userId: req.userId },
+        { _id: req.params.hotelId, userId: authReq.userId },
         updatedHotel,
         { new: true },
       );
@@ -120,7 +127,8 @@ router.put(
       /* Upload the images to Cloudinary */
 
       // Retrieve the uploaded image files from the request
-      const imageFiles = ((req as any).files as MulterFile[]) || [];
+      const reqWithFiles = req as MulterRequest;
+      const imageFiles = reqWithFiles.files ?? [];
 
       const updatedImageUrls = await uploadImagesToCloudinary(imageFiles);
 

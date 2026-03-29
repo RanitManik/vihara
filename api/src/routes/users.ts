@@ -3,6 +3,9 @@ import User from "../models/user.js";
 import { check, validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 import verifyToken from "../middleware/auth";
+import rateLimit from "../middleware/rateLimit";
+
+type AuthRequest = Request & { userId?: string };
 
 const router = express.Router();
 
@@ -20,9 +23,10 @@ const validateRegister = [
 router.get(
   "/me",
   verifyToken,
+  rateLimit,
   async (req: Request, res: Response): Promise<void> => {
     // Assuming user is authenticated and user ID is available in req.userId
-    const userId = (req as any).userId; // Type assertion for custom property
+    const userId = (req as AuthRequest).userId;
 
     try {
       const user = await User.findById(userId).select("-password");
