@@ -14,14 +14,14 @@ export function StarRatingFilter({ selectedStars, onChange }: Props) {
       <h4 className="font-heading text-xl leading-none font-semibold">
         Property rating
       </h4>
-      <div className="space-y-2">
+      <div className="grid grid-cols-1 gap-2">
         {["5", "4", "3", "2", "1"].map((star) => {
           const checked = selectedStars.includes(star);
 
           return (
             <Label
               key={star}
-              className="border-border/70 bg-background/70 flex cursor-pointer items-center justify-between rounded-xl border px-3 py-2.5"
+              className="border-border/70 bg-background/70 flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl border px-3 py-2.5 whitespace-nowrap"
             >
               <div className="flex items-center gap-3">
                 <Checkbox

@@ -83,7 +83,7 @@ export function Hero() {
             <div className="pt-2">
               <Suspense
                 fallback={
-                  <div className="surface-panel mx-auto h-[88px] w-full rounded-[1.8rem] p-3" />
+                  <div className="surface-panel mx-auto h-22 w-full rounded-[1.8rem] p-3" />
                 }
               >
                 <SearchBar />

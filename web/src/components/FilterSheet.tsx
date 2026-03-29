@@ -31,7 +31,7 @@ export function FilterSheet({ children }: FilterSheetProps) {
       </SheetTrigger>
       <SheetContent
         side="left"
-        className="border-border/60 w-[92vw] overflow-y-auto border-r bg-[linear-gradient(180deg,rgba(255,250,243,0.98),rgba(250,244,232,0.98))] sm:w-[430px]"
+        className="border-border/60 w-[92vw] overflow-y-auto border-r bg-[linear-gradient(180deg,rgba(255,250,243,0.98),rgba(250,244,232,0.98))] sm:w-107.5"
       >
         <SheetHeader className="text-left">
           <SheetTitle className="font-heading text-4xl leading-none">
@@ -42,7 +42,7 @@ export function FilterSheet({ children }: FilterSheetProps) {
             amenities.
           </SheetDescription>
         </SheetHeader>
-        <div className="mt-8">{children}</div>
+        <div className="p-4">{children}</div>
       </SheetContent>
     </Sheet>
   );
