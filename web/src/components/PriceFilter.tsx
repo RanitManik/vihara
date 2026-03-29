@@ -8,6 +8,7 @@ type Props = {
 
 const MIN_PRICE = 2500;
 const MAX_PRICE = 30000;
+const STEP = 500;
 export function PriceFilter({ selectedPrice, onChange }: Props) {
   return (
     <PriceFilterInternal

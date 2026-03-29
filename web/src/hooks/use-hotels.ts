@@ -2,7 +2,11 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
-import { HotelSearchResponse, HotelType } from "@/shared-types";
+import {
+  HotelSearchResponse,
+  HotelType,
+  PaymentIntentResponse,
+} from "@/shared-types";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -72,6 +76,7 @@ export const useUpdateMyHotel = (hotelId: string) => {
     },
   });
 };
+
 type BookingData = {
   paymentIntentId: string;
   checkIn: string;
@@ -100,7 +105,7 @@ export const useCreateBooking = (hotelId: string) => {
 export const useCreatePaymentIntent = (hotelId: string) => {
   return useMutation({
     mutationFn: (numberOfNights: string) =>
-      apiClient.post<{ clientSecret: string }>(
+      apiClient.post<PaymentIntentResponse>(
         `/api/hotels/${hotelId}/bookings/payment-intent`,
         { numberOfNights },
       ),
