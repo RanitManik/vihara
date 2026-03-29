@@ -42,52 +42,68 @@ function SearchGrid() {
   useEffect(() => {
     if (!pendingParams) return;
 
-    const timer = setTimeout(() => {
+    // If pending matches current searchParams, we can clear the pending state.
+    // We use a small timeout to avoid the synchronous setState warning while
+    // still providing the same functional behavior of resetting the pending state.
+    if (pendingParams.toString() === searchParams.toString()) {
+      const resetTimer = setTimeout(() => {
+        setPendingParams(null);
+      }, 0);
+      return () => clearTimeout(resetTimer);
+    }
+
+    const pushTimer = setTimeout(() => {
       router.replace(`/search?${pendingParams.toString()}`, {
         scroll: false,
       });
-      // Clear pending params after updating URL
-      setPendingParams(null);
     }, 400);
 
-    return () => clearTimeout(timer);
-  }, [pendingParams, router]);
+    return () => clearTimeout(pushTimer);
+  }, [pendingParams, router, searchParams]);
 
   // Use either pendingParams (if user is actively filtering) or searchParams
   const activeParams = pendingParams || searchParams;
 
+  // Create a stable string representation for useMemo
+  const activeParamsString = activeParams.toString();
+
   // Create the API search params
   const apiSearchParams = useMemo(() => {
     const params = new URLSearchParams();
-    params.append("destination", activeParams.get("destination") || "");
-    params.append("checkIn", activeParams.get("checkIn") || "");
-    params.append("checkOut", activeParams.get("checkOut") || "");
-    params.append("adultCount", activeParams.get("adultCount") || "");
-    params.append("childCount", activeParams.get("childCount") || "");
-    params.append("pageNumber", activeParams.get("page") || "1");
+    const currentParams = new URLSearchParams(activeParamsString);
 
-    activeParams
+    params.append("destination", currentParams.get("destination") || "");
+    params.append("checkIn", currentParams.get("checkIn") || "");
+    params.append("checkOut", currentParams.get("checkOut") || "");
+    params.append("adultCount", currentParams.get("adultCount") || "");
+    params.append("childCount", currentParams.get("childCount") || "");
+    params.append("pageNumber", currentParams.get("page") || "1");
+
+    currentParams
       .getAll("stars")
       .forEach((star) => params.append("stars", star));
-    activeParams
+    currentParams
       .getAll("types")
       .forEach((type) => params.append("types", type));
-    activeParams
+    currentParams
       .getAll("facilities")
       .forEach((facility) => params.append("facilities", facility));
 
-    const maxPrice = activeParams.get("maxPrice");
+    const maxPrice = currentParams.get("maxPrice");
     if (maxPrice) params.append("maxPrice", maxPrice);
 
-    const sortOptionParam = activeParams.get("sortOption");
+    const sortOptionParam = currentParams.get("sortOption");
     if (sortOptionParam && sortOptionParam !== "default") {
       params.append("sortOption", sortOptionParam);
     }
     return params;
-  }, [activeParams]);
+  }, [activeParamsString]);
 
-  const { data: hotelData, isLoading: isFetching } =
-    useSearchHotels(apiSearchParams);
+  const {
+    data: hotelData,
+    isLoading,
+    isFetching,
+  } = useSearchHotels(apiSearchParams);
 
   const selectedStars = activeParams.getAll("stars");
   const selectedHotelTypes = activeParams.getAll("types");
@@ -129,7 +145,11 @@ function SearchGrid() {
       params.set("page", "1");
     }
 
-    setPendingParams(params);
+    if (params.toString() === searchParams.toString()) {
+      setPendingParams(null);
+    } else {
+      setPendingParams(params);
+    }
   };
 
   const toggleValue = (
@@ -149,8 +169,6 @@ function SearchGrid() {
       },
     );
   };
-
-  const showResultsSkeleton = isFetching;
 
   return (
     <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
@@ -258,76 +276,90 @@ function SearchGrid() {
           </aside>
 
           <section className="space-y-5">
-            <div className="surface-panel flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm font-semibold tracking-[0.18em] uppercase">
-                  {hotelData?.pagination?.totalHotels} Results
-                </p>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  Sort and compare the stays that best fit your pace and budget.
-                </p>
-              </div>
-              <Select
-                value={sortOption}
-                onValueChange={(value) =>
-                  updateSearchParams(
-                    {
-                      sortOption: value === "default" ? undefined : value,
-                    },
-                    {
-                      resetPage: true,
-                    },
-                  )
-                }
-              >
-                <SelectTrigger className="h-11 w-full rounded-full px-4 sm:w-60">
-                  <SelectValue placeholder="Sort by relevance" />
-                </SelectTrigger>
-                <SelectContent position="popper">
-                  <SelectItem value="default">Sort by relevance</SelectItem>
-                  <SelectItem value="starRating">Highest rating</SelectItem>
-                  <SelectItem value="pricePerNightAsc">
-                    Price: low to high
-                  </SelectItem>
-                  <SelectItem value="pricePerNightDesc">
-                    Price: high to low
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+            <div
+              className={`space-y-5 transition-opacity duration-200 ${
+                isFetching && !isLoading ? "opacity-50" : "opacity-100"
+              }`}
+            >
+              {isLoading ? (
+                <SearchResultsSkeleton />
+              ) : (
+                <>
+                  <div className="surface-panel flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm font-semibold tracking-[0.18em] uppercase">
+                        {hotelData?.pagination?.totalHotels ?? 0} Results
+                      </p>
+                      <p className="text-muted-foreground mt-1 text-sm">
+                        Sort and compare the stays that best fit your pace and
+                        budget.
+                      </p>
+                    </div>
+                    <Select
+                      value={sortOption}
+                      onValueChange={(value) =>
+                        updateSearchParams(
+                          {
+                            sortOption: value === "default" ? undefined : value,
+                          },
+                          {
+                            resetPage: true,
+                          },
+                        )
+                      }
+                    >
+                      <SelectTrigger className="h-11 w-full rounded-full px-4 sm:w-60">
+                        <SelectValue placeholder="Sort by relevance" />
+                      </SelectTrigger>
+                      <SelectContent position="popper">
+                        <SelectItem value="default">
+                          Sort by relevance
+                        </SelectItem>
+                        <SelectItem value="starRating">
+                          Highest rating
+                        </SelectItem>
+                        <SelectItem value="pricePerNightAsc">
+                          Price: low to high
+                        </SelectItem>
+                        <SelectItem value="pricePerNightDesc">
+                          Price: high to low
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {hotelData?.data.map((hotel) => (
+                    <SearchResultsCard key={hotel._id} hotel={hotel} />
+                  ))}
+
+                  {hotelData?.data.length === 0 ? (
+                    <div className="surface-panel flex min-h-72 items-center justify-center p-8 text-center">
+                      <div className="space-y-3">
+                        <h2 className="font-heading text-4xl leading-none font-semibold">
+                          No hotels matched this search.
+                        </h2>
+                        <p className="text-muted-foreground max-w-md text-sm leading-6">
+                          Try widening the price cap, removing a few filters, or
+                          searching a nearby destination.
+                        </p>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {hotelData ? (
+                    <Pagination
+                      page={hotelData.pagination.page || 1}
+                      pages={hotelData.pagination.totalPages || 1}
+                      onPageChange={(nextPage) =>
+                        updateSearchParams({
+                          page: nextPage.toString(),
+                        })
+                      }
+                    />
+                  ) : null}
+                </>
+              )}
             </div>
-
-            {showResultsSkeleton ? <SearchResultsSkeleton /> : null}
-
-            {!showResultsSkeleton &&
-              hotelData?.data.map((hotel) => (
-                <SearchResultsCard key={hotel._id} hotel={hotel} />
-              ))}
-
-            {!showResultsSkeleton && hotelData?.data.length === 0 ? (
-              <div className="surface-panel flex min-h-72 items-center justify-center p-8 text-center">
-                <div className="space-y-3">
-                  <h2 className="font-heading text-4xl leading-none font-semibold">
-                    No hotels matched this search.
-                  </h2>
-                  <p className="text-muted-foreground max-w-md text-sm leading-6">
-                    Try widening the price cap, removing a few filters, or
-                    searching a nearby destination.
-                  </p>
-                </div>
-              </div>
-            ) : null}
-
-            {!showResultsSkeleton && hotelData ? (
-              <Pagination
-                page={hotelData.pagination.page || 1}
-                pages={hotelData.pagination.totalPages || 1}
-                onPageChange={(nextPage) =>
-                  updateSearchParams({
-                    page: nextPage.toString(),
-                  })
-                }
-              />
-            ) : null}
           </section>
         </div>
       </div>

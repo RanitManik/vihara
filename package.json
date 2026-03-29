@@ -10,8 +10,7 @@
     "dev": "nx run-many --target=dev --parallel",
     "dev:api": "nx dev api",
     "dev:web": "nx dev web",
-    "e2e": "nx run-many --target=e2e --all",
-    "e2e:web": "nx e2e web-e2e",
+    "e2e": "nx e2e e2e",
     "format": "nx format:write",
     "format:check": "nx format:check",
     "lint": "nx run-many --target=lint --all",
@@ -27,7 +26,7 @@
     "typecheck": "nx run-many --target=typecheck --all",
     "typecheck:api": "nx typecheck api",
     "typecheck:web": "nx typecheck web",
-    "typecheck:web-e2e": "nx typecheck web-e2e"
+    "typecheck:e2e": "nx typecheck e2e"
   },
   "lint-staged": {
     "*.{js,ts,tsx,jsx}": [
