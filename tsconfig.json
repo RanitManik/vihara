@@ -10,7 +10,7 @@
       "path": "./web"
     },
     {
-      "path": "./web-e2e"
+      "path": "./e2e"
     }
   ]
 }

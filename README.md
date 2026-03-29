@@ -68,7 +68,7 @@ The workspace is managed by Nx, separating concerns while maintaining a unified 
 
 - `api/` — The REST API server (Express + MongoDB).
 - `web/` — The frontend application (Next.js).
-- `web-e2e/` — Playwright end-to-end test suite for the web application.
+- `e2e/` — Playwright end-to-end test suite for the web application.
 
 ## 🚀 Getting Started
 
@@ -233,7 +233,7 @@ Use the following commands from the repository root to manage the monorepo:
 The repository maintains strict quality control through automated testing:
 
 - **Unit Tests:** Run `pnpm test` to execute Jest suites.
-- **E2E Tests:** Run `pnpm e2e` to execute the Playwright suite located in `web-e2e/`. Ensure your local servers are running or your `MONGODB_URI_E2E` is properly configured before running E2E workflows.
+- **E2E Tests:** Run `pnpm e2e` to execute the Playwright suite located in `e2e/`. Ensure your local servers are running or your `MONGODB_URI_E2E` is properly configured before running E2E workflows.
 
 ## ☁️ Deployment
 
