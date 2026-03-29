@@ -207,7 +207,14 @@ router.post(
   rateLimit,
   async (req: Request, res: Response) => {
     try {
-      const { numbersOfNights } = req.body;
+      const { numberOfNights } = req.body;
+      const nights = parseInt(numberOfNights);
+
+      if (isNaN(nights) || nights <= 0) {
+        res.status(400).json({ message: "Invalid Number of Nights" });
+        return;
+      }
+
       const hotelId = req.params.hotelId;
 
       const hotel = await Hotel.findById(hotelId);
@@ -218,14 +225,8 @@ router.post(
       }
 
       // Stripe expects amount in smallest currency unit (e.g. paise), and as integer
-      // Assuming pricePerNight is in INR, multiply by 100 for paise if needed, OR if it's already in base unit, just round.
-      // User error says "Invalid integer: 134661.5", implies it's sending a float.
-      // NOTE: If pricePerNight is in Rupee, Stripe for INR expects amount in Rupee * 100 (paise).
-      // But based on the error "134661.5" which is large, it might already be high.
-      // However, typical Stripe integration: amount 1000 = 10.00 currency units.
-      // If the error value is 134661.5, and that's rejected, it's just the float nature.
-      // I will Math.ceil or Math.round it to ensure integer.
-      const totalCost = Math.round(hotel.pricePerNight * numbersOfNights * 100);
+      // pricePerNight is in Rupees, multiply by 100 for paise and round to ensure integer
+      const totalCost = Math.round(hotel.pricePerNight * nights * 100);
 
       const paymentIntent = await stripe.paymentIntents.create({
         amount: totalCost,

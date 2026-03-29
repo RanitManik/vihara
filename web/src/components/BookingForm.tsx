@@ -13,12 +13,10 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCreateBooking } from "@/hooks/use-hotels";
+import { UserType } from "@/shared-types";
 
 type Props = {
-  currentUser: {
-    firstName: string;
-    email: string;
-  };
+  currentUser: UserType;
   paymentIntent: {
     paymentIntentId: string;
     clientSecret: string;
@@ -60,6 +58,7 @@ export function BookingForm({ currentUser, paymentIntent }: Props) {
   const { handleSubmit, register } = useForm<BookingFormData>({
     defaultValues: {
       firstName: currentUser.firstName,
+      lastName: currentUser.lastName,
       email: currentUser.email,
       adultCount,
       childCount,

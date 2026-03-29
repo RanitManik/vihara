@@ -8,6 +8,7 @@ import { Calendar, CreditCard, Hotel, Users } from "lucide-react";
 
 import { BookingForm } from "@/components/BookingForm";
 import { BookingPageSkeleton } from "@/components/PageSkeletons";
+import { useGetMe } from "@/hooks/use-auth";
 import { useGetHotelById, useCreatePaymentIntent } from "@/hooks/use-hotels";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUB_KEY || "");
@@ -34,6 +35,7 @@ export default function BookingPage() {
   }, [searchParams]);
 
   const { data: hotel } = useGetHotelById(hotelIdStr);
+  const { data: currentUser } = useGetMe();
   const { mutate: createPaymentIntent, data: paymentIntentData } =
     useCreatePaymentIntent(hotelIdStr);
 
@@ -43,7 +45,7 @@ export default function BookingPage() {
     }
   }, [hotelIdStr, numberOfNights, createPaymentIntent]);
 
-  if (!hotel || !paymentIntentData) {
+  if (!hotel || !paymentIntentData || !currentUser) {
     return (
       <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
         <div className="container-shell">
@@ -131,7 +133,7 @@ export default function BookingPage() {
             options={{ clientSecret: paymentIntentData.clientSecret }}
           >
             <BookingForm
-              currentUser={{ firstName: "Test", email: "test@example.com" }}
+              currentUser={currentUser}
               paymentIntent={paymentIntentData}
             />
           </Elements>
