@@ -1,48 +1,20 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, MapPin, Star } from "lucide-react";
 
-import { apiClient } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-
-type LovedHotel = {
-  _id: string;
-  name: string;
-  city: string;
-  country: string;
-  pricePerNight: number;
-  imageUrls: string[];
-  starRating: number;
-  description: string;
-  type: string;
-};
+import { useGetHotels } from "@/hooks/use-public-hotels";
 
 export function HomesGuestsLove() {
-  const [hotels, setHotels] = useState<LovedHotel[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchHotels = async () => {
-      try {
-        const data = await apiClient.get<LovedHotel[]>("/api/hotels");
-        setHotels(data);
-      } catch (error) {
-        console.error("Failed to fetch top-rated hotels", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchHotels();
-  }, []);
+  const { data: hotels, isLoading } = useGetHotels();
 
   const topRatedHotels = useMemo(
     () =>
-      [...hotels]
+      [...(hotels || [])]
         .sort((a, b) => {
           if (b.starRating !== a.starRating) {
             return b.starRating - a.starRating;

@@ -15,41 +15,16 @@ import {
 import { GuestInfoForm } from "@/components/GuestInfoForm";
 import { HotelDetailSkeleton } from "@/components/PageSkeletons";
 import { Badge } from "@/components/ui/badge";
-import { apiClient } from "@/lib/api-client";
-import { HotelType } from "@/shared-types";
+import { useGetHotelById } from "@/hooks/use-hotels";
 
 export default function HotelDetail() {
   const { hotelId } = useParams();
-  const [hotel, setHotel] = useState<HotelType | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: hotel, isLoading: loading } = useGetHotelById(
+    hotelId as string,
+  );
+
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchHotel = async () => {
-      if (!hotelId) {
-        return;
-      }
-
-      try {
-        const data = await apiClient.get<HotelType>(
-          `/api/hotels/${hotelId as string}`,
-        );
-        setHotel(data);
-      } catch (error) {
-        console.error("Error fetching hotel:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchHotel();
-  }, [hotelId]);
-
-  useEffect(() => {
-    setActiveImageIndex(0);
-    setIsLightboxOpen(false);
-  }, [hotel?._id]);
 
   useEffect(() => {
     if (!hotel || hotel.imageUrls.length <= 1 || isLightboxOpen) {
@@ -98,7 +73,7 @@ export default function HotelDetail() {
 
   return (
     <>
-      <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
+      <main key={hotel._id} className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
         <div className="container-shell space-y-6">
           <section className="surface-panel overflow-hidden p-0">
             <div className="relative min-h-115 overflow-hidden">

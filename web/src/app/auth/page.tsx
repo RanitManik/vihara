@@ -4,10 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -21,8 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAppContext } from "@/contexts/AppContext";
-import { apiClient } from "@/lib/api-client";
+import { useLogin, useRegister } from "@/hooks/use-auth";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -43,8 +40,8 @@ const registerSchema = z.object({
 export default function AuthPage() {
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
-  const { validateToken } = useAppContext();
+  const login = useLogin();
+  const register = useRegister();
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -65,29 +62,11 @@ export default function AuthPage() {
   });
 
   async function onLoginSubmit(values: z.infer<typeof loginSchema>) {
-    try {
-      await apiClient.post("/api/auth/login", values);
-      await validateToken();
-      toast.success("Welcome back.");
-      router.push("/");
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Invalid credentials";
-      toast.error(message);
-    }
+    login.mutate(values);
   }
 
   async function onRegisterSubmit(values: z.infer<typeof registerSchema>) {
-    try {
-      await apiClient.post("/api/users/register", values);
-      await validateToken();
-      toast.success("Account created successfully.");
-      router.push("/");
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Failed to create account";
-      toast.error(message);
-    }
+    register.mutate(values);
   }
 
   const handleGoogleLogin = () => {
@@ -287,8 +266,11 @@ export default function AuthPage() {
                       <Button
                         type="submit"
                         className="h-12 w-full rounded-full text-base font-semibold"
+                        disabled={login.isPending || register.isPending}
                       >
-                        {activeForm.submitLabel}
+                        {login.isPending || register.isPending
+                          ? "Processing..."
+                          : activeForm.submitLabel}
                       </Button>
                     </form>
                   </Form>
@@ -407,8 +389,11 @@ export default function AuthPage() {
                       <Button
                         type="submit"
                         className="h-12 w-full rounded-full text-base font-semibold"
+                        disabled={login.isPending || register.isPending}
                       >
-                        {activeForm.submitLabel}
+                        {login.isPending || register.isPending
+                          ? "Processing..."
+                          : activeForm.submitLabel}
                       </Button>
                     </form>
                   </Form>

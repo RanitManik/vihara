@@ -1,38 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Building2, Calendar, CreditCard, MapPin } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { apiClient } from "@/lib/api-client";
-import { HotelType } from "@/shared-types";
 import {
   PageIntroSkeleton,
   PortfolioCardsSkeleton,
 } from "@/components/PageSkeletons";
+import { useGetMyBookings } from "@/hooks/use-hotels";
 
 export default function MyBookings() {
-  const [hotels, setHotels] = useState<HotelType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: hotels, isLoading } = useGetMyBookings();
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const data = await apiClient.get<HotelType[]>("/api/my-bookings");
-        setHotels(data);
-      } catch (error) {
-        console.error("Failed to fetch bookings", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBookings();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
         <div className="container-shell space-y-6">
@@ -43,7 +25,9 @@ export default function MyBookings() {
     );
   }
 
-  if (!hotels.length) {
+  const bookingList = hotels || [];
+
+  if (!bookingList.length) {
     return (
       <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
         <div className="container-shell space-y-6">
@@ -95,7 +79,7 @@ export default function MyBookings() {
         </section>
 
         <section className="space-y-6">
-          {hotels.map((hotel) => (
+          {bookingList.map((hotel) => (
             <article
               key={hotel._id}
               className="surface-panel grid overflow-hidden p-0 lg:grid-cols-[340px_1fr]"

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 
 type Props = {
@@ -7,10 +8,31 @@ type Props = {
 
 const MIN_PRICE = 2500;
 const MAX_PRICE = 30000;
-const STEP = 500;
-
 export function PriceFilter({ selectedPrice, onChange }: Props) {
-  const sliderValue = selectedPrice ?? MAX_PRICE;
+  return (
+    <PriceFilterInternal
+      key={selectedPrice ?? MAX_PRICE}
+      selectedPrice={selectedPrice}
+      onChange={onChange}
+    />
+  );
+}
+
+function PriceFilterInternal({ selectedPrice, onChange }: Props) {
+  const [internalValue, setInternalValue] = useState(
+    selectedPrice ?? MAX_PRICE,
+  );
+
+  // Debounce the change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (internalValue !== selectedPrice) {
+        onChange(internalValue);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [internalValue, onChange, selectedPrice]);
 
   return (
     <div className="border-border/70 space-y-3 border-b pb-4">
@@ -24,7 +46,7 @@ export function PriceFilter({ selectedPrice, onChange }: Props) {
           </p>
         </div>
         <div className="bg-secondary rounded-full px-3 py-2 text-sm font-semibold">
-          ₹{sliderValue.toLocaleString("en-IN")}
+          ₹{internalValue.toLocaleString("en-IN")}
         </div>
       </div>
 
@@ -32,8 +54,8 @@ export function PriceFilter({ selectedPrice, onChange }: Props) {
         min={MIN_PRICE}
         max={MAX_PRICE}
         step={STEP}
-        value={[sliderValue]}
-        onValueChange={([value]) => onChange(value)}
+        value={[internalValue]}
+        onValueChange={([value]) => setInternalValue(value)}
       />
 
       <div className="text-muted-foreground flex justify-between text-xs font-medium">

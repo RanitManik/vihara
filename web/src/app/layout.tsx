@@ -7,6 +7,7 @@ import { AppProvider } from "@/contexts/AppContext";
 import { Toaster } from "@/components/ui/sonner";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { QueryProvider } from "@/components/providers/query-provider";
 
 const headingFont = Cormorant_Garamond({
   subsets: ["latin"],
@@ -38,13 +39,15 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="font-body flex min-h-screen flex-col antialiased">
-        <AppProvider>
-          <Header />
-          <div className="flex flex-1 flex-col">{children}</div>
-          <Footer />
-          <Toaster position="top-center" richColors />
-          <NextTopLoader color="#dd8f66" showSpinner={false} />
-        </AppProvider>
+        <QueryProvider>
+          <AppProvider>
+            <Header />
+            <div className="flex flex-1 flex-col">{children}</div>
+            <Footer />
+            <Toaster position="top-center" richColors />
+            <NextTopLoader color="#dd8f66" showSpinner={false} />
+          </AppProvider>
+        </QueryProvider>
       </body>
     </html>
   );

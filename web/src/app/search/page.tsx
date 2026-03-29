@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { FacilitiesFilter } from "@/components/FacilitiesFilter";
@@ -19,8 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { apiClient } from "@/lib/api-client";
-import { HotelSearchResponse } from "@/shared-types";
+import { useSearchHotels } from "@/hooks/use-hotels";
 
 function parsePositiveInteger(value: string | null, fallback: number) {
   const parsedValue = Number.parseInt(value ?? "", 10);
@@ -33,17 +32,71 @@ function parsePositiveInteger(value: string | null, fallback: number) {
 function SearchGrid() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const searchParamsString = searchParams.toString();
-  const [hotelData, setHotelData] = useState<HotelSearchResponse | null>(null);
-  const [isFetching, setIsFetching] = useState(true);
-  const selectedStars = searchParams.getAll("stars");
-  const selectedHotelTypes = searchParams.getAll("types");
-  const selectedFacilities = searchParams.getAll("facilities");
+
+  // Local state to track filter changes before pushing to URL
+  const [pendingParams, setPendingParams] = useState<URLSearchParams | null>(
+    null,
+  );
+
+  // Debounce pushing pendingParams to the URL
+  useEffect(() => {
+    if (!pendingParams) return;
+
+    const timer = setTimeout(() => {
+      router.replace(`/search?${pendingParams.toString()}`, {
+        scroll: false,
+      });
+      // Clear pending params after updating URL
+      setPendingParams(null);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [pendingParams, router]);
+
+  // Use either pendingParams (if user is actively filtering) or searchParams
+  const activeParams = pendingParams || searchParams;
+
+  // Create the API search params
+  const apiSearchParams = useMemo(() => {
+    const params = new URLSearchParams();
+    params.append("destination", activeParams.get("destination") || "");
+    params.append("checkIn", activeParams.get("checkIn") || "");
+    params.append("checkOut", activeParams.get("checkOut") || "");
+    params.append("adultCount", activeParams.get("adultCount") || "");
+    params.append("childCount", activeParams.get("childCount") || "");
+    params.append("pageNumber", activeParams.get("page") || "1");
+
+    activeParams
+      .getAll("stars")
+      .forEach((star) => params.append("stars", star));
+    activeParams
+      .getAll("types")
+      .forEach((type) => params.append("types", type));
+    activeParams
+      .getAll("facilities")
+      .forEach((facility) => params.append("facilities", facility));
+
+    const maxPrice = activeParams.get("maxPrice");
+    if (maxPrice) params.append("maxPrice", maxPrice);
+
+    const sortOptionParam = activeParams.get("sortOption");
+    if (sortOptionParam && sortOptionParam !== "default") {
+      params.append("sortOption", sortOptionParam);
+    }
+    return params;
+  }, [activeParams]);
+
+  const { data: hotelData, isLoading: isFetching } =
+    useSearchHotels(apiSearchParams);
+
+  const selectedStars = activeParams.getAll("stars");
+  const selectedHotelTypes = activeParams.getAll("types");
+  const selectedFacilities = activeParams.getAll("facilities");
   const selectedPrice = parsePositiveInteger(
-    searchParams.get("maxPrice"),
+    activeParams.get("maxPrice"),
     30000,
   );
-  const sortOption = searchParams.get("sortOption") || "default";
+  const sortOption = activeParams.get("sortOption") || "default";
 
   const updateSearchParams = (
     updates: Record<string, string | string[] | undefined>,
@@ -53,7 +106,7 @@ function SearchGrid() {
       resetPage?: boolean;
     } = {},
   ) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(activeParams.toString());
 
     Object.entries(updates).forEach(([key, value]) => {
       params.delete(key);
@@ -76,75 +129,8 @@ function SearchGrid() {
       params.set("page", "1");
     }
 
-    router.replace(`/search?${params.toString()}`, {
-      scroll: false,
-    });
+    setPendingParams(params);
   };
-
-  useEffect(() => {
-    const fetchHotels = async () => {
-      setIsFetching(true);
-
-      const currentSearchParams = new URLSearchParams(searchParamsString);
-      const currentPage = parsePositiveInteger(
-        currentSearchParams.get("page"),
-        1,
-      );
-      const currentSelectedStars = currentSearchParams.getAll("stars");
-      const currentSelectedHotelTypes = currentSearchParams.getAll("types");
-      const currentSelectedFacilities =
-        currentSearchParams.getAll("facilities");
-      const currentSelectedPrice = parsePositiveInteger(
-        currentSearchParams.get("maxPrice"),
-        30000,
-      );
-      const currentSortOption =
-        currentSearchParams.get("sortOption") || "default";
-
-      const searchParamsObj: Record<string, string | string[] | undefined> = {
-        destination: currentSearchParams.get("destination") || "",
-        checkIn: currentSearchParams.get("checkIn") || "",
-        checkOut: currentSearchParams.get("checkOut") || "",
-        adultCount: currentSearchParams.get("adultCount") || "",
-        childCount: currentSearchParams.get("childCount") || "",
-        pageNumber: currentPage.toString(),
-        stars: currentSelectedStars,
-        types: currentSelectedHotelTypes,
-        facilities: currentSelectedFacilities,
-        maxPrice: currentSelectedPrice.toString(),
-        sortOption:
-          currentSortOption === "default" ? undefined : currentSortOption,
-      };
-
-      const params = new URLSearchParams();
-
-      Object.entries(searchParamsObj).forEach(([key, value]) => {
-        if (!value || (Array.isArray(value) && value.length === 0)) {
-          return;
-        }
-
-        if (Array.isArray(value)) {
-          value.forEach((item) => params.append(key, item));
-          return;
-        }
-
-        params.append(key, value);
-      });
-
-      try {
-        const data = await apiClient.get<HotelSearchResponse>(
-          `/api/hotels/search?${params.toString()}`,
-        );
-        setHotelData(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsFetching(false);
-      }
-    };
-
-    fetchHotels();
-  }, [searchParamsString]);
 
   const toggleValue = (
     key: "stars" | "types" | "facilities",
@@ -294,7 +280,7 @@ function SearchGrid() {
                   )
                 }
               >
-                <SelectTrigger className="h-11 w-full rounded-full px-4 sm:w-[240px]">
+                <SelectTrigger className="h-11 w-full rounded-full px-4 sm:w-60">
                   <SelectValue placeholder="Sort by relevance" />
                 </SelectTrigger>
                 <SelectContent position="popper">

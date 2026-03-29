@@ -1,45 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, MapPin, Star } from "lucide-react";
 
-import { apiClient } from "@/lib/api-client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-
-export type HotelType = {
-  _id: string;
-  name: string;
-  city: string;
-  country: string;
-  pricePerNight: number;
-  imageUrls: string[];
-  starRating: number;
-  description: string;
-  type?: string;
-};
+import { useGetHotels } from "@/hooks/use-public-hotels";
 
 export function FeaturedHotels() {
-  const [hotels, setHotels] = useState<HotelType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: hotelsData, isLoading } = useGetHotels();
 
-  useEffect(() => {
-    const fetchHotels = async () => {
-      try {
-        const data = await apiClient.get<HotelType[]>("/api/hotels");
-        setHotels(data.slice(0, 3));
-      } catch (error) {
-        console.error("Failed to fetch hotels", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchHotels();
-  }, []);
+  const hotels = useMemo(() => {
+    return (hotelsData || []).slice(0, 3);
+  }, [hotelsData]);
 
   return (
     <section className="space-y-8">
