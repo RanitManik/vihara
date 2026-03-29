@@ -142,7 +142,7 @@ export default function MyBookings() {
                             Total cost
                           </p>
                           <p className="mt-2 text-base font-semibold">
-                            ₹{booking.totalCost}
+                            ₹{(booking.totalCost / 100).toFixed(2)}
                           </p>
                         </div>
                       </div>

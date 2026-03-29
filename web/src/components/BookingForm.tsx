@@ -17,6 +17,7 @@ import { useCreateBooking } from "@/hooks/use-hotels";
 type Props = {
   currentUser: {
     firstName: string;
+    lastName: string;
     email: string;
   };
   paymentIntent: {
@@ -60,6 +61,7 @@ export function BookingForm({ currentUser, paymentIntent }: Props) {
   const { handleSubmit, register } = useForm<BookingFormData>({
     defaultValues: {
       firstName: currentUser.firstName,
+      lastName: currentUser.lastName,
       email: currentUser.email,
       adultCount,
       childCount,

@@ -14,6 +14,14 @@ export const useValidateToken = () => {
   });
 };
 
+export const useGetMe = () => {
+  return useQuery({
+    queryKey: ["fetch-me"],
+    queryFn: () => apiClient.get("/api/users/me"),
+    retry: false,
+  });
+};
+
 type RegisterData = {
   firstName: string;
   lastName: string;
