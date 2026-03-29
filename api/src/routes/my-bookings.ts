@@ -6,8 +6,11 @@ import { HotelType } from "../shared/types";
 
 const router = express.Router();
 
+router.use(rateLimit);
+router.use(verifyToken);
+
 // /api/my-bookings
-router.get("/", verifyToken, rateLimit, async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
     const hotels = await Hotel.find({
       bookings: { $elemMatch: { userId: req.userId } },

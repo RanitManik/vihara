@@ -12,6 +12,9 @@ type MulterRequest = Request & { files?: MulterFile[]; userId?: string };
 
 const router = express.Router();
 
+router.use(rateLimit);
+router.use(verifyToken);
+
 const hotelValidation = [
   body("name").notEmpty().withMessage("Name is required"),
   body("city").notEmpty().withMessage("City is required"),
@@ -40,8 +43,6 @@ const hotelValidation = [
 // api/my-hotels
 router.post(
   "/",
-  verifyToken,
-  rateLimit,
   hotelValidation,
   upload.array("imageFiles", 6),
   async (req: Request, res: Response) => {
@@ -79,7 +80,7 @@ router.post(
   },
 );
 
-router.get("/", verifyToken, rateLimit, async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
   const authReq = req as MulterRequest;
   try {
     const hotels = await Hotel.find({ userId: authReq.userId });
@@ -90,29 +91,22 @@ router.get("/", verifyToken, rateLimit, async (req: Request, res: Response) => {
   }
 });
 
-router.get(
-  "/:hotelId",
-  verifyToken,
-  rateLimit,
-  async (req: Request, res: Response) => {
-    try {
-      const hotel = await Hotel.findById(req.params.hotelId);
-      if (!hotel) {
-        res.status(404).json({ message: "Hotel not found" });
-        return;
-      }
-      res.json(hotel);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Something Went Wrong" });
+router.get("/:hotelId", async (req: Request, res: Response) => {
+  try {
+    const hotel = await Hotel.findById(req.params.hotelId);
+    if (!hotel) {
+      res.status(404).json({ message: "Hotel not found" });
+      return;
     }
-  },
-);
+    res.json(hotel);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something Went Wrong" });
+  }
+});
 
 router.put(
   "/:hotelId",
-  verifyToken,
-  rateLimit,
   upload.array("imageFiles"),
   async (req: Request, res: Response) => {
     try {
