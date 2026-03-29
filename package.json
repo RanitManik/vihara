@@ -16,8 +16,10 @@
     "format:check": "nx format:check",
     "lint": "nx run-many --target=lint --all",
     "lint:api": "nx lint api",
+    "lint:commit": "commitlint --from=HEAD~1 --to=HEAD",
     "lint:web": "nx lint web",
     "nx": "nx",
+    "prepare": "husky",
     "seed:hotels": "nx run api:seed-hotels",
     "test": "nx run-many --target=test --all",
     "test:api": "nx test api",
@@ -26,6 +28,15 @@
     "typecheck:api": "nx typecheck api",
     "typecheck:web": "nx typecheck web",
     "typecheck:web-e2e": "nx typecheck web-e2e"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -46,6 +57,8 @@
     "stripe": "^21.0.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
     "@eslint/js": "^9.8.0",
     "@next/eslint-plugin-next": "^16.0.1",
     "@nx/devkit": "22.6.3",
@@ -83,6 +96,7 @@
     "eslint-plugin-playwright": "^1.6.2",
     "eslint-plugin-react": "7.35.0",
     "eslint-plugin-react-hooks": "7.0.1",
+    "husky": "^9.1.7",
     "jest": "^30.3.0",
     "jest-environment-node": "^30.3.0",
     "jest-util": "^30.3.0",
