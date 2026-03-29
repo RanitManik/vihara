@@ -2,11 +2,6 @@ import rateLimit from "express-rate-limit";
 import { RedisStore } from "rate-limit-redis";
 import redisClient from "../config/redis";
 
-const store = new RedisStore({
-  // @ts-expect-error - ioredis and redis-rate-limit types mismatch but compatible
-  sendCommand: (...args: string[]) => redisClient.call(...args),
-});
-
 // Default rate limit policy per IP
 export const defaultRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -14,7 +9,11 @@ export const defaultRateLimiter = rateLimit({
   message: { message: "Too many requests, please try again later." },
   standardHeaders: true,
   legacyHeaders: false,
-  store,
+  store: new RedisStore({
+    prefix: "rl:default:",
+    // @ts-expect-error - ioredis and redis-rate-limit types mismatch but compatible
+    sendCommand: (...args: string[]) => redisClient.call(...args),
+  }),
 });
 
 // Stricter rate limit for authentication routes
@@ -26,7 +25,11 @@ export const authRateLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  store,
+  store: new RedisStore({
+    prefix: "rl:auth:",
+    // @ts-expect-error - ioredis and redis-rate-limit types mismatch but compatible
+    sendCommand: (...args: string[]) => redisClient.call(...args),
+  }),
 });
 
 export default defaultRateLimiter;

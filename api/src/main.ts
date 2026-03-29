@@ -50,7 +50,7 @@ const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
   cookieName: "x-csrf-token",
   cookieOptions: {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: env.NODE_ENV === "production" ? "none" : "lax",
     secure: env.NODE_ENV === "production",
   },
   size: 64,
@@ -89,7 +89,11 @@ app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 
 // CSRF Protection Middleware
 app.use((req, res, next) => {
-  if (req.path === "/health" || req.path === "/api/csrf-token") {
+  if (
+    req.path === "/health" ||
+    req.path === "/api/csrf-token" ||
+    req.path === "/api/auth/logout"
+  ) {
     return next();
   }
   return doubleCsrfProtection(req, res, next);
