@@ -133,12 +133,12 @@ export function BrowseByHotelType() {
           type="button"
           size="icon"
           variant="outline"
-          disabled={!canScrollPrev}
-          onClick={() => api?.scrollPrev()}
+          onClick={() => canScrollPrev && api?.scrollPrev()}
           className={cn(
             "absolute top-28 -left-6 z-10 h-12 w-12 rounded-full bg-white shadow-lg",
             !canScrollPrev && "opacity-60",
           )}
+          aria-disabled={!canScrollPrev}
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -147,12 +147,12 @@ export function BrowseByHotelType() {
           type="button"
           size="icon"
           variant="outline"
-          disabled={!canScrollNext}
-          onClick={() => api?.scrollNext()}
+          onClick={() => canScrollNext && api?.scrollNext()}
           className={cn(
             "absolute top-28 -right-6 z-10 h-12 w-12 rounded-full bg-white shadow-lg",
             !canScrollNext && "opacity-60",
           )}
+          aria-disabled={!canScrollNext}
         >
           <ArrowRight className="h-5 w-5" />
         </Button>
