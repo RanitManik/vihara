@@ -3,6 +3,7 @@ import upload from "../config/multer";
 import cloudinary from "cloudinary";
 import Hotel from "../models/hotel";
 import verifyToken from "../middleware/auth";
+import rateLimit from "../middleware/rateLimit";
 import { body } from "express-validator";
 import { HotelType } from "../shared/types";
 
@@ -40,6 +41,7 @@ const hotelValidation = [
 router.post(
   "/",
   verifyToken,
+  rateLimit,
   hotelValidation,
   upload.array("imageFiles", 6),
   async (req: Request, res: Response) => {
@@ -77,7 +79,7 @@ router.post(
   },
 );
 
-router.get("/", verifyToken, async (req: Request, res: Response) => {
+router.get("/", verifyToken, rateLimit, async (req: Request, res: Response) => {
   const authReq = req as MulterRequest;
   try {
     const hotels = await Hotel.find({ userId: authReq.userId });
@@ -88,23 +90,29 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
   }
 });
 
-router.get("/:hotelId", verifyToken, async (req: Request, res: Response) => {
-  try {
-    const hotel = await Hotel.findById(req.params.hotelId);
-    if (!hotel) {
-      res.status(404).json({ message: "Hotel not found" });
-      return;
+router.get(
+  "/:hotelId",
+  verifyToken,
+  rateLimit,
+  async (req: Request, res: Response) => {
+    try {
+      const hotel = await Hotel.findById(req.params.hotelId);
+      if (!hotel) {
+        res.status(404).json({ message: "Hotel not found" });
+        return;
+      }
+      res.json(hotel);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Something Went Wrong" });
     }
-    res.json(hotel);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Something Went Wrong" });
-  }
-});
+  },
+);
 
 router.put(
   "/:hotelId",
   verifyToken,
+  rateLimit,
   upload.array("imageFiles"),
   async (req: Request, res: Response) => {
     try {
