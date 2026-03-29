@@ -51,8 +51,16 @@ export const apiClient = {
           return (retryBody ? JSON.parse(retryBody) : {}) as Promise<T>;
         }
       }
-      const error = await response.json();
-      throw new Error(error.message || "Something went wrong");
+
+      const errorBody = await response.text();
+      let errorMessage = "Something went wrong";
+      try {
+        const errorJson = JSON.parse(errorBody);
+        errorMessage = errorJson.message || errorMessage;
+      } catch (e) {
+        errorMessage = `Error ${response.status}: ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
     }
 
     const responseBody = await response.text();
@@ -64,8 +72,15 @@ export const apiClient = {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Something went wrong");
+      const errorBody = await response.text();
+      let errorMessage = "Something went wrong";
+      try {
+        const errorJson = JSON.parse(errorBody);
+        errorMessage = errorJson.message || errorMessage;
+      } catch (e) {
+        errorMessage = `Error ${response.status}: ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
     }
 
     return response.json() as Promise<T>;
@@ -83,8 +98,15 @@ export const apiClient = {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Something went wrong");
+      const errorBody = await response.text();
+      let errorMessage = "Something went wrong";
+      try {
+        const errorJson = JSON.parse(errorBody);
+        errorMessage = errorJson.message || errorMessage;
+      } catch (e) {
+        errorMessage = `Error ${response.status}: ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
     }
 
     return response.json() as Promise<T>;
@@ -101,8 +123,15 @@ export const apiClient = {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Something went wrong");
+      const errorBody = await response.text();
+      let errorMessage = "Something went wrong";
+      try {
+        const errorJson = JSON.parse(errorBody);
+        errorMessage = errorJson.message || errorMessage;
+      } catch (e) {
+        errorMessage = `Error ${response.status}: ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
     }
 
     return response.json() as Promise<T>;

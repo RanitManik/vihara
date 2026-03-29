@@ -117,7 +117,7 @@ router.post("/logout", (req: Request, res: Response) => {
     secure: env.NODE_ENV === "production",
     sameSite: env.NODE_ENV === "production" ? "none" : "lax",
   });
-  res.send();
+  res.status(200).json({ message: "Logged out successfully" });
 });
 
 export default router;

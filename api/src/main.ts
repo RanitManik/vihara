@@ -6,7 +6,7 @@ import morgan from "morgan";
 import hpp from "hpp";
 import mongoSanitize from "express-mongo-sanitize";
 import cookieParser from "cookie-parser";
-import csurf from "csurf";
+import { doubleCsrf } from "csrf-csrf";
 import { v2 as cloudinary } from "cloudinary";
 import passport from "./config/passport";
 import { env } from "./config/env";
@@ -21,9 +21,10 @@ import hotelRoutes from "./routes/hotels";
 import bookingRoutes from "./routes/my-bookings";
 import rateLimiter from "./middleware/rateLimit";
 
+import pkg from "express/package.json";
+const expressVersion = pkg.version;
+
 const startTime = process.hrtime.bigint();
-const expressPackage = require("express/package.json");
-const expressVersion = expressPackage.version;
 
 cloudinary.config({
   cloud_name: env.CLOUDINARY_CLOUD_NAME,
@@ -41,6 +42,21 @@ mongoose.connect(mongoUri as string).then(() => {
 });
 
 const app = express();
+
+// CSRF Protection configuration
+const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
+  getSecret: () => env.CSRF_SECRET || "a-very-secret-string",
+  getSessionIdentifier: (req) => req.cookies["auth_token"] || "guest",
+  cookieName: "x-csrf-token",
+  cookieOptions: {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: env.NODE_ENV === "production",
+  },
+  size: 64,
+  ignoredMethods: ["GET", "HEAD", "OPTIONS"],
+  getCsrfTokenFromRequest: (req) => req.headers["x-csrf-token"],
+});
 
 // Trust the first proxy (e.g. Nginx, Heroku, etc.)
 app.set("trust proxy", 1);
@@ -71,25 +87,17 @@ app.use(cookieParser());
 app.use(express.json({ limit: "10kb" })); // Body limit for security
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 
-const csrfProtection = csurf({
-  cookie: {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: env.NODE_ENV === "production",
-  },
-});
-
-// CSRF Protection
+// CSRF Protection Middleware
 app.use((req, res, next) => {
-  if (req.path === "/health") {
+  if (req.path === "/health" || req.path === "/api/csrf-token") {
     return next();
   }
-  return csrfProtection(req, res, next);
+  return doubleCsrfProtection(req, res, next);
 });
 
 // Endpoint to retrieve CSRF token
 app.get("/api/csrf-token", (req, res) => {
-  res.status(200).json({ csrfToken: req.csrfToken() });
+  res.status(200).json({ csrfToken: generateCsrfToken(req, res) });
 });
 
 // Passport
