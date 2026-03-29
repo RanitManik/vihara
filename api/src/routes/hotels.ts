@@ -4,6 +4,7 @@ import express, { Request, Response } from "express";
 import { param, validationResult } from "express-validator";
 import Stripe from "stripe";
 import verifyToken from "../middleware/auth";
+import rateLimit from "../middleware/rateLimit";
 
 const router = express.Router();
 
@@ -203,6 +204,7 @@ router.get(
 router.post(
   "/:hotelId/bookings/payment-intent",
   verifyToken,
+  rateLimit,
   async (req: Request, res: Response) => {
     try {
       const { numbersOfNights } = req.body;
@@ -261,6 +263,7 @@ router.post(
 router.post(
   "/:hotelId/bookings",
   verifyToken,
+  rateLimit,
   async (req: Request, res: Response) => {
     try {
       const paymentIntentId = req.body.paymentIntentId;
