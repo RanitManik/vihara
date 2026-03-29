@@ -28,7 +28,7 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden px-4 pt-6 pb-14 sm:px-6 lg:px-8">
       <div className="container-shell">
-        <div className="relative overflow-hidden rounded-[2rem] border border-white/30 bg-[#261b16] px-6 py-8 text-white sm:px-8 lg:px-10 lg:py-10">
+        <div className="relative overflow-hidden rounded-[2rem] border border-white/30 bg-[#261b16] px-0 pt-12 text-white sm:px-8 sm:py-8 lg:px-10 lg:py-10">
           <div className="absolute inset-0">
             {heroImages.map((src, index) => (
               <Image
@@ -46,12 +46,12 @@ export function Hero() {
           </div>
 
           <div className="relative space-y-7">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold backdrop-blur-md">
+            <div className="hidden items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold backdrop-blur-md sm:inline-flex">
               <Sparkles className="h-4 w-4 text-amber-300" />
               Curated escapes for design-forward travelers
             </div>
 
-            <div className="space-y-5">
+            <div className="space-y-5 px-6 sm:px-0">
               <h1 className="font-heading max-w-[15ch] text-5xl font-medium text-balance sm:text-6xl xl:max-w-[18ch] 2xl:text-7xl">
                 Stay somewhere that shapes the whole trip.
               </h1>
@@ -62,7 +62,7 @@ export function Hero() {
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-3 text-sm">
+            <div className="hidden flex-wrap gap-3 text-sm sm:flex">
               <Link
                 href="/search"
                 className="group inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur-md transition-all duration-200 hover:border-white/25 hover:bg-white/20"
