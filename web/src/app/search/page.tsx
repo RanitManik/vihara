@@ -42,21 +42,24 @@ function SearchGrid() {
   useEffect(() => {
     if (!pendingParams) return;
 
-    const timer = setTimeout(() => {
+    // If pending matches current searchParams, we can clear the pending state.
+    // We use a small timeout to avoid the synchronous setState warning while
+    // still providing the same functional behavior of resetting the pending state.
+    if (pendingParams.toString() === searchParams.toString()) {
+      const resetTimer = setTimeout(() => {
+        setPendingParams(null);
+      }, 0);
+      return () => clearTimeout(resetTimer);
+    }
+
+    const pushTimer = setTimeout(() => {
       router.replace(`/search?${pendingParams.toString()}`, {
         scroll: false,
       });
     }, 400);
 
-    return () => clearTimeout(timer);
-  }, [pendingParams, router]);
-
-  // Sync pendingParams back to null when searchParams catches up to avoid flicker
-  useEffect(() => {
-    if (pendingParams && pendingParams.toString() === searchParams.toString()) {
-      setPendingParams(null);
-    }
-  }, [searchParams, pendingParams]);
+    return () => clearTimeout(pushTimer);
+  }, [pendingParams, router, searchParams]);
 
   // Use either pendingParams (if user is actively filtering) or searchParams
   const activeParams = pendingParams || searchParams;
