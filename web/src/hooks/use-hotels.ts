@@ -1,6 +1,11 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import {
   HotelSearchResponse,
@@ -15,6 +20,7 @@ export const useSearchHotels = (queryParams: URLSearchParams) => {
     queryKey: ["search-hotels", queryParams.toString()],
     queryFn: () =>
       apiClient.get<HotelSearchResponse>(`/api/hotels/search?${queryParams}`),
+    placeholderData: keepPreviousData,
   });
 };
 
