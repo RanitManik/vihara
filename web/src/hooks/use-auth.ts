@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { UserType } from "@/shared-types";
 
 export const useValidateToken = () => {
   return useQuery({
@@ -15,9 +16,9 @@ export const useValidateToken = () => {
 };
 
 export const useGetMe = () => {
-  return useQuery({
+  return useQuery<UserType>({
     queryKey: ["fetch-me"],
-    queryFn: () => apiClient.get("/api/users/me"),
+    queryFn: () => apiClient.get<UserType>("/api/users/me"),
     retry: false,
   });
 };

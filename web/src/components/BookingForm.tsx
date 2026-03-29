@@ -13,13 +13,10 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCreateBooking } from "@/hooks/use-hotels";
+import { UserType } from "@/shared-types";
 
 type Props = {
-  currentUser: {
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
+  currentUser: UserType;
   paymentIntent: {
     paymentIntentId: string;
     clientSecret: string;
