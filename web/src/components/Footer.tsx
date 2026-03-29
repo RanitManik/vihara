@@ -48,7 +48,7 @@ export function Footer() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/search"
-                className="bg-primary text-primary-foreground inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold shadow-lg"
+                className="bg-primary text-primary-foreground inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
               >
                 Explore stays
                 <ArrowUpRight className="h-4 w-4" />

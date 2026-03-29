@@ -1,11 +1,11 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { ArrowRight, Sparkles, Trees } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 
 import { SearchBar } from "./SearchBar";
+import { Badge } from "./ui/badge";
 
 const heroImages = [
   "/hotels/hotel-image-01.jpg",
@@ -37,8 +37,10 @@ export function Hero() {
                 alt="Curated hotel background"
                 fill
                 priority={index === 0}
-                className={`object-cover object-center transition-opacity duration-1000 ${
-                  index === activeImage ? "opacity-35" : "opacity-0"
+                className={`object-cover object-center transition-all duration-7000 ease-in-out ${
+                  index === activeImage
+                    ? "scale-110 opacity-40"
+                    : "scale-100 opacity-0"
                 }`}
               />
             ))}
@@ -46,38 +48,27 @@ export function Hero() {
           </div>
 
           <div className="relative space-y-7">
-            <div className="hidden items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold backdrop-blur-md sm:inline-flex">
-              <Sparkles className="h-4 w-4 text-amber-300" />
-              Curated escapes for design-forward travelers
-            </div>
+            <Badge
+              variant="outline"
+              className="ml-6 flex border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-amber-200 backdrop-blur-md sm:ml-0"
+            >
+              <Sparkles className="mr-2 h-3.5 w-3.5" />
+              Curated for design-forward travelers
+            </Badge>
 
-            <div className="space-y-5 px-6 sm:px-0">
-              <h1 className="font-heading max-w-[15ch] text-5xl font-medium text-balance sm:text-6xl xl:max-w-[18ch] 2xl:text-7xl">
-                Stay somewhere that shapes the whole trip.
+            <div className="space-y-4 px-6 sm:px-0">
+              <h1 className="font-heading text-5xl font-medium tracking-tight text-balance sm:text-7xl lg:text-8xl">
+                Stay somewhere that{" "}
+                <span className="font-serif text-amber-200/90 italic">
+                  shapes
+                </span>{" "}
+                the trip.
               </h1>
-              <p className="max-w-2xl text-base leading-7 text-white/78 sm:text-lg">
+              <p className="max-w-xl text-base leading-relaxed font-light text-white/50 sm:text-lg">
                 Vihara helps you discover hotels with atmosphere, not just
                 availability. Search beautiful stays, book faster, and move
                 through your journey with less friction.
               </p>
-            </div>
-
-            <div className="hidden flex-wrap gap-3 text-sm sm:flex">
-              <Link
-                href="/search"
-                className="group inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur-md transition-all duration-200 hover:border-white/25 hover:bg-white/20"
-              >
-                <Trees className="h-4 w-4 text-emerald-300" />
-
-                <span className="flex items-center gap-2">
-                  <span className="text-white/70">
-                    Boutique, resort & city stays
-                  </span>
-                  <span className="font-medium text-white">Explore</span>
-                </span>
-
-                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
-              </Link>
             </div>
 
             <div className="pt-2">
