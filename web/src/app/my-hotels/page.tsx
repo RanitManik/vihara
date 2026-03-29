@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -18,29 +17,12 @@ import {
   PageIntroSkeleton,
   PortfolioCardsSkeleton,
 } from "@/components/PageSkeletons";
-import { apiClient } from "@/lib/api-client";
-import { HotelType } from "@/shared-types";
+import { useGetMyHotels } from "@/hooks/use-hotels";
 
 export default function MyHotels() {
-  const [hotels, setHotels] = useState<HotelType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: hotels, isLoading } = useGetMyHotels();
 
-  useEffect(() => {
-    const fetchHotels = async () => {
-      try {
-        const data = await apiClient.get<HotelType[]>("/api/my-hotels");
-        setHotels(data);
-      } catch (error) {
-        console.error("Error fetching hotels", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchHotels();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
         <div className="container-shell space-y-6">
@@ -50,6 +32,8 @@ export default function MyHotels() {
       </main>
     );
   }
+
+  const hotelList = hotels || [];
 
   return (
     <main className="px-4 pt-6 pb-14 sm:px-6 lg:px-8">
@@ -75,7 +59,7 @@ export default function MyHotels() {
           </div>
         </section>
 
-        {!hotels.length ? (
+        {!hotelList.length ? (
           <section className="surface-panel flex min-h-80 items-center justify-center p-8 text-center">
             <div className="space-y-4">
               <h2 className="font-heading text-4xl leading-none font-semibold">
@@ -92,7 +76,7 @@ export default function MyHotels() {
           </section>
         ) : (
           <section className="grid gap-6 xl:grid-cols-2">
-            {hotels.map((hotel) => (
+            {hotelList.map((hotel) => (
               <article
                 key={hotel._id}
                 data-testid="hotel-card"

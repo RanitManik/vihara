@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useParams, useSearchParams } from "next/navigation";
@@ -8,17 +8,14 @@ import { Calendar, CreditCard, Hotel, Users } from "lucide-react";
 
 import { BookingForm } from "@/components/BookingForm";
 import { BookingPageSkeleton } from "@/components/PageSkeletons";
-import { apiClient } from "@/lib/api-client";
-import { HotelType, PaymentIntentResponse } from "@/shared-types";
+import { useGetHotelById, useCreatePaymentIntent } from "@/hooks/use-hotels";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUB_KEY || "");
 
 export default function BookingPage() {
   const { hotelId } = useParams();
   const searchParams = useSearchParams();
-  const [hotel, setHotel] = useState<HotelType | null>(null);
-  const [paymentIntentData, setPaymentIntentData] =
-    useState<PaymentIntentResponse | null>(null);
+  const hotelIdStr = hotelId as string;
 
   const numberOfNights = useMemo(() => {
     const checkIn = searchParams.get("checkIn");
@@ -36,46 +33,15 @@ export default function BookingPage() {
     return Math.max(0, nights);
   }, [searchParams]);
 
-  useEffect(() => {
-    if (!hotelId) {
-      return;
-    }
-
-    const fetchHotel = async () => {
-      try {
-        const data = await apiClient.get<HotelType>(
-          `/api/hotels/${hotelId as string}`,
-        );
-        setHotel(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchHotel();
-  }, [hotelId]);
+  const { data: hotel } = useGetHotelById(hotelIdStr);
+  const { mutate: createPaymentIntent, data: paymentIntentData } =
+    useCreatePaymentIntent(hotelIdStr);
 
   useEffect(() => {
-    if (!hotelId || numberOfNights <= 0) {
-      return;
+    if (hotelIdStr && numberOfNights > 0) {
+      createPaymentIntent(numberOfNights.toString());
     }
-
-    const createPaymentIntent = async () => {
-      try {
-        const data = await apiClient.post<PaymentIntentResponse>(
-          `/api/hotels/${hotelId}/bookings/payment-intent`,
-          {
-            numbersOfNights: numberOfNights,
-          },
-        );
-        setPaymentIntentData(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    createPaymentIntent();
-  }, [hotelId, numberOfNights]);
+  }, [hotelIdStr, numberOfNights, createPaymentIntent]);
 
   if (!hotel || !paymentIntentData) {
     return (

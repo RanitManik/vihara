@@ -12,7 +12,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { apiClient } from "@/lib/api-client";
+import { useCreateBooking } from "@/hooks/use-hotels";
 
 type Props = {
   currentUser: {
@@ -42,15 +42,20 @@ export type BookingFormData = {
 export function BookingForm({ currentUser, paymentIntent }: Props) {
   const stripe = useStripe();
   const elements = useElements();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const router = useRouter();
+  const { hotelId } = useParams();
+  const { mutate: saveBooking, isPending: isSaving } = useCreateBooking(
+    hotelId as string,
+  );
 
-  const searchParams = new URLSearchParams(window.location.search);
+  const searchParams = new URLSearchParams(
+    typeof window !== "undefined" ? window.location.search : "",
+  );
   const checkIn = searchParams.get("checkIn") || "";
   const checkOut = searchParams.get("checkOut") || "";
   const adultCount = parseInt(searchParams.get("adultCount") || "1");
   const childCount = parseInt(searchParams.get("childCount") || "0");
-  const { hotelId } = useParams();
-  const router = useRouter();
 
   const { handleSubmit, register } = useForm<BookingFormData>({
     defaultValues: {
@@ -70,7 +75,7 @@ export function BookingForm({ currentUser, paymentIntent }: Props) {
       return;
     }
 
-    setIsLoading(true);
+    setIsProcessing(true);
 
     const result = await stripe.confirmPayment({
       elements,
@@ -82,28 +87,31 @@ export function BookingForm({ currentUser, paymentIntent }: Props) {
 
     if (result.error) {
       toast.error(result.error.message);
-      setIsLoading(false);
+      setIsProcessing(false);
       return;
     }
 
     if (result.paymentIntent?.status === "succeeded") {
-      try {
-        await apiClient.post(`/api/hotels/${hotelId}/bookings`, {
+      saveBooking(
+        {
           paymentIntentId: result.paymentIntent.id,
           checkIn: formData.checkIn,
           checkOut: formData.checkOut,
           adultCount: formData.adultCount,
           childCount: formData.childCount,
           totalCost: paymentIntent.totalCost,
-        });
-        toast.success("Booking saved!");
-        router.push("/my-bookings");
-      } catch {
-        toast.error("Error saving booking");
-        setIsLoading(false);
-      }
+        },
+        {
+          onSuccess: () => router.push("/my-bookings"),
+          onSettled: () => setIsProcessing(false),
+        },
+      );
+    } else {
+      setIsProcessing(false);
     }
   };
+
+  const isLoading = isProcessing || isSaving;
 
   return (
     <div className="space-y-6">

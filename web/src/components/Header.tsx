@@ -4,10 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Compass, LogOut, Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { toast } from "sonner";
 
 import { useAppContext } from "@/contexts/AppContext";
-import { apiClient } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -18,6 +16,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { useLogout } from "@/hooks/use-auth";
 
 const guestLinks = [
   { href: "/", label: "Explore" },
@@ -33,7 +32,8 @@ const memberLinks = [
 
 export function Header() {
   const pathname = usePathname();
-  const { isLoggedIn, validateToken } = useAppContext();
+  const { isLoggedIn } = useAppContext();
+  const logout = useLogout();
 
   if (pathname === "/auth") {
     return null;
@@ -93,19 +93,11 @@ export function Header() {
             <Button
               variant="outline"
               className="rounded-full px-5"
-              onClick={async () => {
-                try {
-                  await apiClient.post("/api/auth/logout", {});
-                  await validateToken();
-                  toast.success("Signed out successfully.");
-                } catch (error) {
-                  console.error("Logout failed", error);
-                  toast.error("Unable to sign out right now.");
-                }
-              }}
+              onClick={() => logout.mutate()}
+              disabled={logout.isPending}
             >
               <LogOut className="h-4 w-4" />
-              Sign out
+              {logout.isPending ? "Signing out..." : "Sign out"}
             </Button>
           )}
         </div>
@@ -153,18 +145,10 @@ export function Header() {
                   size="lg"
                   variant="destructive"
                   className="w-full rounded-full"
-                  onClick={async () => {
-                    try {
-                      await apiClient.post("/api/auth/logout", {});
-                      await validateToken();
-                      toast.success("Signed out successfully.");
-                    } catch (error) {
-                      console.error("Logout failed", error);
-                      toast.error("Unable to sign out right now.");
-                    }
-                  }}
+                  onClick={() => logout.mutate()}
+                  disabled={logout.isPending}
                 >
-                  Sign out
+                  {logout.isPending ? "Signing out..." : "Sign out"}
                 </Button>
               )}
             </SheetFooter>

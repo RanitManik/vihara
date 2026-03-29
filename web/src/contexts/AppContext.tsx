@@ -1,8 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { apiClient } from "@/lib/api-client";
+import React, { createContext, useContext } from "react";
 import { toast } from "sonner";
+import { useValidateToken } from "@/hooks/use-auth";
 
 type ToastMessage = {
   message: string;
@@ -13,55 +13,27 @@ type AppContext = {
   isLoggedIn: boolean;
   stripePromise: null;
   showToast: (toastMessage: ToastMessage) => void;
-  validateToken: () => Promise<void>;
 };
 
 const AppContext = createContext<AppContext | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [toastMessage, setToastMessage] = useState<ToastMessage | undefined>(
-    undefined,
-  );
+  const { data, isError, isLoading } = useValidateToken();
 
   const showToast = (toastMessage: ToastMessage) => {
-    setToastMessage(toastMessage);
+    toast[toastMessage.type === "SUCCESS" ? "success" : "error"](
+      toastMessage.message,
+    );
   };
-
-  const validateToken = async () => {
-    try {
-      await apiClient.get("/api/auth/validate-token");
-      setIsLoggedIn(true);
-    } catch {
-      setIsLoggedIn(false);
-    }
-  };
-
-  useEffect(() => {
-    // validateToken performs async auth status fetching implicitly updating React state.
-    // This is intentionally handled here so that user session is initialized on mount.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    validateToken();
-  }, []);
 
   return (
     <AppContext.Provider
       value={{
-        isLoggedIn,
+        isLoggedIn: !isError && !!data && !isLoading,
         stripePromise: null,
         showToast,
-        validateToken,
       }}
     >
-      {toastMessage && (
-        <div className="hidden">
-          {/* Toast logic handled by sonner usage directly in components mostly, but keeping structure for future */}
-          {toast[toastMessage.type === "SUCCESS" ? "success" : "error"](
-            toastMessage.message,
-          )}
-          {/* Reset after render? Toast lib handles it usually. */}
-        </div>
-      )}
       {children}
     </AppContext.Provider>
   );

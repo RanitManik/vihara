@@ -13,11 +13,11 @@ export function HotelTypesFilter({ selectedHotelTypes, onChange }: Props) {
       <h4 className="font-heading text-xl leading-none font-semibold">
         Stay type
       </h4>
-      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+      <div className="grid grid-cols-2 gap-2">
         {hotelTypes.map((type) => (
           <Label
             key={type}
-            className="border-border/70 bg-background/70 flex cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-medium"
+            className="border-border/70 bg-background/70 flex w-full cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-medium whitespace-nowrap"
           >
             <Checkbox
               checked={selectedHotelTypes.includes(type)}

@@ -139,13 +139,8 @@ export function SearchBar({ className }: SearchBarProps) {
   };
 
   return (
-    <div
-      className={cn(
-        "surface-panel mx-auto w-full rounded-[1.8rem] p-3",
-        className,
-      )}
-    >
-      <div className="grid gap-3 lg:grid-cols-[1.25fr_1fr_1fr_190px]">
+    <div className={cn("surface-panel w-full rounded-[1.8rem] p-3", className)}>
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[1.25fr_1fr_1fr_190px]">
         <div className="bg-background/95 border-border/60 flex h-18 items-center gap-3 rounded-4xl border px-4">
           <div className="bg-primary/12 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
             <MapPin className="h-4.5 w-4.5" />
@@ -155,7 +150,7 @@ export function SearchBar({ className }: SearchBarProps) {
               Destination
             </p>
             <Input
-              placeholder="Jaipur, Kyoto, or a quiet coast"
+              placeholder="Jaipur, Kyoto, or Paris"
               className="text-foreground h-auto rounded-none border-0 bg-transparent px-0 py-0.5 text-base shadow-none focus-visible:ring-0"
               value={destination}
               onChange={(event) => setDestination(event.target.value)}

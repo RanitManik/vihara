@@ -1,0 +1,28 @@
+{
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "files.exclude": {
+    "**/.nx": true,
+    "**/dist": true,
+    "**/tmp": true,
+    "**/pnpm-lock.yaml": true,
+    "**/.agents": true,
+    "**/.claude": true,
+    "**/.codex": true,
+    "**/.gemini": true,
+    "**/.opencode": true,
+    "**/AGENTS.md": true,
+    "**/.github/agents": true
+  },
+  "search.exclude": {
+    "**/.nx": true,
+    "**/dist": true,
+    "**/tmp": true,
+    "**/pnpm-lock.yaml": true,
+    "**/.agents": true,
+    "**/.claude": true,
+    "**/.codex": true,
+    "**/.gemini": true,
+    "**/.opencode": true,
+    "**/.github/agents": true
+  }
+}

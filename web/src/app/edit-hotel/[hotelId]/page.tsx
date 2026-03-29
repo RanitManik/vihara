@@ -1,51 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { toast } from "sonner";
-
+import { useParams } from "next/navigation";
 import ManageHotelForm from "@/components/ManageHotelForm";
-import { apiClient } from "@/lib/api-client";
-import { HotelType } from "@/shared-types";
+import { useGetHotelById, useUpdateMyHotel } from "@/hooks/use-hotels";
 
 export default function EditHotel() {
   const { hotelId } = useParams();
-  const router = useRouter();
-  const [hotel, setHotel] = useState<HotelType | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const hotelIdStr = hotelId as string;
 
-  useEffect(() => {
-    const fetchHotel = async () => {
-      try {
-        const data = await apiClient.get<HotelType>(
-          `/api/my-hotels/${hotelId as string}`,
-        );
-        setHotel(data);
-      } catch (error) {
-        console.error("Error fetching hotel details", error);
-      }
-    };
+  const { data: hotel, isLoading: isFetching } = useGetHotelById(hotelIdStr);
+  const { mutate, isPending: isUpdating } = useUpdateMyHotel(hotelIdStr);
 
-    fetchHotel();
-  }, [hotelId]);
-
-  const handleSave = async (hotelFormData: FormData) => {
-    setIsLoading(true);
-
-    try {
-      await apiClient.putMultipart(`/api/my-hotels/${hotelId}`, hotelFormData);
-      toast.success("Hotel updated successfully.");
-      router.push("/my-hotels");
-    } catch (error) {
-      toast.error("Error saving hotel.");
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSave = (hotelFormData: FormData) => {
+    mutate(hotelFormData);
   };
 
+  if (isFetching) {
+    return (
+      <div className="container-shell px-4 py-12 text-center">
+        Loading hotel details...
+      </div>
+    );
+  }
+
   if (!hotel) {
-    return <div className="container-shell px-4 py-12">Loading...</div>;
+    return (
+      <div className="container-shell px-4 py-12 text-center text-red-500">
+        Hotel not found.
+      </div>
+    );
   }
 
   return (
@@ -54,7 +37,7 @@ export default function EditHotel() {
         <ManageHotelForm
           hotel={hotel}
           onSave={handleSave}
-          isLoading={isLoading}
+          isLoading={isUpdating}
         />
       </div>
     </main>
