@@ -5,6 +5,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import verifyToken from "../middleware/auth";
 import passport from "passport";
+import { env } from "../config/env";
+import { authRateLimiter } from "../middleware/rateLimit";
 
 const router = express.Router();
 
@@ -17,15 +19,16 @@ router.get(
 // /api/auth/google/callback
 router.get(
   "/google/callback",
+  authRateLimiter,
   passport.authenticate("google", {
     session: false,
-    failureRedirect: `${process.env.FRONTEND_URL}/login`,
+    failureRedirect: `${env.FRONTEND_URL}/login`,
   }),
   (req: Request, res: Response) => {
     const user = req.user as UserType;
     const token = jwt.sign(
       { userId: user._id.toString() },
-      process.env.JWT_SECRET_KEY as string,
+      env.JWT_SECRET_KEY,
       {
         expiresIn: "1d",
       },
@@ -33,18 +36,19 @@ router.get(
 
     res.cookie("auth_token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: env.NODE_ENV === "production",
+      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 86400000,
     });
 
-    res.redirect(`${process.env.FRONTEND_URL}`);
+    res.redirect(`${env.FRONTEND_URL}`);
   },
 );
 
 // /api/auth/login
 router.post(
   "/login",
+  authRateLimiter,
   [
     check("email", "email is required").isEmail(),
     check(
@@ -79,7 +83,7 @@ router.post(
 
       const token = jwt.sign(
         { userId: user._id.toString() },
-        process.env.JWT_SECRET_KEY as string,
+        env.JWT_SECRET_KEY,
         {
           expiresIn: "1d",
         },
@@ -87,8 +91,8 @@ router.post(
 
       res.cookie("auth_token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: env.NODE_ENV === "production",
+        sameSite: env.NODE_ENV === "production" ? "none" : "lax",
         maxAge: 86400000,
       });
 
@@ -110,8 +114,8 @@ router.post("/logout", (req: Request, res: Response) => {
   res.cookie("auth_token", "", {
     expires: new Date(0),
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: env.NODE_ENV === "production",
+    sameSite: env.NODE_ENV === "production" ? "none" : "lax",
   });
   res.send();
 });

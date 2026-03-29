@@ -79,6 +79,7 @@ Ensure you have the following installed and configured:
 - **Node.js:** v20 or higher
 - **Package Manager:** pnpm v9+ (Recommended), npm, or yarn
 - **Database:** A running MongoDB instance (local or MongoDB Atlas)
+- **Redis:** A running Redis instance (required for rate limiting)
 - **External Accounts:** \* [Cloudinary](https://cloudinary.com/) (for image uploads)
   - [Stripe](https://stripe.com/) (for payment processing)
 
@@ -110,9 +111,13 @@ FRONTEND_URL=http://localhost:3000
 # Database
 MONGODB_URI=mongodb://localhost:27017/vihara
 MONGODB_URI_E2E=mongodb://localhost:27017/vihara_test # Optional: For E2E testing
+REDIS_URL=redis://localhost:6379
 
 # Security
 JWT_SECRET_KEY=your_super_secret_jwt_key
+GOOGLE_CLIENT_ID=your_google_client_id # Optional: For Google OAuth
+GOOGLE_CLIENT_SECRET=your_google_client_secret # Optional: For Google OAuth
+BACKEND_URL=http://localhost:4000 # Optional: For Google OAuth callback
 
 # Cloudinary
 CLOUDINARY_CLOUD_NAME=your_cloud_name

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { env } from "../config/env";
 
 declare module "express" {
   interface Request {
@@ -18,10 +19,7 @@ const verifyToken = (req: Request, res: Response, next: NextFunction): void => {
       return; // Ensure the function stops execution
     }
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET_KEY as string,
-    ) as JwtPayload;
+    const decoded = jwt.verify(token, env.JWT_SECRET_KEY) as JwtPayload;
 
     if (!decoded || typeof decoded.userId !== "string") {
       res.status(401).json({ message: "Unauthorized: Invalid token" });

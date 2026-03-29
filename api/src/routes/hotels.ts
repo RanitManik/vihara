@@ -5,10 +5,11 @@ import { param, validationResult } from "express-validator";
 import Stripe from "stripe";
 import verifyToken from "../middleware/auth";
 import rateLimit from "../middleware/rateLimit";
+import { env } from "../config/env";
 
 const router = express.Router();
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
 // /api/hotels
 type HotelSearchQuery = {

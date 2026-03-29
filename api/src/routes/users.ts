@@ -3,6 +3,8 @@ import User from "../models/user.js";
 import { check, validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 import verifyToken from "../middleware/auth";
+import { env } from "../config/env";
+import { authRateLimiter } from "../middleware/rateLimit";
 import rateLimit from "../middleware/rateLimit";
 
 type AuthRequest = Request & { userId?: string };
@@ -45,6 +47,7 @@ router.get(
 // /api/users/register
 router.post(
   "/register",
+  authRateLimiter,
   validateRegister,
   async (req: Request, res: Response): Promise<void> => {
     // Validate the request and return errors if any
@@ -67,14 +70,14 @@ router.post(
 
       const token = jwt.sign(
         { userId: user._id.toString() },
-        process.env.JWT_SECRET_KEY as string,
+        env.JWT_SECRET_KEY,
         { expiresIn: "1d" },
       );
 
       res.cookie("auth_token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: env.NODE_ENV === "production",
+        sameSite: env.NODE_ENV === "production" ? "none" : "lax",
         maxAge: 86400000,
       });
 
