@@ -50,3 +50,6 @@ out
 
 # tsbuildinfo files
 tsconfig.tsbuildinfo
+.nx/polygraph
+.claude/worktrees
+.claude/settings.local.json
