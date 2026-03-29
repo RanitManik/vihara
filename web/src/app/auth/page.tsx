@@ -1,11 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Sparkles, Stars, Users } from "lucide-react";
+import { Eye, EyeOff, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -43,7 +43,6 @@ const registerSchema = z.object({
 export default function AuthPage() {
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
   const [showPassword, setShowPassword] = useState(false);
-  const [testimonialIndex, setTestimonialIndex] = useState(0);
   const router = useRouter();
   const { validateToken } = useAppContext();
 
@@ -243,12 +242,12 @@ export default function AuthPage() {
                               <FormLabel className="text-sm font-semibold">
                                 Password
                               </FormLabel>
-                              <Link
+                              {/* <Link
                                 href="#"
                                 className="text-primary text-xs font-semibold hover:underline"
                               >
                                 Forgot password?
-                              </Link>
+                              </Link> */}
                             </div>
                             <FormControl>
                               <div className="relative">

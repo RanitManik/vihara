@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import {
   BedDouble,
   Images,
@@ -122,37 +122,67 @@ export default function ManageHotelForm({ onSave, isLoading, hotel }: Props) {
     defaultValues,
   });
 
-  const [existingImages, setExistingImages] = useState<string[]>([]);
-  const watchedFiles = form.watch("imageFiles");
-  const previewFiles = useMemo(
-    () => (watchedFiles ? Array.from(watchedFiles) : []),
-    [watchedFiles],
+  const watchedFiles = useWatch({
+    control: form.control,
+    name: "imageFiles",
+  });
+
+  const [removedExistingImages, setRemovedExistingImages] = useState<string[]>(
+    [],
   );
 
-  useEffect(() => {
-    if (hotel) {
-      const hotelData = hotel as HotelFormSource;
+  const existingImages = useMemo(() => {
+    const hotelImages = hotel?.imageUrls ?? [];
+    return hotelImages.filter((url) => !removedExistingImages.includes(url));
+  }, [hotel, removedExistingImages]);
 
-      form.reset({
-        name: hotelData.name ?? "",
-        city: hotelData.city ?? "",
-        country: hotelData.country ?? "",
-        address: hotelData.address ?? "",
-        description: hotelData.description ?? "",
-        type: normalizeHotelType(hotelData.type ?? hotelData.hotelType),
-        pricePerNight: hotelData.pricePerNight ?? defaultValues.pricePerNight,
-        starRating: hotelData.starRating ?? defaultValues.starRating,
-        facilities: hotelData.facilities ?? [],
-        imageFiles: {} as FileList,
-        imageUrls: hotelData.imageUrls ?? [],
-        adultCount: hotelData.adultCount ?? defaultValues.adultCount,
-        childCount: hotelData.childCount ?? defaultValues.childCount,
-      });
-      setExistingImages(hotelData.imageUrls ?? []);
+  const [
+    name,
+    city,
+    country,
+    type,
+    starRating,
+    pricePerNight,
+    adultCount,
+    childCount,
+  ] = useWatch({
+    control: form.control,
+    name: [
+      "name",
+      "city",
+      "country",
+      "type",
+      "starRating",
+      "pricePerNight",
+      "adultCount",
+      "childCount",
+    ],
+  }) || ["", "", "", "", 0, 0, 0, 0];
+
+  const previewFiles = watchedFiles ? Array.from(watchedFiles) : [];
+
+  useEffect(() => {
+    if (!hotel) {
       return;
     }
 
-    setExistingImages([]);
+    const hotelData = hotel as HotelFormSource;
+
+    form.reset({
+      name: hotelData.name ?? "",
+      city: hotelData.city ?? "",
+      country: hotelData.country ?? "",
+      address: hotelData.address ?? "",
+      description: hotelData.description ?? "",
+      type: normalizeHotelType(hotelData.type ?? hotelData.hotelType),
+      pricePerNight: hotelData.pricePerNight ?? defaultValues.pricePerNight,
+      starRating: hotelData.starRating ?? defaultValues.starRating,
+      facilities: hotelData.facilities ?? [],
+      imageFiles: {} as FileList,
+      imageUrls: hotelData.imageUrls ?? [],
+      adultCount: hotelData.adultCount ?? defaultValues.adultCount,
+      childCount: hotelData.childCount ?? defaultValues.childCount,
+    });
   }, [form, hotel]);
 
   const onSubmit = form.handleSubmit((values) => {
@@ -587,9 +617,10 @@ export default function ManageHotelForm({ onSave, isLoading, hotel }: Props) {
                           variant="outline"
                           className="w-full rounded-full"
                           onClick={() =>
-                            setExistingImages((current) =>
-                              current.filter((image) => image !== url),
-                            )
+                            setRemovedExistingImages((current) => [
+                              ...current,
+                              url,
+                            ])
                           }
                         >
                           Remove image
@@ -700,12 +731,11 @@ export default function ManageHotelForm({ onSave, isLoading, hotel }: Props) {
                 Property
               </p>
               <p className="mt-2 text-base font-semibold">
-                {form.watch("name") || "Untitled hotel"}
+                {name || "Untitled hotel"}
               </p>
               <p className="text-muted-foreground mt-1 text-sm">
-                {[form.watch("city"), form.watch("country")]
-                  .filter(Boolean)
-                  .join(", ") || "Location not set"}
+                {[city, country].filter(Boolean).join(", ") ||
+                  "Location not set"}
               </p>
             </div>
 
@@ -714,10 +744,10 @@ export default function ManageHotelForm({ onSave, isLoading, hotel }: Props) {
                 Positioning
               </p>
               <p className="mt-2 text-base font-semibold">
-                {form.watch("type") || "Type not selected"}
+                {type || "Type not selected"}
               </p>
               <p className="text-muted-foreground mt-1 text-sm">
-                {form.watch("starRating") || 0} star rating
+                {starRating || 0} star rating
               </p>
             </div>
 
@@ -726,11 +756,7 @@ export default function ManageHotelForm({ onSave, isLoading, hotel }: Props) {
                 Pricing
               </p>
               <p className="mt-2 text-base font-semibold">
-                ₹
-                {Number(form.watch("pricePerNight") || 0).toLocaleString(
-                  "en-IN",
-                )}{" "}
-                / night
+                ₹{Number(pricePerNight || 0).toLocaleString("en-IN")} / night
               </p>
             </div>
 
@@ -740,8 +766,7 @@ export default function ManageHotelForm({ onSave, isLoading, hotel }: Props) {
               </p>
               <p className="mt-2 flex items-center gap-2 text-base font-semibold">
                 <Users className="h-4 w-4" />
-                {form.watch("adultCount") || 0} adults,{" "}
-                {form.watch("childCount") || 0} children
+                {adultCount || 0} adults, {childCount || 0} children
               </p>
             </div>
           </div>

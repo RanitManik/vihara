@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useParams, useSearchParams } from "next/navigation";
@@ -16,22 +16,24 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUB_KEY || "");
 export default function BookingPage() {
   const { hotelId } = useParams();
   const searchParams = useSearchParams();
-  const [numberOfNights, setNumberOfNights] = useState<number>(0);
   const [hotel, setHotel] = useState<HotelType | null>(null);
   const [paymentIntentData, setPaymentIntentData] =
     useState<PaymentIntentResponse | null>(null);
 
-  useEffect(() => {
+  const numberOfNights = useMemo(() => {
     const checkIn = searchParams.get("checkIn");
     const checkOut = searchParams.get("checkOut");
 
-    if (checkIn && checkOut) {
-      const nights = Math.ceil(
-        (new Date(checkOut).getTime() - new Date(checkIn).getTime()) /
-          (1000 * 60 * 60 * 24),
-      );
-      setNumberOfNights(nights);
+    if (!checkIn || !checkOut) {
+      return 0;
     }
+
+    const nights = Math.ceil(
+      (new Date(checkOut).getTime() - new Date(checkIn).getTime()) /
+        (1000 * 60 * 60 * 24),
+    );
+
+    return Math.max(0, nights);
   }, [searchParams]);
 
   useEffect(() => {

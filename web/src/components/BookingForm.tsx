@@ -7,7 +7,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { useForm } from "react-hook-form";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -50,6 +50,7 @@ export function BookingForm({ currentUser, paymentIntent }: Props) {
   const adultCount = parseInt(searchParams.get("adultCount") || "1");
   const childCount = parseInt(searchParams.get("childCount") || "0");
   const { hotelId } = useParams();
+  const router = useRouter();
 
   const { handleSubmit, register } = useForm<BookingFormData>({
     defaultValues: {
@@ -96,7 +97,7 @@ export function BookingForm({ currentUser, paymentIntent }: Props) {
           totalCost: paymentIntent.totalCost,
         });
         toast.success("Booking saved!");
-        window.location.href = "/my-bookings";
+        router.push("/my-bookings");
       } catch {
         toast.error("Error saving booking");
         setIsLoading(false);

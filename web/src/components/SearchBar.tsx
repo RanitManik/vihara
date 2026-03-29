@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { format } from "date-fns";
 import {
   Calendar as CalendarIcon,
@@ -80,41 +80,32 @@ export function SearchBar({ className }: SearchBarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [destination, setDestination] = useState("");
-  const [date, setDate] = useState<DateRange | undefined>();
-  const [adultCount, setAdultCount] = useState(2);
-  const [childCount, setChildCount] = useState(0);
-  const [roomCount, setRoomCount] = useState(1);
 
-  useEffect(() => {
+  const [destination, setDestination] = useState(
+    () => searchParams.get("destination") ?? "",
+  );
+  const [date, setDate] = useState<DateRange | undefined>(() => {
     const checkIn = parseDate(searchParams.get("checkIn"));
     const checkOut = parseDate(searchParams.get("checkOut"));
-    const nextAdultCount = Number.parseInt(
-      searchParams.get("adultCount") ?? "2",
-      10,
-    );
-    const nextChildCount = Number.parseInt(
-      searchParams.get("childCount") ?? "0",
-      10,
-    );
-    const nextRoomCount = Number.parseInt(
-      searchParams.get("roomCount") ?? "1",
-      10,
-    );
-
-    setDestination(searchParams.get("destination") ?? "");
-    setDate(
-      checkIn
-        ? {
-            from: checkIn,
-            to: checkOut,
-          }
-        : undefined,
-    );
-    setAdultCount(nextAdultCount > 0 ? nextAdultCount : 2);
-    setChildCount(nextChildCount >= 0 ? nextChildCount : 0);
-    setRoomCount(nextRoomCount > 0 ? nextRoomCount : 1);
-  }, [searchParams]);
+    return checkIn
+      ? {
+          from: checkIn,
+          to: checkOut,
+        }
+      : undefined;
+  });
+  const [adultCount, setAdultCount] = useState(() => {
+    const next = Number.parseInt(searchParams.get("adultCount") ?? "2", 10);
+    return next > 0 ? next : 2;
+  });
+  const [childCount, setChildCount] = useState(() => {
+    const next = Number.parseInt(searchParams.get("childCount") ?? "0", 10);
+    return next >= 0 ? next : 0;
+  });
+  const [roomCount, setRoomCount] = useState(() => {
+    const next = Number.parseInt(searchParams.get("roomCount") ?? "1", 10);
+    return next > 0 ? next : 1;
+  });
 
   const handleSearch = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -155,7 +146,7 @@ export function SearchBar({ className }: SearchBarProps) {
       )}
     >
       <div className="grid gap-3 lg:grid-cols-[1.25fr_1fr_1fr_190px]">
-        <div className="bg-background/95 border-border/60 flex h-18 items-center gap-3 rounded-[1.25rem] border px-4">
+        <div className="bg-background/95 border-border/60 flex h-18 items-center gap-3 rounded-4xl border px-4">
           <div className="bg-primary/12 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
             <MapPin className="h-4.5 w-4.5" />
           </div>
@@ -177,7 +168,7 @@ export function SearchBar({ className }: SearchBarProps) {
             <button
               type="button"
               className={cn(
-                "bg-background/95 border-border/60 flex h-18 items-center gap-3 rounded-[1.25rem] border px-4 text-left",
+                "bg-background/95 border-border/60 flex h-18 items-center gap-3 rounded-4xl border px-4 text-left",
                 !date && "text-muted-foreground",
               )}
             >
@@ -222,7 +213,7 @@ export function SearchBar({ className }: SearchBarProps) {
           <PopoverTrigger asChild>
             <button
               type="button"
-              className="bg-background/95 border-border/60 flex h-18 items-center gap-3 rounded-[1.25rem] border px-4 text-left"
+              className="bg-background/95 border-border/60 flex h-18 items-center gap-3 rounded-4xl border px-4 text-left"
             >
               <div className="bg-primary/12 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
                 <Users className="h-4.5 w-4.5" />
@@ -241,7 +232,7 @@ export function SearchBar({ className }: SearchBarProps) {
           </PopoverTrigger>
           <PopoverContent
             align="start"
-            className="w-[360px] rounded-[1.45rem] border border-[#e8e0d7] p-5 shadow-[0_30px_80px_-30px_rgba(60,40,20,0.35)]"
+            className="w-90 rounded-[1.45rem] border border-[#e8e0d7] p-5 shadow-[0_30px_80px_-30px_rgba(60,40,20,0.35)]"
           >
             <div className="space-y-3">
               <GuestRow
@@ -269,7 +260,7 @@ export function SearchBar({ className }: SearchBarProps) {
         <Button
           onClick={handleSearch}
           size="lg"
-          className="h-18 w-full rounded-[1.25rem] px-4 text-base font-semibold shadow-[0_18px_40px_-24px_rgba(130,68,35,0.85)]"
+          className="h-18 w-full rounded-4xl px-4 text-base font-semibold"
         >
           <Search className="h-4 w-4" />
           Search stays
