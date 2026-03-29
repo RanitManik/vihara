@@ -11,6 +11,7 @@ const envSchema = z.object({
   FRONTEND_URL: z.url(),
   BACKEND_URL: z.url().optional(),
   JWT_SECRET_KEY: z.string().min(1),
+  CSRF_SECRET: z.string().min(1).optional(),
   CLOUDINARY_CLOUD_NAME: z.string().min(1),
   CLOUDINARY_API_KEY: z.string().min(1),
   CLOUDINARY_API_SECRET: z.string().min(1),
