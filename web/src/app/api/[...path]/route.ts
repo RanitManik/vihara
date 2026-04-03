@@ -105,58 +105,20 @@ const createProxyResponse = async (
   }
 };
 
-export const GET = async (
-  request: NextRequest,
-  context: { params: Promise<{ path: string[] }> },
-): Promise<NextResponse> => {
-  const { path } = await context.params;
-  return createProxyResponse(request, "GET", path);
+const makeMethodHandler = (method: string) => {
+  return async (
+    request: NextRequest,
+    context: { params: Promise<{ path: string[] }> },
+  ): Promise<NextResponse> => {
+    const { path } = await context.params;
+    return createProxyResponse(request, method, path);
+  };
 };
 
-export const POST = async (
-  request: NextRequest,
-  context: { params: Promise<{ path: string[] }> },
-): Promise<NextResponse> => {
-  const { path } = await context.params;
-  return createProxyResponse(request, "POST", path);
-};
-
-export const PUT = async (
-  request: NextRequest,
-  context: { params: Promise<{ path: string[] }> },
-): Promise<NextResponse> => {
-  const { path } = await context.params;
-  return createProxyResponse(request, "PUT", path);
-};
-
-export const PATCH = async (
-  request: NextRequest,
-  context: { params: Promise<{ path: string[] }> },
-): Promise<NextResponse> => {
-  const { path } = await context.params;
-  return createProxyResponse(request, "PATCH", path);
-};
-
-export const DELETE = async (
-  request: NextRequest,
-  context: { params: Promise<{ path: string[] }> },
-): Promise<NextResponse> => {
-  const { path } = await context.params;
-  return createProxyResponse(request, "DELETE", path);
-};
-
-export const OPTIONS = async (
-  request: NextRequest,
-  context: { params: Promise<{ path: string[] }> },
-): Promise<NextResponse> => {
-  const { path } = await context.params;
-  return createProxyResponse(request, "OPTIONS", path);
-};
-
-export const HEAD = async (
-  request: NextRequest,
-  context: { params: Promise<{ path: string[] }> },
-): Promise<NextResponse> => {
-  const { path } = await context.params;
-  return createProxyResponse(request, "HEAD", path);
-};
+export const GET = makeMethodHandler("GET");
+export const POST = makeMethodHandler("POST");
+export const PUT = makeMethodHandler("PUT");
+export const PATCH = makeMethodHandler("PATCH");
+export const DELETE = makeMethodHandler("DELETE");
+export const OPTIONS = makeMethodHandler("OPTIONS");
+export const HEAD = makeMethodHandler("HEAD");
