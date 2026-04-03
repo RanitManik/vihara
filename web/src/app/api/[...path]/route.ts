@@ -66,19 +66,19 @@ const createProxyResponse = async (
       headers: responseHeaders,
     });
 
-    const responseHeadersWithSetCookie = backendResponse.headers as Headers & {
+    const backendHeaders = backendResponse.headers as Headers & {
       getSetCookie?: () => string[];
     };
 
     let setCookieHeader: string[] = [];
-    if (typeof responseHeadersWithSetCookie.getSetCookie === "function") {
-      setCookieHeader = responseHeadersWithSetCookie.getSetCookie();
+    if (typeof backendHeaders.getSetCookie === "function") {
+      setCookieHeader = backendHeaders.getSetCookie();
     } else {
       const rawSetCookie = backendResponse.headers.get("set-cookie");
       if (rawSetCookie) {
         if (process.env.NODE_ENV !== "production") {
           console.warn(
-            "Headers.getSetCookie unavailable; using set-cookie fallback",
+            "Headers.getSetCookie unavailable; using set-cookie fallback. Consider upgrading runtime/fetch implementation for standards-compliant Set-Cookie handling.",
           );
         }
         setCookieHeader = [rawSetCookie];
