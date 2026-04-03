@@ -4,6 +4,7 @@ const BACKEND_URL =
   process.env.BACKEND_URL ||
   process.env.NEXT_PUBLIC_BACKEND_URL ||
   "http://localhost:4000";
+let hasLoggedSetCookieFallbackWarning = false;
 
 const REQUEST_HEADER_ALLOWLIST = [
   "accept",
@@ -76,9 +77,12 @@ const createProxyResponse = async (
     } else {
       const rawSetCookie = backendResponse.headers.get("set-cookie");
       if (rawSetCookie) {
-        console.warn(
-          "Headers.getSetCookie unavailable; using set-cookie fallback",
-        );
+        if (!hasLoggedSetCookieFallbackWarning) {
+          console.warn(
+            "Headers.getSetCookie unavailable; using set-cookie fallback",
+          );
+          hasLoggedSetCookieFallbackWarning = true;
+        }
         setCookieHeader = [rawSetCookie];
       }
     }
@@ -89,9 +93,14 @@ const createProxyResponse = async (
 
     return response;
   } catch (error) {
-    console.error("API proxy request failed", { method, targetUrl, error });
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("API proxy request failed", {
+      method,
+      targetUrl,
+      errorMessage,
+    });
     return NextResponse.json(
-      { message: "Bad Gateway: API is unreachable" },
+      { message: "Bad Gateway: API proxy request failed" },
       { status: 502 },
     );
   }
