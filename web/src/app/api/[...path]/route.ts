@@ -70,9 +70,9 @@ const createProxyResponse = async (
       getSetCookie?: () => string[];
     };
 
-    let setCookieHeader: string[] = [];
+    let setCookieHeaders: string[] = [];
     if (typeof backendHeaders.getSetCookie === "function") {
-      setCookieHeader = backendHeaders.getSetCookie();
+      setCookieHeaders = backendHeaders.getSetCookie();
     } else {
       const rawSetCookie = backendResponse.headers.get("set-cookie");
       if (rawSetCookie) {
@@ -81,21 +81,20 @@ const createProxyResponse = async (
             "Headers.getSetCookie unavailable; using set-cookie fallback. Consider upgrading runtime/fetch implementation for standards-compliant Set-Cookie handling.",
           );
         }
-        setCookieHeader = [rawSetCookie];
+        setCookieHeaders = [rawSetCookie];
       }
     }
 
-    for (const cookie of setCookieHeader) {
+    for (const cookie of setCookieHeaders) {
       response.headers.append("set-cookie", cookie);
     }
 
     return response;
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error("API proxy request failed", {
       method,
       targetUrl,
-      errorMessage,
+      errorMessage: error instanceof Error ? error.message : String(error),
       error,
     });
     return NextResponse.json(
