@@ -77,9 +77,7 @@ const createProxyResponse = async (
       const rawSetCookie = backendResponse.headers.get("set-cookie");
       if (rawSetCookie) {
         if (process.env.NODE_ENV !== "production") {
-          console.warn(
-            "Headers.getSetCookie unavailable; using set-cookie fallback. Consider upgrading runtime/fetch implementation for standards-compliant Set-Cookie handling.",
-          );
+          console.warn("Headers.getSetCookie unavailable; using fallback.");
         }
         setCookieHeaders = [rawSetCookie];
       }
@@ -95,7 +93,6 @@ const createProxyResponse = async (
       method,
       targetUrl,
       errorMessage: error instanceof Error ? error.message : String(error),
-      error,
     });
     return NextResponse.json(
       { message: "Bad Gateway: API proxy request failed" },
