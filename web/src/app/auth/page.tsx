@@ -70,9 +70,7 @@ export default function AuthPage() {
   }
 
   const handleGoogleLogin = () => {
-    const backendUrl =
-      process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
-    window.location.href = `${backendUrl}/api/auth/google`;
+    window.location.href = "/api/auth/google";
   };
 
   const activeForm =

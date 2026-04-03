@@ -1,11 +1,10 @@
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const API_BASE_URL = "/api";
 
 let csrfToken: string | null = null;
 
 const getCsrfToken = async () => {
   if (csrfToken) return csrfToken;
-  const response = await fetch(`${API_BASE_URL}/api/csrf-token`, {
+  const response = await fetch(`${API_BASE_URL}/csrf-token`, {
     credentials: "include",
   });
   if (response.ok) {
