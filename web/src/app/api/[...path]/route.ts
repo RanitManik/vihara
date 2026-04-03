@@ -4,7 +4,6 @@ const BACKEND_URL =
   process.env.BACKEND_URL ||
   process.env.NEXT_PUBLIC_BACKEND_URL ||
   "http://localhost:4000";
-let hasLoggedSetCookieFallbackWarning = false;
 
 const REQUEST_HEADER_ALLOWLIST = [
   "accept",
@@ -77,11 +76,10 @@ const createProxyResponse = async (
     } else {
       const rawSetCookie = backendResponse.headers.get("set-cookie");
       if (rawSetCookie) {
-        if (!hasLoggedSetCookieFallbackWarning) {
+        if (process.env.NODE_ENV !== "production") {
           console.warn(
             "Headers.getSetCookie unavailable; using set-cookie fallback",
           );
-          hasLoggedSetCookieFallbackWarning = true;
         }
         setCookieHeader = [rawSetCookie];
       }
@@ -98,6 +96,7 @@ const createProxyResponse = async (
       method,
       targetUrl,
       errorMessage,
+      error,
     });
     return NextResponse.json(
       { message: "Bad Gateway: API proxy request failed" },
@@ -109,7 +108,7 @@ const createProxyResponse = async (
 export const GET = async (
   request: NextRequest,
   context: { params: Promise<{ path: string[] }> },
-) => {
+): Promise<NextResponse> => {
   const { path } = await context.params;
   return createProxyResponse(request, "GET", path);
 };
