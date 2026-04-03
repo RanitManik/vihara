@@ -66,6 +66,7 @@ const createProxyResponse = async (
       headers: responseHeaders,
     });
 
+    // Keep compatibility with runtimes where getSetCookie may not exist yet.
     const setCookieHeader =
       "getSetCookie" in backendResponse.headers
         ? backendResponse.headers.getSetCookie()
@@ -76,7 +77,8 @@ const createProxyResponse = async (
     }
 
     return response;
-  } catch {
+  } catch (error) {
+    console.error("API proxy request failed", error);
     return NextResponse.json(
       { message: "Bad Gateway: API is unreachable" },
       { status: 502 },
