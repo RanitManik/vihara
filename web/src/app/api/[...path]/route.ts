@@ -66,11 +66,22 @@ const createProxyResponse = async (
       headers: responseHeaders,
     });
 
-    // Keep compatibility with runtimes where getSetCookie may not exist yet.
-    const setCookieHeader =
-      "getSetCookie" in backendResponse.headers
-        ? backendResponse.headers.getSetCookie()
-        : [];
+    const responseHeadersWithSetCookie = backendResponse.headers as Headers & {
+      getSetCookie?: () => string[];
+    };
+
+    let setCookieHeader: string[] = [];
+    if (typeof responseHeadersWithSetCookie.getSetCookie === "function") {
+      setCookieHeader = responseHeadersWithSetCookie.getSetCookie();
+    } else {
+      const rawSetCookie = backendResponse.headers.get("set-cookie");
+      if (rawSetCookie) {
+        console.warn(
+          "Headers.getSetCookie unavailable; using set-cookie fallback",
+        );
+        setCookieHeader = [rawSetCookie];
+      }
+    }
 
     for (const cookie of setCookieHeader) {
       response.headers.append("set-cookie", cookie);
@@ -78,7 +89,7 @@ const createProxyResponse = async (
 
     return response;
   } catch (error) {
-    console.error("API proxy request failed", error);
+    console.error("API proxy request failed", { method, targetUrl, error });
     return NextResponse.json(
       { message: "Bad Gateway: API is unreachable" },
       { status: 502 },
@@ -86,46 +97,58 @@ const createProxyResponse = async (
   }
 };
 
-const handleProxy = async (
+export const GET = async (
   request: NextRequest,
   context: { params: Promise<{ path: string[] }> },
-  method: string,
 ) => {
   const { path } = await context.params;
-  return createProxyResponse(request, method, path);
+  return createProxyResponse(request, "GET", path);
 };
 
-export const GET = (
+export const POST = async (
   request: NextRequest,
   context: { params: Promise<{ path: string[] }> },
-) => handleProxy(request, context, "GET");
+): Promise<NextResponse> => {
+  const { path } = await context.params;
+  return createProxyResponse(request, "POST", path);
+};
 
-export const POST = (
+export const PUT = async (
   request: NextRequest,
   context: { params: Promise<{ path: string[] }> },
-) => handleProxy(request, context, "POST");
+): Promise<NextResponse> => {
+  const { path } = await context.params;
+  return createProxyResponse(request, "PUT", path);
+};
 
-export const PUT = (
+export const PATCH = async (
   request: NextRequest,
   context: { params: Promise<{ path: string[] }> },
-) => handleProxy(request, context, "PUT");
+): Promise<NextResponse> => {
+  const { path } = await context.params;
+  return createProxyResponse(request, "PATCH", path);
+};
 
-export const PATCH = (
+export const DELETE = async (
   request: NextRequest,
   context: { params: Promise<{ path: string[] }> },
-) => handleProxy(request, context, "PATCH");
+): Promise<NextResponse> => {
+  const { path } = await context.params;
+  return createProxyResponse(request, "DELETE", path);
+};
 
-export const DELETE = (
+export const OPTIONS = async (
   request: NextRequest,
   context: { params: Promise<{ path: string[] }> },
-) => handleProxy(request, context, "DELETE");
+): Promise<NextResponse> => {
+  const { path } = await context.params;
+  return createProxyResponse(request, "OPTIONS", path);
+};
 
-export const OPTIONS = (
+export const HEAD = async (
   request: NextRequest,
   context: { params: Promise<{ path: string[] }> },
-) => handleProxy(request, context, "OPTIONS");
-
-export const HEAD = (
-  request: NextRequest,
-  context: { params: Promise<{ path: string[] }> },
-) => handleProxy(request, context, "HEAD");
+): Promise<NextResponse> => {
+  const { path } = await context.params;
+  return createProxyResponse(request, "HEAD", path);
+};
