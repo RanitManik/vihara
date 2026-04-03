@@ -1,7 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const BACKEND_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+  process.env.BACKEND_URL ||
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  "http://localhost:4000";
+
+const REQUEST_HEADER_ALLOWLIST = [
+  "accept",
+  "accept-language",
+  "authorization",
+  "content-type",
+  "cookie",
+  "origin",
+  "referer",
+  "user-agent",
+  "x-csrf-token",
+  "x-requested-with",
+];
+
+const getForwardHeaders = (request: NextRequest) => {
+  const headers = new Headers();
+
+  for (const [key, value] of request.headers.entries()) {
+    if (REQUEST_HEADER_ALLOWLIST.includes(key.toLowerCase())) {
+      headers.set(key, value);
+    }
+  }
+
+  headers.delete("content-length");
+  return headers;
+};
 
 const createProxyResponse = async (
   request: NextRequest,
@@ -11,28 +39,49 @@ const createProxyResponse = async (
   const targetPath = path.join("/");
   const targetUrl = `${BACKEND_URL}/api/${targetPath}${request.nextUrl.search}`;
 
-  const headers = new Headers(request.headers);
-  headers.set("host", new URL(BACKEND_URL).host);
-  headers.delete("content-length");
+  try {
+    const backendResponse = await fetch(targetUrl, {
+      method,
+      headers: getForwardHeaders(request),
+      body:
+        method === "GET" || method === "HEAD"
+          ? undefined
+          : await request.arrayBuffer(),
+      redirect: "manual",
+    });
 
-  const backendResponse = await fetch(targetUrl, {
-    method,
-    headers,
-    body:
-      method === "GET" || method === "HEAD"
-        ? undefined
-        : await request.arrayBuffer(),
-    redirect: "manual",
-  });
+    const responseHeaders = new Headers();
+    for (const [key, value] of backendResponse.headers.entries()) {
+      if (
+        key.toLowerCase() !== "content-encoding" &&
+        key.toLowerCase() !== "content-length" &&
+        key.toLowerCase() !== "set-cookie"
+      ) {
+        responseHeaders.set(key, value);
+      }
+    }
 
-  const responseHeaders = new Headers(backendResponse.headers);
-  responseHeaders.delete("content-encoding");
-  responseHeaders.delete("content-length");
+    const response = new NextResponse(backendResponse.body, {
+      status: backendResponse.status,
+      headers: responseHeaders,
+    });
 
-  return new NextResponse(backendResponse.body, {
-    status: backendResponse.status,
-    headers: responseHeaders,
-  });
+    const setCookieHeader =
+      "getSetCookie" in backendResponse.headers
+        ? backendResponse.headers.getSetCookie()
+        : [];
+
+    for (const cookie of setCookieHeader) {
+      response.headers.append("set-cookie", cookie);
+    }
+
+    return response;
+  } catch {
+    return NextResponse.json(
+      { message: "Bad Gateway: API is unreachable" },
+      { status: 502 },
+    );
+  }
 };
 
 const handleProxy = async (
