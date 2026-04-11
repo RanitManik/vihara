@@ -79,7 +79,7 @@
     "@nx/eslint-plugin": "22.6.3",
     "@nx/jest": "22.6.3",
     "@nx/js": "22.6.3",
-    "@nx/next": "22.6.2",
+    "@nx/next": "22.6.5",
     "@nx/node": "22.6.2",
     "@nx/playwright": "22.6.3",
     "@nx/workspace": "22.6.3",
