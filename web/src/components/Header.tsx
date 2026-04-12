@@ -137,14 +137,17 @@ export function Header() {
             </div>
             <SheetFooter className="px-0">
               {!isLoggedIn ? (
-                <Button asChild className="w-full rounded-full">
+                <Button
+                  asChild
+                  className="h-auto w-full rounded-full px-4 py-4"
+                >
                   <Link href="/auth">Create account</Link>
                 </Button>
               ) : (
                 <Button
                   size="lg"
                   variant="destructive"
-                  className="w-full rounded-full"
+                  className="h-auto w-full rounded-full px-4 py-4"
                   onClick={() => logout.mutate()}
                   disabled={logout.isPending}
                 >
