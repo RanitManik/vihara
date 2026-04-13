@@ -81,7 +81,7 @@
     "@nx/js": "22.6.3",
     "@nx/next": "22.6.5",
     "@nx/node": "22.6.2",
-    "@nx/playwright": "22.6.3",
+    "@nx/playwright": "22.6.5",
     "@nx/workspace": "22.6.3",
     "@playwright/test": "^1.36.0",
     "@swc-node/register": "1.11.1",
