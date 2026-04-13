@@ -103,8 +103,8 @@ importers:
         specifier: ^9.8.0
         version: 9.39.4
       '@next/eslint-plugin-next':
-        specifier: ^16.0.1
-        version: 16.2.1
+        specifier: ^16.2.3
+        version: 16.2.3
       '@nx/devkit':
         specifier: 22.6.4
         version: 22.6.4(nx@22.6.3(@swc-node/register@1.11.1(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@swc/core@1.15.21(@swc/helpers@0.5.21))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.21)))
@@ -422,8 +422,8 @@ importers:
         version: 4.3.6
     devDependencies:
       '@next/eslint-plugin-next':
-        specifier: ^16.0.1
-        version: 16.2.1
+        specifier: ^16.2.3
+        version: 16.2.3
       '@nx/next':
         specifier: 22.6.5
         version: 22.6.5(add22ddbb62ef62c3f5668aaf1544e28)
@@ -2115,6 +2115,9 @@ packages:
 
   '@next/eslint-plugin-next@16.2.1':
     resolution: {integrity: sha512-r0epZGo24eT4g08jJlg2OEryBphXqO8aL18oajoTKLzHJ6jVr6P6FI58DLMug04MwD3j8Fj0YK0slyzneKVyzA==}
+
+  '@next/eslint-plugin-next@16.2.3':
+    resolution: {integrity: sha512-nE/b9mht28XJxjTwKs/yk7w4XTaU3t40UHVAky6cjiijdP/SEy3hGsnQMPxmXPTpC7W4/97okm6fngKnvCqVaA==}
 
   '@next/swc-darwin-arm64@16.2.3':
     resolution: {integrity: sha512-u37KDKTKQ+OQLvY+z7SNXixwo4Q2/IAJFDzU1fYe66IbCE51aDSAzkNDkWmLN0yjTUh4BKBd+hb69jYn6qqqSg==}
@@ -11980,6 +11983,10 @@ snapshots:
   '@next/env@16.2.3': {}
 
   '@next/eslint-plugin-next@16.2.1':
+    dependencies:
+      fast-glob: 3.3.1
+
+  '@next/eslint-plugin-next@16.2.3':
     dependencies:
       fast-glob: 3.3.1
 
