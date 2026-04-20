@@ -36,8 +36,8 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0
       express-rate-limit:
-        specifier: ^8.3.1
-        version: 8.3.1(express@4.22.1)
+        specifier: ^8.3.2
+        version: 8.3.2(express@4.22.1)
       express-validator:
         specifier: ^7.3.2
         version: 7.3.2
@@ -76,7 +76,7 @@ importers:
         version: 2.0.0
       rate-limit-redis:
         specifier: ^4.3.1
-        version: 4.3.1(express-rate-limit@8.3.1(express@4.22.1))
+        version: 4.3.1(express-rate-limit@8.3.2(express@4.22.1))
       react:
         specifier: ^19.2.5
         version: 19.2.5
@@ -6166,8 +6166,8 @@ packages:
     resolution: {integrity: sha512-PZBs5nwhD6ek9ZuP+W2xmpvcrHwXZxD5GdieX2dsjPbAbH4azOkrHbycBud2QRU+YQF1CT+pki/lZGedHgo/dQ==}
     engines: {node: '>=10'}
 
-  express-rate-limit@8.3.1:
-    resolution: {integrity: sha512-D1dKN+cmyPWuvB+G2SREQDzPY1agpBIcTa9sJxOPMCNeH3gwzhqJRDWCXW3gg0y//+LQ/8j52JbMROWyrKdMdw==}
+  express-rate-limit@8.3.2:
+    resolution: {integrity: sha512-77VmFeJkO0/rvimEDuUC5H30oqUC4EyOhyGccfqoLebB0oiEYfM7nwPrsDsBL1gsTpwfzX8SFy2MT3TDyRq+bg==}
     engines: {node: '>= 16'}
     peerDependencies:
       express: '>= 4.11'
@@ -16979,7 +16979,7 @@ snapshots:
 
   express-mongo-sanitize@2.2.0: {}
 
-  express-rate-limit@8.3.1(express@4.22.1):
+  express-rate-limit@8.3.2(express@4.22.1):
     dependencies:
       express: 4.22.1
       ip-address: 10.1.0
@@ -19558,9 +19558,9 @@ snapshots:
 
   range-parser@1.2.1: {}
 
-  rate-limit-redis@4.3.1(express-rate-limit@8.3.1(express@4.22.1)):
+  rate-limit-redis@4.3.1(express-rate-limit@8.3.2(express@4.22.1)):
     dependencies:
-      express-rate-limit: 8.3.1(express@4.22.1)
+      express-rate-limit: 8.3.2(express@4.22.1)
 
   raw-body@2.5.3:
     dependencies:
