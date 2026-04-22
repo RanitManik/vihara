@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import express, { Request, Response } from "express";
 import { check, validationResult } from "express-validator";
 import User, { UserType } from "../models/user";
@@ -7,6 +8,7 @@ import verifyToken from "../middleware/auth";
 import passport from "passport";
 import { env } from "../config/env";
 import { authRateLimiter } from "../middleware/rateLimit";
+import redisClient from "../config/redis";
 
 const router = express.Router();
 
@@ -22,17 +24,58 @@ router.get(
   authRateLimiter,
   passport.authenticate("google", {
     session: false,
-    failureRedirect: `${env.FRONTEND_URL}/login`,
+    failureRedirect: `${env.FRONTEND_URL}/auth`,
   }),
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     const user = req.user as UserType;
     const token = jwt.sign(
       { userId: user._id.toString() },
       env.JWT_SECRET_KEY,
-      {
-        expiresIn: "1d",
-      },
+      { expiresIn: "1d" },
     );
+
+    // Safari's ITP blocks cookies set during cross-site redirect chains
+    // (frontend → Google → backend → frontend). To work around this, we
+    // store the JWT in Redis under a short-lived opaque code and redirect
+    // the frontend with just that code in the URL. The frontend then
+    // exchanges the code via a direct first-party CORS fetch (/oauth-complete),
+    // and the cookie is set in that response — which Safari allows.
+    const oauthCode = crypto.randomBytes(32).toString("hex");
+    await redisClient.set(`oauth:${oauthCode}`, token, "EX", 60);
+
+    res.redirect(`${env.FRONTEND_URL}/auth/callback?oauth_code=${oauthCode}`);
+  },
+);
+
+// /api/auth/oauth-complete
+// Exchanges the short-lived opaque code for the auth_token cookie.
+// This endpoint is called via a first-party CORS fetch from the frontend,
+// so Safari's ITP does not treat the resulting Set-Cookie as a tracker cookie.
+router.get(
+  "/oauth-complete",
+  authRateLimiter,
+  async (req: Request, res: Response) => {
+    const { oauth_code } = req.query;
+
+    if (!oauth_code || typeof oauth_code !== "string") {
+      res.status(400).json({ message: "Missing or invalid oauth_code" });
+      return;
+    }
+
+    const redisKey = `oauth:${oauth_code}`;
+    const token = await redisClient.get(redisKey);
+
+    if (!token) {
+      res
+        .status(400)
+        .json({
+          message: "OAuth code expired or already used. Please sign in again.",
+        });
+      return;
+    }
+
+    // One-time use — delete immediately to prevent replay attacks
+    await redisClient.del(redisKey);
 
     res.cookie("auth_token", token, {
       httpOnly: true,
@@ -41,7 +84,8 @@ router.get(
       maxAge: 86400000,
     });
 
-    res.redirect(`${env.FRONTEND_URL}`);
+    const decoded = jwt.decode(token) as { userId: string };
+    res.status(200).json({ userId: decoded.userId });
   },
 );
 

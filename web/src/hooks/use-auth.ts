@@ -1,9 +1,10 @@
 "use client";
 
+import { useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient, clearCsrfToken } from "@/lib/api-client";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { UserType } from "@/shared-types";
 
 export const useValidateToken = () => {
@@ -71,6 +72,30 @@ export const useLogin = () => {
       toast.error(error.message);
     },
   });
+};
+
+// Exchanges the short-lived oauth_code (set in the URL by the backend after
+// Google OAuth) for the actual auth_token cookie. This fetch is a first-party
+// CORS request from the frontend domain, which bypasses Safari's ITP that
+// would otherwise block cookies set during cross-site redirect chains.
+//
+// The hook deliberately does NOT handle toasts or navigation — the caller
+// (auth/callback/page.tsx) owns the success/error UX.
+export const useGoogleOAuthExchange = () => {
+  const queryClient = useQueryClient();
+
+  const exchange = useCallback(
+    async (oauthCode: string): Promise<void> => {
+      await apiClient.get(
+        `/api/auth/oauth-complete?oauth_code=${encodeURIComponent(oauthCode)}`,
+      );
+      clearCsrfToken();
+      await queryClient.invalidateQueries({ queryKey: ["validate-token"] });
+    },
+    [queryClient],
+  );
+
+  return { exchange };
 };
 
 export const useLogout = () => {

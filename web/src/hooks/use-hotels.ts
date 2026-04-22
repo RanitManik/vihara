@@ -13,7 +13,7 @@ import {
   PaymentIntentResponse,
 } from "@/shared-types";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 
 export const useSearchHotels = (queryParams: URLSearchParams) => {
   return useQuery({

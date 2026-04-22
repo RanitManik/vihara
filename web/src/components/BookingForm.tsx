@@ -7,7 +7,8 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { useForm } from "react-hook-form";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
