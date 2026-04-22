@@ -92,7 +92,11 @@ app.use((req, res, next) => {
   if (
     req.path === "/health" ||
     req.path === "/api/csrf-token" ||
-    req.path === "/api/auth/logout"
+    req.path === "/api/auth/logout" ||
+    // Google OAuth routes must bypass CSRF — the callback comes from Google's
+    // domain where there is no matching x-csrf-token cookie context.
+    req.path === "/api/auth/google" ||
+    req.path.startsWith("/api/auth/google/")
   ) {
     return next();
   }

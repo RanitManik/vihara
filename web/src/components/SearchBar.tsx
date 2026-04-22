@@ -12,7 +12,8 @@ import {
   Plus,
 } from "lucide-react";
 import { DateRange } from "react-day-picker";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
