@@ -120,7 +120,7 @@
     "jest-util": "^30.4.1",
     "nx": "22.6.3",
     "prettier": "~3.8.2",
-    "prettier-plugin-tailwindcss": "^0.7.2",
+    "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "4.2.2",
     "ts-jest": "^29.4.0",
     "ts-node": "10.9.2",
